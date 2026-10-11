@@ -26,6 +26,7 @@ function TheDiem({ p, kieu, i, onXemBanDo }: { p: DiaDiem; kieu: 'lon' | 'vua' |
       <Link to={`/dia-diem/${p.id}`} className="the-anh group" aria-label={chon(p.ten, p.tenEn)}>
         <span className="khung"><KhungAnh p={p} /></span>
         <span className="man" />
+        {p.vung && <span className={`fx-noi-it nhan-vung vung-${VUNG[p.vung].token} absolute left-3 top-3 z-[4]`}>{nn === 'en' ? VUNG[p.vung].nganEn : VUNG[p.vung].ngan}</span>}
         <span className={`fx-noi absolute inset-x-0 bottom-0 block p-5 text-[#F7F5EF] ${kieu === 'lon' ? 'sm:p-7' : ''}`}>
           <span className="text-[13px] font-medium text-[#DCE4E0]">{nn === 'en' ? LOAI[p.loai]?.en : LOAI[p.loai]?.ten}</span>
           <b className={`mt-0.5 block ${kieu === 'lon' ? 'tieu-de-vua' : 'text-[19px] font-semibold leading-snug'}`}>{chon(p.ten, p.tenEn)}</b>
@@ -40,11 +41,12 @@ function TheDiem({ p, kieu, i, onXemBanDo }: { p: DiaDiem; kieu: 'lon' | 'vua' |
     </article>);
 }
 
-export default function KhamPha({ ds, dangTai, tuKhoa, onBoTuKhoa, onXemBanDo }: {
+export default function KhamPha({ ds, dangTai, tuKhoa, onBoTuKhoa, onXemBanDo, vung, onVung: setVung }: {
   ds: DiaDiem[]; dangTai: boolean; tuKhoa: string; onBoTuKhoa: () => void; onXemBanDo: (id: string) => void;
+  /* Vùng đang lọc do trang chủ giữ: khối Ba sắc phía trên cũng chọn được. */
+  vung: Vung | null; onVung: (v: Vung | null) => void;
 }) {
   const { t, nn } = useNN();
-  const [vung, setVung] = useState<Vung | null>(null);
   const [loai, setLoai] = useState<Loai | null>(null);
   const [moHet, setMoHet] = useState(false);
   const q = boDau(tuKhoa.trim());
@@ -71,8 +73,8 @@ export default function KhamPha({ ds, dangTai, tuKhoa, onBoTuKhoa, onXemBanDo }:
             <div className="khong-thanh-cuon -mr-4 flex gap-2 overflow-x-auto pr-4 sm:mr-0 sm:flex-wrap sm:pr-0" role="group" aria-label={t('vung')}>
               <button type="button" className="chip" aria-pressed={!vung} onClick={() => doi(() => setVung(null))}>{t('tatCa')}</button>
               {(Object.keys(VUNG) as Vung[]).map((v) => { const n = demVung(v); return (
-                <button key={v} type="button" className="chip" aria-pressed={vung === v} disabled={!n && vung !== v} onClick={() => doi(() => setVung(vung === v ? null : v))}>
-                  {ten(VUNG[v])}<span className="chip-so">{n}</span></button>); })}
+                <button key={v} type="button" className={`chip vung-${VUNG[v].token}`} aria-pressed={vung === v} disabled={!n && vung !== v} onClick={() => doi(() => setVung(vung === v ? null : v))}>
+                  <span className="cham-vung" aria-hidden="true" />{ten(VUNG[v])}<span className="chip-so">{n}</span></button>); })}
             </div>
           </div>
           <div className="flex items-center gap-3">

@@ -308,6 +308,86 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.45; }
 @keyframes hop-vao { from { opacity: 0; transform: perspective(1200px) translateY(56px) rotateX(10deg); } }
 
 /* =========================================================================
+   BA SẮC LÂM ĐỒNG — màu ba vùng, trường hạt, chữ đổ màu theo cuộn
+   ========================================================================= */
+
+/* Trường hạt (TruongHat.tsx). Mặt nạ chừa chỗ cho chữ: hạt nhạt dần về phía khối chữ. */
+.hat-hero { -webkit-mask: radial-gradient(125% 95% at 0% 100%, transparent 30%, #000 68%); mask: radial-gradient(125% 95% at 0% 100%, transparent 30%, #000 68%); }
+.hat-dau { -webkit-mask: linear-gradient(180deg, transparent 0%, #000 45%); mask: linear-gradient(180deg, transparent 0%, #000 45%); opacity: .7; }
+@media (min-width: 768px) {
+  .hat-dau { -webkit-mask: linear-gradient(90deg, transparent 0%, rgb(0 0 0 / .15) 38%, #000 72%); mask: linear-gradient(90deg, transparent 0%, rgb(0 0 0 / .15) 38%, #000 72%); opacity: 1; }
+}
+
+/* Dải ba sắc: dấu hiệu nhận diện — ba vùng nối nhau. Không phải gradient: ba khúc màu rời. */
+.ba-sac { display: flex; gap: 4px; }
+.ba-sac > i { display: block; height: 4px; border-radius: 9999px; }
+.ba-sac > i:nth-child(1) { width: 44px; background: rgb(var(--c-hoa)); }
+.ba-sac > i:nth-child(2) { width: 28px; background: rgb(var(--c-bien)); }
+.ba-sac > i:nth-child(3) { width: 16px; background: rgb(var(--c-quy)); }
+.hero-hien.ba-sac > i { transform-origin: left; animation: ba-sac-ve .9s var(--ease-expo) both; }
+.hero-hien.ba-sac > i:nth-child(2) { animation-delay: .12s; }
+.hero-hien.ba-sac > i:nth-child(3) { animation-delay: .24s; }
+@keyframes ba-sac-ve { from { transform: scaleX(0); } }
+
+/* Câu đổ màu theo cuộn: chữ nhạt dần đậm lên từng chữ khi câu đi vào giữa màn hình.
+   Trình duyệt chưa hỗ trợ cuộn điều khiển hoạt ảnh thì chữ đậm sẵn. */
+@supports (animation-timeline: view()) {
+  .chu-do-mau > span {
+    animation: chu-day linear both; animation-timeline: view();
+    animation-range: cover calc(8% + var(--i) * 2.2%) cover calc(22% + var(--i) * 2.2%);
+  }
+  @keyframes chu-day { from { color: rgb(var(--c-ink) / .18); } to { color: rgb(var(--c-ink)); } }
+}
+
+/* Ba ô vùng: ảnh thật nhuộm màu vùng, ô đang rê/tập trung mở rộng ra. */
+.vung-sac .vung-o {
+  position: relative; overflow: hidden; isolation: isolate; min-height: 15rem; flex: 1 1 0; border-radius: 22px;
+  color: #fff; background: var(--vm); box-shadow: var(--sh-2);
+  transition: opacity .9s var(--ease-expo), transform 1.1s var(--ease-expo), flex-grow .7s var(--ease-expo), box-shadow .5s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 80ms), calc(var(--i, 0) * 80ms), 0s, 0s;
+}
+.vung-hoa { --vm: rgb(184 40 93); --vm2: 184 40 93; }
+.vung-bien { --vm: rgb(19 106 158); --vm2: 19 106 158; }
+.vung-quy { --vm: rgb(143 94 0); --vm2: 143 94 0; }
+.vung-anh { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; transform: scale(1.06);
+  filter: saturate(1.15); transition: transform 1.2s var(--ease-expo); }
+/* Màn màu vùng: đặc ở đáy (chữ trắng ≥ 5:1), loãng dần lên trên để thấy ảnh. */
+.vung-man { position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(0deg, rgb(var(--vm2) / .96) 0%, rgb(var(--vm2) / .82) 38%, rgb(var(--vm2) / .3) 100%); mix-blend-mode: normal; }
+.vung-ten { font-size: clamp(2rem, 1.4rem + 2vw, 3.25rem); }
+.vung-them { max-width: 26rem; }
+@media (min-width: 1024px) {
+  .vung-sac .vung-o { min-height: 0; }
+  .vung-sac:hover .vung-o, .vung-sac:focus-within .vung-o { flex-grow: .8; }
+  .vung-sac .vung-o:hover, .vung-sac .vung-o:focus-visible { flex-grow: 1.9; box-shadow: var(--sh-3); }
+  .vung-o:hover .vung-anh, .vung-o:focus-visible .vung-anh { transform: scale(1); }
+  .vung-them { opacity: .0; transform: translateY(10px); transition: opacity .5s var(--ease-out), transform .6s var(--ease-expo); }
+  .vung-o:hover .vung-them, .vung-o:focus-visible .vung-them { opacity: 1; transform: none; }
+  .vung-sac:not(:hover):not(:focus-within) .vung-them { opacity: 1; transform: none; }
+}
+.vung-o:focus-visible { outline: 3px solid rgb(var(--c-ink)); outline-offset: 3px; }
+
+/* Khung chờ ảnh theo màu vùng; đường đồng mức vẫn nằm trên. */
+.anh-cho.vung-hoa, .anh-cho.vung-bien, .anh-cho.vung-quy {
+  color: rgb(255 255 255 / .7); background: radial-gradient(120% 90% at 70% 0%, rgb(var(--vm2) / .78), rgb(var(--vm2)) 55%, rgb(12 34 30) 140%); }
+/* Ô vùng: đường đồng mức trắng mờ trên mặt màu (lộ rõ khi chưa có ảnh). */
+.vung-o::after { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: rgb(255 255 255 / .12);
+  -webkit-mask: url('/nen/dong-muc.svg') center / 1100px auto; mask: url('/nen/dong-muc.svg') center / 1100px auto; }
+
+/* Chip vùng: chấm màu vùng; chọn rồi thì nền màu vùng. */
+.chip .cham-vung { width: 9px; height: 9px; border-radius: 9999px; background: var(--vm); }
+.chip.vung-hoa[aria-pressed='true'], .chip.vung-bien[aria-pressed='true'], .chip.vung-quy[aria-pressed='true'] { background: var(--vm); border-color: var(--vm); color: #fff; }
+.chip[aria-pressed='true'] .cham-vung { background: #fff; }
+
+/* Gạch dưới mục đang mở ở đầu trang: ba khúc màu ba vùng. */
+.gach-ba-sac::after { background-image: linear-gradient(90deg, rgb(var(--c-hoa)) 0 46%, transparent 46% 50%, rgb(var(--c-bien)) 50% 78%, transparent 78% 82%, rgb(var(--c-quy)) 82%); }
+
+/* Nhãn vùng trên thẻ ảnh */
+.nhan-vung { display: inline-flex; align-items: center; gap: 6px; border-radius: 9999px; padding: 4px 10px 4px 8px;
+  font-size: 12px; font-weight: 600; line-height: 1.4; color: #fff; background: rgb(var(--vm2) / .92); }
+.nhan-vung::before { content: ''; width: 7px; height: 7px; border-radius: 9999px; background: #fff; opacity: .9; }
+
+/* =========================================================================
    THANH CUỘN
    ========================================================================= */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -330,4 +410,6 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.45; }
   .duong-ke-vach, .duong-ke-cham, .thanh-sao { transform: none; opacity: 1; transition: none; }
   .da-hien .duong-ke-vach, .da-hien .duong-ke-cham { animation: none; }
   ::view-transition-group(*) { animation: none; }
+  .hero-hien.ba-sac > i, .chu-do-mau > span { animation: none; }
+  .vung-sac .vung-o, .vung-anh, .vung-them { transition: none; }
 }

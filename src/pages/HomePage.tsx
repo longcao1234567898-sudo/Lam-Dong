@@ -11,10 +11,12 @@ import KhamPha from '../components/trang-chu/KhamPha';
 import BanDoTuongTac, { type Tab } from '../components/trang-chu/BanDoTuongTac';
 import LoTrinhNoiBat from '../components/trang-chu/LoTrinhNoiBat';
 import DanhGiaKhach from '../components/trang-chu/DanhGiaKhach';
+import VungSac from '../components/trang-chu/VungSac';
 import ChiTiet from '../components/du-lich/ChiTiet';
 import { layDiaDiem, layThongKe, layLoTrinh, layTinTuc } from '../services/api';
 import { giamChuyenDong } from '../utils/hangSo';
 import { useNN } from '../i18n/NgonNgu';
+import type { Vung } from '../utils/kieu';
 
 export default function HomePage() {
   const { t, chon: dich, ngay } = useNN();
@@ -27,6 +29,7 @@ export default function HomePage() {
   const suKien = tin.filter((x) => x.loai === 'su-kien' || x.loai === 'thong-bao').sort((a, b) => Number(!!b.noiBat) - Number(!!a.noiBat)).slice(0, 3);
 
   const [tuKhoa, setTuKhoa] = useState('');
+  const [vung, setVung] = useState<Vung | null>(null);
   const [tab, setTab] = useState<Tab>('diem');
   const [chon, setChon] = useState<string | null>(null);
   const [tuyen, setTuyen] = useState<number | null>(null);
@@ -49,7 +52,9 @@ export default function HomePage() {
       {isError && <div className="container-page pt-10"><div className="the mx-auto max-w-xl px-5 py-4 text-center text-[15px]">
         <b className="block">{t('chuaTaiDuoc')}</b>{(error as Error)?.message}</div></div>}
 
-      <KhamPha ds={ds} dangTai={isLoading} tuKhoa={tuKhoa} onBoTuKhoa={() => setTuKhoa('')}
+      <VungSac ds={ds} dangTai={isLoading} onChon={(v) => { setVung(v); cuonToi('kham-pha'); }} />
+
+      <KhamPha ds={ds} dangTai={isLoading} tuKhoa={tuKhoa} onBoTuKhoa={() => setTuKhoa('')} vung={vung} onVung={setVung}
         onXemBanDo={(id) => { setTab('diem'); setTuyen(null); setChon(id); toiBanDo(); }} />
 
       <BanDoTuongTac ref={khuBanDo} ds={ds} loTrinh={loTrinh} tab={tab} onTab={setTab} chon={chon} onChon={setChon} tuyen={tuyen} onTuyen={setTuyen} />

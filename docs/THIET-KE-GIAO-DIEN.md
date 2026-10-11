@@ -4,6 +4,23 @@ Phạm vi: trang chủ (6 khối A–F) và hệ thống thiết kế dùng chun
 
 Mã nguồn hiện có: React 18 + TypeScript + Vite + Tailwind 3 + react-query + react-leaflet (nền OpenStreetMap) + lucide-react. Song ngữ qua `useNN()` (`t`, `chon`). Đọc mục [Ràng buộc dữ liệu](#ràng-buộc-dữ-liệu-đọc-trước-khi-dựng) trước khi dựng: trang này là trang của cơ quan nhà nước, **mọi con số, ảnh, đánh giá trên trang phải lần ra được nguồn thật**.
 
+## Cập nhật: "Ba sắc Lâm Đồng" — nhiều màu hơn, chuyển động theo chuột
+
+Yêu cầu: trang người dân đẹp, nhiều màu hơn, có hình ảnh chuyển động kiểu Antigravity. Màu mới **mang nghĩa**: mỗi vùng du lịch của tỉnh sau hợp nhất một sắc (token trong `tokens.css`, tên trong `VUNG` ở `utils/hangSo.ts`).
+
+| Vùng | Màu | Bản đậm (chữ / nền có chữ trắng) |
+|---|---|---|
+| Cao nguyên Lâm Viên – Đà Lạt | mai anh đào `#E0457B` (`hoa`) | `#B8285D` — 5.5 trên ivory, chữ trắng 6.0 |
+| Biển và đảo đông nam | biển `#1E88C8` (`bien`) | `#136A9E` — 5.4 trên ivory, chữ trắng 5.9 |
+| Đại ngàn, công viên địa chất | dã quỳ `#F29A1F` (`quy`, nền thì chữ ink 7.1) | `#8F5E00` — 5.1 trên ivory, chữ trắng 5.6 |
+
+Thêm `sim` `#7B5CD6` (hoa sim) chỉ dùng cho hạt chuyển động. Quy tắc "vàng chỉ cho sao" ở mục 1 nay chỉ áp cho màu `gold`; dã quỳ là màu vùng.
+
+- **Trường hạt** (`components/hieu-ung/TruongHat.tsx`): hàng trăm cánh hoa năm màu trôi theo gió, rê chuột thì dạt ra thành vòng xoáy quanh con trỏ, cánh gần to và đậm, cánh xa nhỏ và mờ. Không có chuột thì "cơn gió" ảo tự đi. Có ở hero (trên ảnh, chừa góc chữ) và đầu mọi trang con (`DauTrang`, nhạt dần về phía chữ). Canvas 2D, dừng khi khuất màn hình hoặc tab ẩn; bật giảm chuyển động thì vẽ một khung tĩnh.
+- **Khối "Ba sắc"** (`trang-chu/VungSac.tsx`) ngay dưới hero: ba ô ảnh thật nhuộm màu vùng; rê chuột hoặc Tab tới thì ô mở rộng; bấm là lọc khối Khám phá theo vùng (trạng thái vùng nay do `HomePage` giữ). Tiêu đề đổ màu từng chữ theo nhịp cuộn (`.chu-do-mau`, chỉ trình duyệt có `animation-timeline`).
+- **Dải ba sắc** (`.ba-sac`, ba khúc màu rời, không gradient): trên tiêu đề hero, đầu trang con, và gạch dưới mục đang mở ở thanh đầu trang.
+- Chip vùng có chấm màu, chọn rồi nền màu vùng; thẻ điểm có nhãn vùng; thẻ chưa có ảnh nhuộm màu vùng thay cho xanh rừng.
+
 ## Cập nhật: bỏ cảnh 3D, dùng ảnh thật
 
 Người dùng thấy cảnh 3D và ảnh địa hình vẽ máy "mờ, nhựa", nên đã gỡ hẳn (bỏ cả gói three.js). Thay bằng:

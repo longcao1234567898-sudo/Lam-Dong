@@ -4,7 +4,9 @@ import { Leaf, Landmark, Tent, BedDouble, UtensilsCrossed, Gift } from 'lucide-r
 import { anhUrl } from '../../services/api';
 import { anhMacDinh, srcSetMacDinh } from '../../utils/anhMacDinh';
 import { useNN } from '../../i18n/NgonNgu';
+import { VUNG } from '../../utils/hangSo';
 import type { DiaDiem, Loai } from '../../utils/kieu';
+import TruongHat, { useCheDoToi } from '../hieu-ung/TruongHat';
 
 export const IC_LOAI: Record<Loai, typeof Leaf> = { 'thien-nhien': Leaf, 'di-tich': Landmark, 'vui-choi': Tent, 'luu-tru': BedDouble, 'am-thuc': UtensilsCrossed, 'dac-san': Gift };
 const SAO = 'M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95z';
@@ -35,7 +37,8 @@ export function KhungAnh({ p, sizes = '(min-width: 1024px) 50vw, 100vw', uuTien 
   if (m) return <img src={m.nho} srcSet={srcSetMacDinh(m)} sizes={sizes} alt={chon(p.ten, p.tenEn)} width={m.rong} height={m.cao}
     loading={uuTien ? 'eager' : 'lazy'} decoding="async" className="fx-anh-troi absolute inset-0 h-full w-full object-cover" />;
   const Ic = IC_LOAI[p.loai] || Leaf;
-  return <span className="anh-cho"><Ic className="h-7 w-7" strokeWidth={1.5} /><span className="text-xs font-medium">{t('chuaCoAnh')}</span></span>;
+  /* Chưa có ảnh: khung chờ nhuộm màu vùng của điểm, thẻ vẫn rực mà không bịa ảnh. */
+  return <span className={`anh-cho ${p.vung ? 'vung-' + VUNG[p.vung].token : ''}`}><Ic className="h-7 w-7" strokeWidth={1.5} /><span className="text-xs font-medium">{t('chuaCoAnh')}</span></span>;
 }
 
 export function TieuDeKhoi({ tieuDe, moTa, phai, toi = false }: { tieuDe: string; moTa: string; phai?: ReactNode; toi?: boolean }) {
@@ -49,9 +52,13 @@ export function TieuDeKhoi({ tieuDe, moTa, phai, toi = false }: { tieuDe: string
 
 /** Đầu trang con: tiêu đề serif trên nền đường đồng mức, có lối quay lại và nút phụ bên phải. */
 export function DauTrang({ tieuDe, moTa, phai, quayLai, children }: { tieuDe: ReactNode; moTa?: ReactNode; phai?: ReactNode; quayLai?: ReactNode; children?: ReactNode }) {
+  const toi = useCheDoToi();
   return (
-    <header className="nen-dong-muc border-b border-line/60 pb-10 pt-12 sm:pb-14 sm:pt-16">
-      <div className="container-page">
+    <header className="nen-dong-muc relative overflow-hidden border-b border-line/60 pb-10 pt-12 sm:pb-14 sm:pt-16">
+      {/* Cánh hoa ba sắc xoáy theo chuột, nhạt dần về phía chữ. */}
+      <TruongHat toi={toi} matDo={0.8} className="hat-dau" />
+      <div className="container-page relative">
+        <span className="ba-sac mb-5" aria-hidden="true"><i /><i /><i /></span>
         {quayLai && <div className="mb-4 text-sm font-semibold">{quayLai}</div>}
         <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
           <div className="max-w-3xl"><h1 className="tieu-de-muc">{tieuDe}</h1>

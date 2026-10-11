@@ -9,11 +9,15 @@ export const LOAI: Record<Loai, { ten: string; en: string; mau: string }> = {
   'dac-san':     { ten: 'Làng nghề – đặc sản',     en: 'Crafts & specialties', mau: '#6B4E7A' },
 };
 /* Vùng du lịch — cán bộ gán cho từng điểm ở khu quản trị (cột dia_diem.vung). */
-export const VUNG: Record<Vung, { ten: string; en: string }> = {
-  'cao-nguyen': { ten: 'Cao nguyên Lâm Viên – Đà Lạt',     en: 'Lam Vien Plateau and Da Lat' },
-  'bien-dao':   { ten: 'Biển và đảo phía đông nam',        en: 'South-east coast and islands' },
-  'dai-ngan':   { ten: 'Đại ngàn và công viên địa chất',   en: 'Western forests and geopark' },
+/* Mỗi vùng một sắc (tokens.css): mai anh đào, biển, dã quỳ. "token" là tên biến màu. */
+export const VUNG: Record<Vung, { ten: string; en: string; token: 'hoa' | 'bien' | 'quy'; ngan: string; nganEn: string }> = {
+  'cao-nguyen': { ten: 'Cao nguyên Lâm Viên – Đà Lạt',     en: 'Lam Vien Plateau and Da Lat', token: 'hoa',  ngan: 'Cao nguyên', nganEn: 'Highlands' },
+  'bien-dao':   { ten: 'Biển và đảo phía đông nam',        en: 'South-east coast and islands', token: 'bien', ngan: 'Biển đảo',   nganEn: 'Coast & islands' },
+  'dai-ngan':   { ten: 'Đại ngàn và công viên địa chất',   en: 'Western forests and geopark',  token: 'quy',  ngan: 'Đại ngàn',   nganEn: 'Forests' },
 };
+/** Màu của vùng dạng CSS, ví dụ mauVung('bien-dao') -> rgb(var(--c-bien)). */
+export const mauVung = (v: Vung | null | undefined, dam = false, alpha = 1) =>
+  v ? `rgb(var(--c-${VUNG[v].token}${dam ? '-dam' : ''}) / ${alpha})` : `rgb(var(--c-emerald) / ${alpha})`;
 export const TIEU_CHI: [keyof TieuChi, string, string][] = [['canhQuan', 'Cảnh quan', 'Scenery'], ['dichVu', 'Dịch vụ', 'Service'], ['veSinh', 'Vệ sinh', 'Cleanliness'], ['giaCa', 'Giá cả', 'Price']];
 export const DI_CUNG: Record<string, [string, string]> = { 'gia-dinh': ['Gia đình', 'Family'], 'ban-be': ['Bạn bè', 'Friends'], 'cap-doi': ['Cặp đôi', 'Couple'], 'mot-minh': ['Một mình', 'Solo'] };
 

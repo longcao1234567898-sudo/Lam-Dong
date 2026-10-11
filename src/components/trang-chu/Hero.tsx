@@ -7,6 +7,7 @@ import { LOAI, giamChuyenDong } from '../../utils/hangSo';
 import { anhUrl } from '../../services/api';
 import { anhMacDinh, srcSetMacDinh } from '../../utils/anhMacDinh';
 import { AnhTuyen } from '../du-lich/GiaoDien';
+import TruongHat from '../hieu-ung/TruongHat';
 import type { DiaDiem, LoTrinh } from '../../utils/kieu';
 
 /** Bỏ dấu để tìm "tri an" vẫn ra "Trị An". */
@@ -104,9 +105,12 @@ export default function Hero({ ds, loTrinh, onTim, onToiBanDo, onToiLoTrinh }: {
           </div>))}
       </div>
       <div className="hero-man pointer-events-none absolute inset-0" aria-hidden="true" />
+      {/* Cánh hoa ba sắc trôi trên ảnh, xoáy quanh con trỏ. */}
+      <TruongHat toi matDo={0.55} doDam={0.9} className="hat-hero" />
 
       <div className="container-page relative z-10 flex flex-1 flex-col justify-end pb-24 pt-36 sm:pb-28">
         <div className="max-w-[46rem]">
+          <span className="hero-hien ba-sac mb-6" aria-hidden="true"><i /><i /><i /></span>
           <h1 id="hero-tieu-de" className="tieu-de-lon hero-chu">
             <span className="dong" style={tre(60)}>{t('heroDong1')}</span>
             <span className="dong" style={tre(190)}>{t('heroDong2')}</span>
