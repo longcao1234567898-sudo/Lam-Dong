@@ -1,0 +1,20 @@
+DAY DU AN LEN MOT KHO GITHUB MOI (web Du lich Lam Dong)
+
+QUAN TRONG: hai tep .env va server/.env chua mat khau co so du lieu va khoa bi mat.
+- Day bang lenh git (cach duoi day): .gitignore tu chan hai tep nay, khong lo.
+- Day bang cach keo tha tren trang GitHub: KHONG keo hai tep .env va server/.env,
+  vi trang web GitHub khong doc .gitignore.
+
+1. Tren GitHub, bam New repository, dat ten du-lich-lam-dong, chon Private, KHONG tick them README.
+2. Mo cua so lenh trong thu muc Lam-Dong vua giai nen, chay lan luot:
+
+git init
+git add .
+git status
+   (kiem tra: trong danh sach KHONG duoc co .env hay server/.env)
+git commit -m "Khoi tao du an Du lich Lam Dong"
+git branch -M main
+git remote add origin https://github.com/<ten-tai-khoan>/du-lich-lam-dong.git
+git push -u origin main
+
+3. Lam tiep theo HUONG-DAN-LAM-DONG.txt: noi Render, Netlify, nap so lieu phu luc, tao tai khoan can bo.

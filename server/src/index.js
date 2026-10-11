@@ -1,0 +1,85 @@
+/**
+ * Máy chủ DU LỊCH LÂM ĐỒNG.
+ *
+ * Cấu hình bảo mật chép theo Điểm Chạm An Ninh: helmet, Permissions-Policy,
+ * CORS có danh sách trắng kèm cookie, tin một tầng proxy để lấy đúng IP thật.
+ * Phần đăng nhập cán bộ (routes/auth.js) dùng nguyên bản đã kiểm chứng.
+ */
+import 'dotenv/config';
+import express from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import { pool } from './db.js';
+import authRouter from './routes/auth.js';
+import congKhaiRouter from './routes/cong-khai.js';
+import quanTriRouter from './routes/quan-tri.js';
+import { requireAuth } from './middleware/auth.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import { turnstileEnabled } from './lib/turnstile.js';
+import { tuNangCap } from './lib/nang-cap-csdl.js';
+
+const app = express();
+const PORT = process.env.PORT || 4000;
+
+app.set('trust proxy', 1);   // Render đặt một tầng proxy phía trước
+app.disable('x-powered-by');
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use((_req, res, next) => {
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+  next();
+});
+
+/* CORS: chỉ cho giao diện của mình gọi, kèm cookie phiên đăng nhập.
+   CORS_ORIGIN có thể ghi nhiều địa chỉ, ngăn bằng dấu phẩy. */
+const choPhep = ['http://localhost:5173', ...String(process.env.CORS_ORIGIN || '').split(',').map((s) => s.trim()).filter(Boolean)];
+app.use(cors({
+  origin(origin, cb) { if (!origin || choPhep.includes(origin)) return cb(null, true); cb(new Error('CORS không cho phép địa chỉ này')); },
+  credentials: true,
+}));
+/* Dữ liệu dạng JSON chỉ cần gói nhỏ. Tệp Excel tải lên đi đường riêng
+   (express.raw ở routes/bao-cao.js) với giới hạn riêng 5 MB. */
+app.use(express.json({ limit: '200kb' }));
+app.use(cookieParser());
+
+app.get('/api/health', async (_req, res) => {
+  let db = false;
+  try { await pool.query('SELECT 1'); db = true; } catch { /* báo false */ }
+  res.status(db ? 200 : 503).json({ ok: db, db, turnstile: turnstileEnabled() });
+});
+
+app.use('/api/auth', authRouter);
+app.use('/api/cong-khai', congKhaiRouter);
+app.use('/api/quan-tri', requireAuth, quanTriRouter);
+app.use('/api', (_req, res) => res.status(404).json({ error: 'Không tìm thấy.' }));
+app.use(errorHandler);
+
+/* Kiểm cấu trúc cơ sở dữ liệu lúc khởi động: mã mới chạy trên cơ sở dữ liệu
+   cũ (quên chạy lại tệp SQL) thì báo rõ ngay, thay vì để từng trang báo lỗi
+   khó hiểu. Chỉ cảnh báo, không chặn khởi động. */
+const CAN_CO = ['anh_tin', 'diem_quan_sat', 'xa_phuong', 'ky_bao_cao', 'nop_bao_cao', 'khong_phat_sinh', 'lich_su_sua', 'bc_khach', 'bc_du_an', 'bc_luu_tru',
+  'bc_vu_viec', 'bc_phoi_hop', 'bc_van_dong', 'bc_luc_luong', 'bc_quan_so', 'bc_dan_cu', 'bc_vi_pham',
+  'lich_trinh', 'lich_trinh_diem', 'anh_dia_diem', 'phan_anh', 'tin_tuc', 'bao_danh_gia'];
+/* Cột thêm ở các đợt sau: thiếu cột thì trang chủ không đọc được danh sách điểm đến. */
+const CAN_CO_COT = [['dia_diem', 'vung'], ['lich_trinh', 'phuong_tien'], ['anh_dia_diem', 'tieu_diem_x'], ['dia_diem', 'chi_tiet'], ['tin_tuc', 'noi_bat'], ['diem_quan_sat', 'google_url']];
+async function timThieu() {
+  const [rows] = await pool.query('SELECT table_name AS t FROM information_schema.tables WHERE table_schema = DATABASE()');
+  const co = new Set(rows.map((r) => r.t ?? r.TABLE_NAME));
+  const [cot] = await pool.query('SELECT table_name AS t, column_name AS c FROM information_schema.columns WHERE table_schema = DATABASE()');
+  const coCot = new Set(cot.map((r) => `${r.t ?? r.TABLE_NAME}.${r.c ?? r.COLUMN_NAME}`));
+  return [...CAN_CO.filter((t) => !co.has(t)), ...CAN_CO_COT.filter(([t, c]) => !coCot.has(`${t}.${c}`)).map(([t, c]) => `${t}.${c}`)];
+}
+/* Thiếu bảng/cột thì tự chạy tệp SQL (lib/nang-cap-csdl.js); đặt TU_NANG_CAP_CSDL=0 để tắt. */
+async function kiemCauTruc() {
+  try {
+    let thieu = await timThieu();
+    if (thieu.length && process.env.TU_NANG_CAP_CSDL !== '0' && await tuNangCap(thieu.join(', '))) thieu = await timThieu();
+    if (thieu.length) console.warn(`⚠️  Cơ sở dữ liệu thiếu bảng hoặc cột: ${thieu.join(', ')}.\n   → Dán lại toàn bộ database/du_lich_lam_dong.sql vào HeidiSQL rồi F9 (chạy lại không mất số liệu).`);
+  } catch (e) { console.warn('⚠️  Chưa kiểm được cấu trúc cơ sở dữ liệu:', e.message); }
+}
+
+app.listen(PORT, () => {
+  console.log(`🌿 Du lịch Lâm Đồng — máy chủ chạy tại cổng ${PORT}`);
+  if (!turnstileEnabled()) console.warn('⚠️  Chưa khai TURNSTILE_SECRET_KEY: cổng kiểm tra chống người máy đang tắt.');
+  kiemCauTruc();
+});
