@@ -27,6 +27,11 @@ export default {
         route: tk('route'),
         star: tk('star'),
         gold: tk('gold'),
+        /* Ba sắc Lâm Đồng: màu của ba vùng du lịch */
+        hoa: tk('hoa'), 'hoa-dam': tk('hoa-dam'),
+        bien: tk('bien'), 'bien-dam': tk('bien-dam'),
+        quy: tk('quy'), 'quy-dam': tk('quy-dam'),
+        sim: tk('sim'),
         /* Thang cũ, khu quản trị còn dùng: ánh xạ lại về bảng màu mới để
            hai khu cùng một giọng màu. 600 là nền nút (chữ trắng 5.26:1). */
         primary: {

@@ -22,6 +22,15 @@
   --c-route: 212 85 47;          /* #D4552F tuyến đường trên nền sáng */
   --c-star: 154 107 18;          /* #9A6B12 viền sao trên nền sáng */
   --c-gold: 234 191 103;         /* #EABF67 ruột sao */
+  /* BA SẮC LÂM ĐỒNG — mỗi vùng du lịch một màu, màu mang nghĩa (vùng), không rải trang trí.
+     Bản "dam" đủ tương phản cho chữ trên nền sáng và cho nền có chữ trắng (đo ở ghi chú). */
+  --c-hoa: 224 69 123;           /* #E0457B mai anh đào — Cao nguyên Lâm Viên, Đà Lạt */
+  --c-hoa-dam: 184 40 93;        /* #B8285D chữ trên ivory 5.5, chữ trắng trên nó 6.0 */
+  --c-bien: 30 136 200;          /* #1E88C8 biển Mũi Né, Phú Quý */
+  --c-bien-dam: 19 106 158;      /* #136A9E chữ trên ivory 5.4, chữ trắng trên nó 5.9 */
+  --c-quy: 242 154 31;           /* #F29A1F hoa dã quỳ — đại ngàn Đắk Nông. Nền thì chữ ink (7.1) */
+  --c-quy-dam: 143 94 0;         /* #8F5E00 chữ trên ivory 5.1 */
+  --c-sim: 123 92 214;           /* #7B5CD6 hoa sim, oải hương — chỉ dùng cho hạt chuyển động */
   --c-danger: 180 35 24;
   --c-danger-bg: 253 236 234;
   --c-warning-bg: 252 239 199;
@@ -60,6 +69,10 @@
   --c-action-hover: 98 201 171;
   --c-on-action: 25 37 34;       /* chữ ink trên nút sáng */
   --c-star: 234 191 103;
+  /* Nền tối: bản "dam" là chữ trên nền tối, nên đổi sang bản sáng */
+  --c-hoa-dam: 244 128 168;
+  --c-bien-dam: 102 182 232;
+  --c-quy-dam: 245 180 84;
   --sh-1: 0 1px 1px rgb(0 0 0 / .25), 0 2px 6px rgb(0 0 0 / .2);
   --sh-2: 0 2px 4px rgb(0 0 0 / .25), 0 18px 40px -16px rgb(0 0 0 / .6);
   --sh-3: 0 4px 10px rgb(0 0 0 / .3), 0 34px 70px -24px rgb(0 0 0 / .7);

@@ -36,9 +36,9 @@ export default function Header() {
     { to: '/phan-anh', ten: t('phanAnh') },
     { to: '/thong-ke', ten: t('thongKe') },
   ];
-  const lop = ({ isActive }: { isActive: boolean }) => `relative inline-flex min-h-[44px] items-center whitespace-nowrap px-3 text-[15px] font-medium transition-colors
+  const lop = ({ isActive }: { isActive: boolean }) => `gach-ba-sac relative inline-flex min-h-[44px] items-center whitespace-nowrap px-3 text-[15px] font-medium transition-colors
     after:absolute after:inset-x-3 after:bottom-1.5 after:h-[2px] after:rounded-full after:transition-transform after:duration-300 ${isActive ? 'after:scale-x-100' : 'after:scale-x-0 hover:after:scale-x-50'}
-    ${trenCanh ? 'text-[#F7F5EF] after:bg-coral' : 'text-ink after:bg-action'}`;
+    ${trenCanh ? 'text-[#F7F5EF]' : 'text-ink'}`;
   const nutPhu = `grid h-11 min-w-[44px] place-items-center rounded-xl px-2 text-[13px] font-semibold transition-colors ${trenCanh ? 'text-[#F7F5EF] hover:bg-white/10' : 'text-ink-2 hover:bg-sunken'}`;
   return (
     <header className={`sticky top-0 z-[600] transition-[background-color,box-shadow] duration-300 ${trenCanh ? 'bg-transparent' : 'bg-ivory/[.97] shadow-[0_1px_0_rgb(var(--c-line))]'}`}
