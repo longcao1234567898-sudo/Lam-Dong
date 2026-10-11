@@ -7,6 +7,7 @@ import { useNN } from '../../i18n/NgonNgu';
 import { VUNG } from '../../utils/hangSo';
 import type { DiaDiem, Loai } from '../../utils/kieu';
 import TruongHat, { useCheDoToi } from '../hieu-ung/TruongHat';
+import CucQuang from '../hieu-ung/CucQuang';
 
 export const IC_LOAI: Record<Loai, typeof Leaf> = { 'thien-nhien': Leaf, 'di-tich': Landmark, 'vui-choi': Tent, 'luu-tru': BedDouble, 'am-thuc': UtensilsCrossed, 'dac-san': Gift };
 const SAO = 'M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95z';
@@ -55,6 +56,7 @@ export function DauTrang({ tieuDe, moTa, phai, quayLai, children }: { tieuDe: Re
   const toi = useCheDoToi();
   return (
     <header className="nen-dong-muc relative overflow-hidden border-b border-line/60 pb-10 pt-12 sm:pb-14 sm:pt-16">
+      <CucQuang />
       {/* Cánh hoa ba sắc xoáy theo chuột, nhạt dần về phía chữ. */}
       <TruongHat toi={toi} matDo={0.8} className="hat-dau" />
       <div className="container-page relative">

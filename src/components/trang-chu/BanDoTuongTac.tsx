@@ -3,6 +3,7 @@ import { forwardRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Navigation, X, Clock, Bus, Phone, ArrowUpRight } from 'lucide-react';
 import BanDo from '../du-lich/BanDo';
+import CucQuang from '../hieu-ung/CucQuang';
 import { HienSao, KhungAnh, TieuDeKhoi } from '../du-lich/GiaoDien';
 import { useNN } from '../../i18n/NgonNgu';
 import { LOAI, VUNG, khoangCachKm, duongDanChiDuong } from '../../utils/hangSo';
@@ -79,7 +80,8 @@ const BanDoTuongTac = forwardRef<HTMLElement, {
   const p = ds.find((x) => x.id === chon) || null;
   const tam: [number, number] | null = p && !lt ? [p.lat, p.lng] : null;
   return (
-    <section ref={ref} id="ban-do" className="nen-toi nen-dong-muc py-20 sm:py-28" style={{ scrollMarginTop: 64 }}>
+    <section ref={ref} id="ban-do" className="nen-toi nen-dong-muc relative overflow-hidden py-20 sm:py-28" style={{ scrollMarginTop: 64 }}>
+      <CucQuang toi />
       <div className="container-page">
         <TieuDeKhoi toi tieuDe={t('banDo')} moTa={t('banDoMoTa2')} />
         <div className="grid gap-5 lg:grid-cols-12">

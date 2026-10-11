@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { PenLine, X } from 'lucide-react';
 import { HienSao, TieuDeKhoi } from '../du-lich/GiaoDien';
+import CucQuang from '../hieu-ung/CucQuang';
 import { layDanhGiaMoiNhat } from '../../services/api';
 import { useNN } from '../../i18n/NgonNgu';
 import { TIEU_CHI, DI_CUNG } from '../../utils/hangSo';
@@ -63,7 +64,8 @@ export default function DanhGiaKhach({ ds, tk, onViet }: { ds: DiaDiem[]; tk: Th
   const nutViet = <button type="button" className="nut nut-chinh" onClick={() => setChonDiem(true)}><PenLine className="h-4 w-4" />{t('vietDanhGia')}</button>;
 
   return (
-    <section id="danh-gia" className="border-t border-line/60 bg-sunken/50 py-20 sm:py-28">
+    <section id="danh-gia" className="relative isolate overflow-hidden border-t border-line/60 bg-sunken/50 py-20 sm:py-28">
+      <CucQuang />
       <div className="container-page">
         <TieuDeKhoi tieuDe={t('danhGiaTieuDe')} moTa={t('danhGiaMoTa')} />
         {!dg || !dg.so ? (

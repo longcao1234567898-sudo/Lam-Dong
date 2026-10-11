@@ -11,6 +11,7 @@ import QuanSat360 from '../../components/du-lich/QuanSat360';
 import { KhungAnh } from '../../components/du-lich/GiaoDien';
 import { layDiaDiem } from '../../services/api';
 import { useNN } from '../../i18n/NgonNgu';
+import { lopVung } from '../../utils/hangSo';
 
 export default function DiaDiemPage() {
   const { id } = useParams();
@@ -21,7 +22,9 @@ export default function DiaDiemPage() {
   if (isLoading) return <p className="py-24 text-center text-muted">{t('dangTai')}</p>;
   if (!p) return <section className="container-page py-24 text-center"><p className="tieu-de-vua">404</p><Link className="mt-3 inline-block text-action" to="/">{t('khamPha')}</Link></section>;
   return (
-    <div className="animate-page nen-dong-muc pb-20">
+    <div className={`animate-page nen-dong-muc relative pb-20 ${lopVung(p.vung)}`}>
+      {/* Vầng sáng màu vùng của điểm sau đầu trang. */}
+      <div className="vang-vung" aria-hidden="true" />
       <div className="container-page pt-8">
         <Link to="/" className="inline-flex min-h-[40px] items-center gap-1.5 text-sm font-semibold text-action"><ArrowLeft className="h-4 w-4" />{t('khamPha')}</Link>
         <div className="mt-4 grid gap-8 lg:grid-cols-12">

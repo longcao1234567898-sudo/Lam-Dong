@@ -13,7 +13,11 @@ const Khung = ({ tieuDe, moTa, rong = false, children }: { tieuDe: string; moTa:
     <h2 className="text-[17px] font-semibold">{tieuDe}</h2><p className="mb-3 text-[13px] text-muted">{moTa}</p>
     <div className="h-[270px]"><ResponsiveContainer width="100%" height="100%">{children}</ResponsiveContainer></div>
   </div>);
-const truc = { fontSize: 12, fill: '#5B6B66' };
+const truc = { fontSize: 12, fill: 'rgb(var(--c-muted))' };
+/* Màu biểu đồ lấy từ ba sắc (đã kiểm bằng công cụ kiểm bảng màu, đạt cả nền sáng lẫn tối,
+   kể cả người mù màu): trong nước = biển, quốc tế = mai anh đào. Số sao 1→5: một sắc dã quỳ
+   từ nhạt tới đậm (thang tuần tự, không dùng đỏ-xanh). */
+const M = { nd: '#1E88C8', qt: '#E0457B', mot: '#1E88C8', luoi: 'rgb(var(--c-line))', sao: ['#F7D9A6', '#F4BF6B', '#F29A1F', '#C47A08', '#8F5E00'] };
 
 const CHU: Record<string, [string, string]> = {
   tieuDe: ['Khách đến và đánh giá', 'Visitors and reviews'], moTa: ['Số liệu lượt khách do cán bộ nhập; đánh giá do du khách gửi.', 'Visitor numbers are entered by officials; reviews come from visitors.'],
@@ -53,33 +57,33 @@ export default function ThongKePage() {
       <div className="grid gap-4 md:grid-cols-2">
         {tk.khachTheoXa && tk.khachTheoXa.ds.length > 0 && <Khung rong tieuDe={t('khachTheoXa')} moTa={t('khachTheoXaMoTa', { ky: tk.khachTheoXa.ky })}>
           <BarChart data={tk.khachTheoXa.ds.map((x) => ({ ...x, ten: x.xa.replace(/^(Xã|Phường|Đặc khu) /, '') }))} layout="vertical" margin={{ left: 8, right: 16 }}>
-            <CartesianGrid horizontal={false} stroke="#e2e8f0" /><XAxis type="number" tick={truc} tickFormatter={(v) => so(v)} /><YAxis type="category" dataKey="ten" tick={truc} width={120} />
+            <CartesianGrid horizontal={false} stroke={M.luoi} /><XAxis type="number" tick={truc} tickFormatter={(v) => so(v)} /><YAxis type="category" dataKey="ten" tick={truc} width={120} />
             <Tooltip formatter={(v) => so(Number(v))} /><Legend />
-            <Bar dataKey="noiDia" name={t('trongNuoc')} stackId="k" fill="#059669" stroke="#fff" strokeWidth={2} maxBarSize={24} />
-            <Bar dataKey="quocTe" name={t('quocTe')} stackId="k" fill="#2563eb" stroke="#fff" strokeWidth={2} radius={[0, 4, 4, 0]} maxBarSize={24} /></BarChart></Khung>}
+            <Bar dataKey="noiDia" name={t('trongNuoc')} stackId="k" fill={M.nd} stroke="rgb(var(--c-surface))" strokeWidth={2} maxBarSize={24} />
+            <Bar dataKey="quocTe" name={t('quocTe')} stackId="k" fill={M.qt} stroke="rgb(var(--c-surface))" strokeWidth={2} radius={[0, 4, 4, 0]} maxBarSize={24} /></BarChart></Khung>}
         <Khung rong tieuDe={c('theoThang')} moTa={c('theoThangMoTa')}>
           <BarChart data={tk.thang.map((x) => ({ ...x, ten: (nn === 'en' ? 'M' : 'T') + Number(x.thang.slice(5)) }))}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" /><XAxis dataKey="ten" tick={truc} /><YAxis tick={truc} tickFormatter={(v) => so(v)} width={64} />
-            <Tooltip formatter={(v) => so(Number(v))} /><Legend /><Bar dataKey="noiDia" name={t('trongNuoc')} stackId="k" fill="#1B5E20" radius={[0, 0, 4, 4]} /><Bar dataKey="quocTe" name={t('quocTe')} stackId="k" fill="#1E3A5F" radius={[4, 4, 0, 0]} />
+            <CartesianGrid vertical={false} stroke={M.luoi} /><XAxis dataKey="ten" tick={truc} /><YAxis tick={truc} tickFormatter={(v) => so(v)} width={64} />
+            <Tooltip formatter={(v) => so(Number(v))} /><Legend /><Bar dataKey="noiDia" name={t('trongNuoc')} stackId="k" fill={M.nd} stroke="rgb(var(--c-surface))" strokeWidth={2} /><Bar dataKey="quocTe" name={t('quocTe')} stackId="k" fill={M.qt} stroke="rgb(var(--c-surface))" strokeWidth={2} radius={[4, 4, 0, 0]} />
           </BarChart></Khung>
         <Khung tieuDe={c('tiLe')} moTa={c('trongNam')}>
-          <PieChart><Pie data={tongNd + tongQt ? [{ ten: t('trongNuoc'), gt: tongNd }, { ten: t('quocTe'), gt: tongQt }] : [{ ten: c('chuaCo'), gt: 1 }]} dataKey="gt" nameKey="ten" innerRadius="58%" outerRadius="85%" paddingAngle={2}>
-            {(tongNd + tongQt ? ['#1B5E20', '#1E3A5F'] : ['#e2e8f0']).map((m) => <Cell key={m} fill={m} />)}</Pie><Tooltip formatter={(v) => (tongNd + tongQt ? so(Number(v)) : '')} /><Legend /></PieChart></Khung>
+          <PieChart><Pie data={tongNd + tongQt ? [{ ten: t('trongNuoc'), gt: tongNd }, { ten: t('quocTe'), gt: tongQt }] : [{ ten: c('chuaCo'), gt: 1 }]} dataKey="gt" nameKey="ten" innerRadius="58%" outerRadius="85%" paddingAngle={2} stroke="rgb(var(--c-surface))" strokeWidth={2}>
+            {(tongNd + tongQt ? [M.nd, M.qt] : ['rgb(var(--c-line))']).map((m) => <Cell key={m} fill={m} />)}</Pie><Tooltip formatter={(v) => (tongNd + tongQt ? so(Number(v)) : '')} /><Legend /></PieChart></Khung>
         <Khung tieuDe={c('top')} moTa={c('topMoTa')}>
           <BarChart data={tk.topDiaDiem} layout="vertical" margin={{ left: 8 }}><XAxis type="number" tick={truc} tickFormatter={(v) => so(v)} /><YAxis type="category" dataKey="ten" tick={truc} width={130} />
-            <Tooltip formatter={(v) => so(Number(v))} /><Bar dataKey="tong" name={c('luot')} fill="#059669" radius={[0, 4, 4, 0]} /></BarChart></Khung>
+            <Tooltip formatter={(v) => so(Number(v))} /><Bar dataKey="tong" name={c('luot')} fill={M.mot} radius={[0, 4, 4, 0]} /></BarChart></Khung>
         <Khung tieuDe={c('tieuChi')} moTa={c('tieuChiMoTa')}>
-          <RadarChart data={TIEU_CHI.map(([k, vi, en]) => ({ ten: nn === 'en' ? en : vi, gt: Number(tk.danhGia.tieuChi[k] || 0) }))}><PolarGrid stroke="#cbd5e1" /><PolarAngleAxis dataKey="ten" tick={truc} />
-            <PolarRadiusAxis domain={[0, 5]} tickCount={6} tick={{ fontSize: 10 }} /><Radar dataKey="gt" name={c('diem')} stroke="#1B5E20" fill="#059669" fillOpacity={0.25} /><Tooltip /></RadarChart></Khung>
+          <RadarChart data={TIEU_CHI.map(([k, vi, en]) => ({ ten: nn === 'en' ? en : vi, gt: Number(tk.danhGia.tieuChi[k] || 0) }))}><PolarGrid stroke={M.luoi} /><PolarAngleAxis dataKey="ten" tick={truc} />
+            <PolarRadiusAxis domain={[0, 5]} tickCount={6} tick={{ fontSize: 10 }} /><Radar dataKey="gt" name={c('diem')} stroke={M.mot} strokeWidth={2} fill={M.mot} fillOpacity={0.2} /><Tooltip /></RadarChart></Khung>
         <Khung tieuDe={c('phanBo')} moTa={c('phanBoMoTa')}>
           <BarChart data={tk.danhGia.phanBo.map((gt, i) => ({ ten: `${i + 1} ${t('sao')}`, gt }))}><XAxis dataKey="ten" tick={truc} /><YAxis allowDecimals={false} tick={truc} /><Tooltip />
-            <Bar dataKey="gt" name={c('soDg')} radius={[4, 4, 0, 0]}>{['#be123c', '#ea580c', '#F59E0B', '#059669', '#1B5E20'].map((m) => <Cell key={m} fill={m} />)}</Bar></BarChart></Khung>
+            <Bar dataKey="gt" name={c('soDg')} radius={[4, 4, 0, 0]}>{M.sao.map((m) => <Cell key={m} fill={m} />)}</Bar></BarChart></Khung>
         <Khung tieuDe={c('saoDiaDiem')} moTa={c('saoDiaDiemMoTa')}>
           <BarChart data={tk.saoTheoDiaDiem.map((x) => ({ ...x, ten: `${x.ten} (${x.so})`, tb: Number(x.tb.toFixed(2)) }))} layout="vertical" margin={{ left: 8 }}>
-            <XAxis type="number" domain={[0, 5]} tick={truc} /><YAxis type="category" dataKey="ten" tick={truc} width={150} /><Tooltip /><Bar dataKey="tb" name={c('saoTbNgan')} fill="#F59E0B" radius={[0, 4, 4, 0]} /></BarChart></Khung>
+            <XAxis type="number" domain={[0, 5]} tick={truc} /><YAxis type="category" dataKey="ten" tick={truc} width={150} /><Tooltip /><Bar dataKey="tb" name={c('saoTbNgan')} fill="#F29A1F" radius={[0, 4, 4, 0]} /></BarChart></Khung>
         <Khung tieuDe={c('dgThang')} moTa={c('dgThangMoTa')}>
           <AreaChart data={th12}><XAxis dataKey="ten" tick={truc} /><YAxis allowDecimals={false} tick={truc} /><Tooltip />
-            <Area type="monotone" dataKey="so" name={c('danhGia')} stroke="#d97706" fill="#F59E0B" fillOpacity={0.18} /></AreaChart></Khung>
+            <Area type="monotone" dataKey="so" name={c('danhGia')} stroke={M.qt} strokeWidth={2} fill={M.qt} fillOpacity={0.14} /></AreaChart></Khung>
       </div>
     </section>
     </div>

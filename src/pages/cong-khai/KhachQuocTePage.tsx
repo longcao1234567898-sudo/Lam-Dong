@@ -36,7 +36,7 @@ export default function KhachQuocTePage() {
       <section className="container-page max-w-4xl py-12">
         <ol className="space-y-4">{MUC.map(({ ic: Ic, vi, en }, i) => { const [tieuDe, noiDung] = nn === 'en' ? en : vi; return (
           <li key={vi[0]} className="hien-dan the flex gap-5 p-6" style={{ '--i': i % 3 } as React.CSSProperties}>
-            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-sunken text-action"><Ic className="h-6 w-6" strokeWidth={1.6} /></span>
+            <span className={`o-bieu-tuong h-12 w-12 ${['vung-hoa', 'vung-bien', 'vung-quy'][i % 3]}`}><Ic className="h-6 w-6" strokeWidth={1.6} aria-hidden="true" /></span>
             <div><h2 className="text-[19px] font-semibold leading-snug">{tieuDe}</h2><p className="mt-1.5 text-[16px] leading-relaxed text-ink-2">{noiDung}</p></div>
           </li>); })}</ol>
         <div className="hien-dan nen-toi mt-6 rounded-[20px] p-6 shadow-sh-2">

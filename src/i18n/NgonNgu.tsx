@@ -134,6 +134,7 @@ const TU: Record<string, [string, string]> = {
   chonLoaiPhanAnh: ['Chọn loại phản ánh trước khi gửi.', 'Choose the type of problem first.'],
   baoMatPhanAnh: ['Số liên hệ chỉ cán bộ xem, không bao giờ công khai. Nội dung phản ánh không hiện trên trang web.', 'Your contact details are seen only by officials and never published. Reports are not shown on the website.'],
   // ---------- tin tức, thống kê
+  docTin: ['Đọc tin', 'Read more'],
   tinTucMoTa: ['Cảnh báo, sự kiện và thông báo từ cán bộ du lịch của tỉnh.', 'Alerts, events and notices from provincial tourism officials.'],
   khongCoTin: ['Hiện chưa có tin nào.', 'No news at the moment.'],
   canhBao: ['Cảnh báo', 'Alert'], suKien: ['Sự kiện', 'Event'], thongBao: ['Thông báo', 'Notice'],
@@ -161,6 +162,9 @@ const TU: Record<string, [string, string]> = {
   khamPhaTieuDe: ['Khám phá điểm đến', 'Explore destinations'],
   vungSacTieuDe: ['Một tỉnh, ba vùng trời: sương hồng cao nguyên, nắng biển đông nam, dã quỳ đại ngàn.',
     'One province, three skies: pink highland mist, south-east sea sun, wild sunflowers in the great forest.'],
+  loiMoiTieuDe: ['Lâm Đồng đang chờ bạn lên đường.', 'Lam Dong is waiting for you.'],
+  loiMoiMoTa: ['Theo một lộ trình gợi ý, hoặc tự xếp các điểm bạn thích rồi gửi đường dẫn cho bạn đồng hành.',
+    'Follow a suggested itinerary, or line up the places you like and send the link to your travel companions.'],
   vungSacMoTa: ['Chọn một vùng để xem các điểm đến ở đó.', 'Pick an area to see its places.'],
   xemDiemVung: ['Xem điểm đến vùng', 'Show places in'],
   soDiemDen: ['{n} điểm đến', '{n} places'],

@@ -5,7 +5,7 @@ import { X, MapPin, Star, Phone, Globe, Clock, Loader2, ExternalLink, MessageSqu
 import toast from 'react-hot-toast';
 import { HienSao, KhungAnh } from './GiaoDien';
 import { layDanhGia, layDanhGiaCuaToi, guiDanhGia, baoDanhGia, anhUrl } from '../../services/api';
-import { LOAI, VUNG, TIEU_CHI, DI_CUNG, webAnToan } from '../../utils/hangSo';
+import { LOAI, VUNG, TIEU_CHI, DI_CUNG, webAnToan, lopVung } from '../../utils/hangSo';
 import { useNN } from '../../i18n/NgonNgu';
 import type { DiaDiem, TieuChi } from '../../utils/kieu';
 
@@ -118,6 +118,7 @@ export function ThongTinDiaDiem({ p, trangRieng = false, vietNgay = false, giua 
     .filter(Boolean).join(', ');
   const khuVuc = [p.xa, p.vung ? VUNG[p.vung][nn === 'en' ? 'en' : 'ten'] : null].filter(Boolean).join(', ');
   return (<>
+    {p.vung && <span className={`nhan-vung ${lopVung(p.vung)} mb-2.5`}>{nn === 'en' ? VUNG[p.vung].nganEn : VUNG[p.vung].ngan}</span>}
     <p className="text-[13px] font-medium text-muted">{nn === 'en' ? LOAI[p.loai]?.en : LOAI[p.loai]?.ten}{khuVuc && `, ${khuVuc}`}</p>
     {trangRieng ? <h1 id="ct-ten" className="tieu-de-muc mt-1">{chon(p.ten, p.tenEn)}</h1> : <h2 id="ct-ten" className="tieu-de-vua mt-1">{chon(p.ten, p.tenEn)}</h2>}
     {trangRieng && nn === 'en' && p.tenEn && <p className="text-sm text-muted">{p.ten}</p>}

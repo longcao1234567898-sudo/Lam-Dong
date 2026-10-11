@@ -12,6 +12,7 @@ import BanDoTuongTac, { type Tab } from '../components/trang-chu/BanDoTuongTac';
 import LoTrinhNoiBat from '../components/trang-chu/LoTrinhNoiBat';
 import DanhGiaKhach from '../components/trang-chu/DanhGiaKhach';
 import VungSac from '../components/trang-chu/VungSac';
+import LoiMoi from '../components/trang-chu/LoiMoi';
 import ChiTiet from '../components/du-lich/ChiTiet';
 import { layDiaDiem, layThongKe, layLoTrinh, layTinTuc } from '../services/api';
 import { giamChuyenDong } from '../utils/hangSo';
@@ -75,6 +76,8 @@ export default function HomePage() {
               {dich(x.noiDung, x.noiDungEn) && <p className="mt-1.5 line-clamp-2 text-[15px] text-ink-2">{dich(x.noiDung, x.noiDungEn)}</p>}</Link>))}</div>
         </div>
       </section>}
+
+      <LoiMoi />
 
       {pViet && <ChiTiet p={pViet} vietNgay onDong={() => setVietCho(null)} />}
     </div>
