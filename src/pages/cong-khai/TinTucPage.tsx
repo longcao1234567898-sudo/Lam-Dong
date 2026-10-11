@@ -15,6 +15,8 @@ export default function TinTucPage() {
   const ds2 = tin.filter((x) => x.loai !== 'lien-he'), lienHe = tin.filter((x) => x.loai === 'lien-he');
   const noiBat = ds2.filter((x) => x.noiBat);
   const IC = { 'canh-bao': AlertTriangle, 'su-kien': CalendarDays, 'thong-bao': Megaphone, 'lien-he': Phone };
+  /* Màu theo loại tin: cảnh báo vàng dã quỳ, sự kiện hồng, thông báo xanh biển. Luôn kèm chữ. */
+  const MAU = { 'canh-bao': 'vung-quy', 'su-kien': 'vung-hoa', 'thong-bao': 'vung-bien', 'lien-he': 'vung-bien' };
   const NHAN = { 'canh-bao': t('canhBao'), 'su-kien': t('suKien'), 'thong-bao': t('thongBao'), 'lien-he': '' };
   return (
     <div className="animate-page">
@@ -29,7 +31,7 @@ export default function TinTucPage() {
               {x.anh?.[0] && <Link to={`/tin-tuc/${x.id}`} tabIndex={-1} aria-hidden="true" className="block aspect-[16/9] bg-sunken sm:aspect-auto">
                 <img src={anhTinUrl(x.anh[0].id)} alt="" loading="lazy" className="h-full w-full object-cover" /></Link>}
               <div className="p-6">
-              <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-medium text-muted"><Ic className={`h-4 w-4 ${canh ? 'text-[#8A5A00]' : ''}`} /><span className={canh ? 'font-semibold text-ink' : ''}>{NHAN[x.loai]}</span>
+              <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-medium text-muted"><span className={`o-bieu-tuong h-8 w-8 rounded-[10px] ${MAU[x.loai]}`}><Ic className="h-4 w-4" aria-hidden="true" /></span><span className={canh ? 'font-semibold text-ink' : ''}>{NHAN[x.loai]}</span>
                 {(x.tuNgay || x.denNgay) && <span>{x.tuNgay ? `${t('tu')} ${ngay(x.tuNgay)} ` : ''}{x.denNgay ? `${t('den')} ${ngay(x.denNgay)}` : ''}</span>}</p>
               <h2 className="mt-2 text-[21px] font-semibold leading-snug"><Link to={`/tin-tuc/${x.id}`} className="underline-offset-2 hover:text-action hover:underline">{chon(x.tieuDe, x.tieuDeEn)}</Link></h2>
               {chon(x.noiDung, x.noiDungEn) && <p className="mt-2 line-clamp-3 whitespace-pre-line text-[16px] leading-relaxed text-ink-2">{chon(x.noiDung, x.noiDungEn)}</p>}

@@ -5,7 +5,7 @@ import { X, MapPin, Star, Phone, Globe, Clock, Loader2, ExternalLink, MessageSqu
 import toast from 'react-hot-toast';
 import { HienSao, KhungAnh } from './GiaoDien';
 import { layDanhGia, layDanhGiaCuaToi, guiDanhGia, baoDanhGia, anhUrl } from '../../services/api';
-import { LOAI, VUNG, TIEU_CHI, DI_CUNG, webAnToan } from '../../utils/hangSo';
+import { LOAI, VUNG, TIEU_CHI, DI_CUNG, webAnToan, lopVung } from '../../utils/hangSo';
 import { useNN } from '../../i18n/NgonNgu';
 import type { DiaDiem, TieuChi } from '../../utils/kieu';
 
@@ -118,6 +118,7 @@ export function ThongTinDiaDiem({ p, trangRieng = false, vietNgay = false, giua 
     .filter(Boolean).join(', ');
   const khuVuc = [p.xa, p.vung ? VUNG[p.vung][nn === 'en' ? 'en' : 'ten'] : null].filter(Boolean).join(', ');
   return (<>
+    {p.vung && <span className={`nhan-vung ${lopVung(p.vung)} mb-2.5`}>{nn === 'en' ? VUNG[p.vung].nganEn : VUNG[p.vung].ngan}</span>}
     <p className="text-[13px] font-medium text-muted">{nn === 'en' ? LOAI[p.loai]?.en : LOAI[p.loai]?.ten}{khuVuc && `, ${khuVuc}`}</p>
     {trangRieng ? <h1 id="ct-ten" className="tieu-de-muc mt-1">{chon(p.ten, p.tenEn)}</h1> : <h2 id="ct-ten" className="tieu-de-vua mt-1">{chon(p.ten, p.tenEn)}</h2>}
     {trangRieng && nn === 'en' && p.tenEn && <p className="text-sm text-muted">{p.ten}</p>}
@@ -176,7 +177,7 @@ export default function ChiTiet({ p, onDong, vietNgay = false }: { p: DiaDiem; o
   return (
     <div className="fixed inset-0 z-[1100] flex items-end justify-center bg-[#0C2925]/60 md:items-center md:p-6" role="dialog" aria-modal="true" aria-labelledby="ct-ten"
       onClick={(e) => e.target === e.currentTarget && onDong()}>
-      <div className="hop-thoai max-h-[90vh] w-full max-w-2xl overflow-auto rounded-t-[24px] bg-paper pb-[calc(1.5rem+env(safe-area-inset-bottom))] text-ink shadow-sh-3 md:rounded-[24px]">
+      <div className="hop-thoai max-h-[90vh] w-full max-w-2xl overflow-auto overscroll-contain rounded-t-[24px] bg-paper pb-[calc(1.5rem+env(safe-area-inset-bottom))] text-ink shadow-sh-3 md:rounded-[24px]">
         <div className="relative h-44 overflow-hidden bg-sunken sm:h-56"><KhungAnh p={p} />
           <button ref={dongRef} type="button" onClick={onDong} aria-label={t('dong')} className="kinh absolute right-4 top-4 z-[3] grid h-10 w-10 place-items-center rounded-xl shadow-sh-2"><X className="h-5 w-5" /></button></div>
         <div className="p-6"><ThongTinDiaDiem p={p} vietNgay={vietNgay} /></div>

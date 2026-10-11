@@ -5,6 +5,7 @@ import { Map as IcBanDo, ArrowUpRight, Clock, Bus, Plus } from 'lucide-react';
 import { AnhTuyen, TieuDeKhoi } from '../du-lich/GiaoDien';
 import { useNN } from '../../i18n/NgonNgu';
 import { chuyenCanh } from '../../utils/hieuUng';
+import { lopVung } from '../../utils/hangSo';
 import type { DiaDiem, LoTrinh } from '../../utils/kieu';
 
 /** Đường kể chuyện: vạch san hô nối các điểm dừng theo thứ tự, ngang trên màn rộng, dọc trên điện thoại. */
@@ -16,7 +17,7 @@ function DuongKe({ diem, ngay }: { diem: DiaDiem[]; ngay: number[] }) {
       <span className="duong-ke-vach absolute left-[8px] right-[calc(100%/var(--n)_-_8px)] top-[7px] h-[2px] bg-route" style={{ '--n': diem.length } as CSSProperties} aria-hidden="true" />
       {diem.map((p, i) => (
         <li key={p.id + i} className="relative pr-3">
-          <span className={`duong-ke-cham relative block h-4 w-4 border-[3px] border-paper bg-route shadow-sh-1 ${i === diem.length - 1 ? 'rounded-[5px]' : 'rounded-full'}`} style={{ '--i': i } as CSSProperties} />
+          <span className={`duong-ke-cham cham-diem ${lopVung(p.vung)} relative block h-4 w-4 border-[3px] border-paper shadow-sh-1 ${i === diem.length - 1 ? 'rounded-[5px]' : 'rounded-full'}`} style={{ '--i': i } as CSSProperties} />
           {nhieuNgay && (i === 0 || ngay[i] !== ngay[i - 1]) && <span className="mt-2 block text-xs font-semibold text-route">{t('ngay')} {ngay[i]}</span>}
           <span className={`block text-[14px] font-medium leading-snug ${nhieuNgay && (i === 0 || ngay[i] !== ngay[i - 1]) ? 'mt-0.5' : 'mt-2'}`}>{chon(p.ten, p.tenEn)}</span>
         </li>))}
@@ -25,7 +26,7 @@ function DuongKe({ diem, ngay }: { diem: DiaDiem[]; ngay: number[] }) {
       <span className="duong-ke-vach absolute bottom-3 left-[7px] top-2 w-[2px] bg-route" aria-hidden="true" />
       {diem.map((p, i) => (
         <li key={p.id + i} className="relative flex items-baseline gap-3">
-          <span className={`duong-ke-cham relative top-[3px] block h-4 w-4 shrink-0 border-[3px] border-paper bg-route ${i === diem.length - 1 ? 'rounded-[5px]' : 'rounded-full'}`} style={{ '--i': i } as CSSProperties} />
+          <span className={`duong-ke-cham cham-diem ${lopVung(p.vung)} relative top-[3px] block h-4 w-4 shrink-0 border-[3px] border-paper ${i === diem.length - 1 ? 'rounded-[5px]' : 'rounded-full'}`} style={{ '--i': i } as CSSProperties} />
           <span className="text-[15px] font-medium">{chon(p.ten, p.tenEn)}{nhieuNgay && (i === 0 || ngay[i] !== ngay[i - 1]) && <span className="ml-2 text-xs font-semibold text-route">{t('ngay')} {ngay[i]}</span>}</span>
         </li>))}
     </ol></>);
@@ -73,8 +74,8 @@ export default function LoTrinhNoiBat({ ds, loTrinh, onXemBanDo }: { ds: DiaDiem
                   <span className="fx-noi-it block p-5">
                     <b className="block text-[19px] font-semibold leading-snug">{chon(l.ten, l.tenEn)}</b>
                     <span className="mt-1 block text-sm text-muted">{[l.thoiGian, t('soDiemDung', { n: diemCua(l).length })].filter(Boolean).join(', ')}</span>
-                    <span className="mt-3 flex items-center" aria-hidden="true">{diemCua(l).map((_, k, a) => (
-                      <span key={k} className="flex items-center"><span className={`h-2.5 w-2.5 bg-route ${k === a.length - 1 ? 'rounded-[3px]' : 'rounded-full'}`} />{k < a.length - 1 && <span className="h-[2px] w-6 bg-route/50" />}</span>))}</span>
+                    <span className="mt-3 flex items-center" aria-hidden="true">{diemCua(l).map((q, k, a) => (
+                      <span key={k} className="flex items-center"><span className={`cham-diem ${lopVung(q.vung)} h-2.5 w-2.5 ${k === a.length - 1 ? 'rounded-[3px]' : 'rounded-full'}`} />{k < a.length - 1 && <span className="h-[2px] w-6 bg-route/50" />}</span>))}</span>
                   </span>
                 </button>
               </article>))}

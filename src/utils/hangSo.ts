@@ -15,6 +15,8 @@ export const VUNG: Record<Vung, { ten: string; en: string; token: 'hoa' | 'bien'
   'bien-dao':   { ten: 'Biển và đảo phía đông nam',        en: 'South-east coast and islands', token: 'bien', ngan: 'Biển đảo',   nganEn: 'Coast & islands' },
   'dai-ngan':   { ten: 'Đại ngàn và công viên địa chất',   en: 'Western forests and geopark',  token: 'quy',  ngan: 'Đại ngàn',   nganEn: 'Forests' },
 };
+/** Lớp CSS mang màu vùng (đặt biến --vm, --vm2 — xem globals.css). */
+export const lopVung = (v: Vung | null | undefined) => (v ? `vung-${VUNG[v].token}` : '');
 /** Màu của vùng dạng CSS, ví dụ mauVung('bien-dao') -> rgb(var(--c-bien)). */
 export const mauVung = (v: Vung | null | undefined, dam = false, alpha = 1) =>
   v ? `rgb(var(--c-${VUNG[v].token}${dam ? '-dam' : ''}) / ${alpha})` : `rgb(var(--c-emerald) / ${alpha})`;

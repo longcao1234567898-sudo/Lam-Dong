@@ -8,7 +8,7 @@ import BanDo from '../../components/du-lich/BanDo';
 import ChiTiet from '../../components/du-lich/ChiTiet';
 import { AnhTuyen, DauTrang, KhungAnh } from '../../components/du-lich/GiaoDien';
 import { layDiaDiem, layLoTrinh } from '../../services/api';
-import { khoangCachKm, duongDanChiDuong } from '../../utils/hangSo';
+import { khoangCachKm, duongDanChiDuong, lopVung } from '../../utils/hangSo';
 import { useNN } from '../../i18n/NgonNgu';
 import type { DiaDiem, LoTrinh } from '../../utils/kieu';
 
@@ -34,7 +34,7 @@ export function LoTrinhDanhSach() {
                   <span>{t('duongChimBay', { km: tongKm(diem) })}</span></span>
                 {chon(l.moTa, l.moTaEn) && <span className="mt-3 block text-[15px] leading-relaxed text-ink-2">{chon(l.moTa, l.moTaEn)}</span>}
                 <span className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-muted">{diem.map((p, k) => (
-                  <span key={p.id + k} className="inline-flex items-center gap-2">{k > 0 && <span className="h-[2px] w-4 bg-route/60" aria-hidden="true" />}{chon(p.ten, p.tenEn)}</span>))}</span>
+                  <span key={p.id + k} className="inline-flex items-center gap-2">{k > 0 && <span className="h-[2px] w-4 bg-route/60" aria-hidden="true" />}<span className={`cham-diem ${lopVung(p.vung)} h-2 w-2 rounded-full`} aria-hidden="true" />{chon(p.ten, p.tenEn)}</span>))}</span>
               </span>
             </Link>
           </div>); })}</div>

@@ -12,19 +12,28 @@ import { NgonNguProvider, useNN } from './i18n/NgonNgu';
 import { batHienDan, batNghieng } from './utils/hieuUng';
 import { cheDoMinhHoa } from './minh-hoa/cheDo';
 import CongXacMinh from './components/common/CongXacMinh';
+import { useChuyenTrang, taiSanTrang } from './hooks/useChuyenTrang';
 
 /* Trang thống kê và trang quản trị tách gói riêng: du khách mở trang chủ
    không phải tải thư viện biểu đồ hay mã quản trị. */
-const ThongKePage = lazy(() => import('./pages/ThongKePage'));
-const DiaDiemPage = lazy(() => import('./pages/cong-khai/DiaDiemPage'));
-const LoTrinhDanhSach = lazy(() => import('./pages/cong-khai/LoTrinhPage').then((m) => ({ default: m.LoTrinhDanhSach })));
-const LoTrinhChiTiet = lazy(() => import('./pages/cong-khai/LoTrinhPage').then((m) => ({ default: m.LoTrinhChiTiet })));
-const TuTaoLoTrinh = lazy(() => import('./pages/cong-khai/LoTrinhPage').then((m) => ({ default: m.TuTaoLoTrinh })));
-const LuuTruPage = lazy(() => import('./pages/cong-khai/LuuTruPage'));
-const PhanAnhPage = lazy(() => import('./pages/cong-khai/PhanAnhPage'));
-const TinTucPage = lazy(() => import('./pages/cong-khai/TinTucPage'));
-const TinChiTietPage = lazy(() => import('./pages/cong-khai/TinChiTietPage'));
-const KhachQuocTePage = lazy(() => import('./pages/cong-khai/KhachQuocTePage'));
+const napThongKe = () => import('./pages/ThongKePage');
+const napDiaDiem = () => import('./pages/cong-khai/DiaDiemPage');
+const napLoTrinh = () => import('./pages/cong-khai/LoTrinhPage');
+const napLuuTru = () => import('./pages/cong-khai/LuuTruPage');
+const napPhanAnh = () => import('./pages/cong-khai/PhanAnhPage');
+const napTinTuc = () => import('./pages/cong-khai/TinTucPage');
+const napTinChiTiet = () => import('./pages/cong-khai/TinChiTietPage');
+const napKhachQuocTe = () => import('./pages/cong-khai/KhachQuocTePage');
+const ThongKePage = lazy(napThongKe);
+const DiaDiemPage = lazy(napDiaDiem);
+const LoTrinhDanhSach = lazy(() => napLoTrinh().then((m) => ({ default: m.LoTrinhDanhSach })));
+const LoTrinhChiTiet = lazy(() => napLoTrinh().then((m) => ({ default: m.LoTrinhChiTiet })));
+const TuTaoLoTrinh = lazy(() => napLoTrinh().then((m) => ({ default: m.TuTaoLoTrinh })));
+const LuuTruPage = lazy(napLuuTru);
+const PhanAnhPage = lazy(napPhanAnh);
+const TinTucPage = lazy(napTinTuc);
+const TinChiTietPage = lazy(napTinChiTiet);
+const KhachQuocTePage = lazy(napKhachQuocTe);
 const AdminNguonAnh = lazy(() => import('./pages/admin/AdminNguonAnh'));
 const AdminLoTrinh = lazy(() => import('./pages/admin/AdminLoTrinh'));
 const AdminTinTuc = lazy(() => import('./pages/admin/AdminTinTuc'));
@@ -49,6 +58,9 @@ function KhungChung() {
   const { pathname } = useLocation();
   /* Chuyển động dùng chung: hiện khi cuộn (3D) và thẻ nghiêng theo chuột — bật một lần cho cả trang. */
   useEffect(() => { const a = batHienDan(), b = batNghieng(); return () => { a(); b(); }; }, []);
+  /* Chuyển trang mượt + về đầu trang; tải sẵn các trang con phía người dân khi máy rảnh. */
+  useChuyenTrang();
+  useEffect(() => { taiSanTrang([napDiaDiem, napLoTrinh, napTinTuc, napLuuTru, napPhanAnh, napKhachQuocTe, napTinChiTiet, napThongKe]); }, []);
   return (<div className="flex min-h-screen flex-col text-ink">
     <a href="#noi-dung" className="sr-only z-[2000] rounded-xl bg-paper px-4 py-3 font-semibold text-ink shadow-sh-3 focus:not-sr-only focus:fixed focus:left-4 focus:top-4">{t('boQuaNoiDung')}</a>
     {cheDoMinhHoa && <div role="status" className="bg-[#FCEFC7] px-4 py-2 text-center text-sm font-semibold text-[#192522]">{t('dangXemMinhHoa')}</div>}

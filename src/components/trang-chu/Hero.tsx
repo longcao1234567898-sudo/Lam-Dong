@@ -27,7 +27,7 @@ function TimKiem({ ds, onTim }: { ds: DiaDiem[]; onTim: (q: string) => void }) {
   const gui = () => { if (hl >= 0 && goiY[hl]) di(`/dia-diem/${goiY[hl].id}`); else if (q.trim()) { onTim(q.trim()); setMo(false); } };
   return (
     <form role="search" className="relative mt-7 max-w-[36rem]" onSubmit={(e) => { e.preventDefault(); gui(); }}>
-      <div className="kinh flex items-center gap-2 rounded-2xl p-1.5 pl-4 shadow-sh-3">
+      <div className="kinh flex items-center gap-2 rounded-2xl p-1.5 pl-4 shadow-sh-3 focus-within:ring-2 focus-within:ring-[#F7F5EF] focus-within:ring-offset-2 focus-within:ring-offset-[#123C35]">
         <Search className="h-5 w-5 shrink-0 text-[#3E4C48]" aria-hidden="true" />
         <input type="search" value={q} placeholder={t('timGoiY')} aria-label={t('timGoiY')}
           role="combobox" aria-autocomplete="list" aria-expanded={hienDs} aria-controls={id + 'ds'}
@@ -109,9 +109,9 @@ export default function Hero({ ds, loTrinh, onTim, onToiBanDo, onToiLoTrinh }: {
       <TruongHat toi matDo={0.55} doDam={0.9} className="hat-hero" />
 
       <div className="container-page relative z-10 flex flex-1 flex-col justify-end pb-24 pt-36 sm:pb-28">
-        <div className="max-w-[46rem]">
+        <div className="max-w-[50rem]">
           <span className="hero-hien ba-sac mb-6" aria-hidden="true"><i /><i /><i /></span>
-          <h1 id="hero-tieu-de" className="tieu-de-lon hero-chu">
+          <h1 id="hero-tieu-de" className="tieu-de-lon tieu-de-hero hero-chu">
             <span className="dong" style={tre(60)}>{t('heroDong1')}</span>
             <span className="dong" style={tre(190)}>{t('heroDong2')}</span>
           </h1>
@@ -136,7 +136,7 @@ export default function Hero({ ds, loTrinh, onTim, onToiBanDo, onToiLoTrinh }: {
         {chieu.length > 1 && <div className="flex items-center gap-1">
           {chieu.map((c, k) => (
             <button key={c.p.id} type="button" onClick={() => setI(k)} aria-label={`${t('anhSo', { n: k + 1 })}: ${chon(c.p.ten, c.p.tenEn)}`} aria-current={k === i}
-              className="grid h-9 w-7 place-items-center"><span className={`block h-1.5 rounded-full transition-all duration-500 ${k === i ? 'w-5 bg-[#F7F5EF]' : 'w-1.5 bg-[#F7F5EF]/50'}`} /></button>))}
+              className="grid h-9 w-7 place-items-center"><span className={`block h-1.5 rounded-full transition-[width,background-color] duration-500 ${k === i ? 'w-5 bg-[#F7F5EF]' : 'w-1.5 bg-[#F7F5EF]/50'}`} /></button>))}
           <button type="button" onClick={() => setDung((d) => !d)} aria-label={dung ? t('chayTiep') : t('tamDung')} title={dung ? t('chayTiep') : t('tamDung')}
             className="ml-1 grid h-9 w-9 place-items-center rounded-full border border-[#F7F5EF]/40 hover:bg-white/10">{dung ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}</button>
         </div>}

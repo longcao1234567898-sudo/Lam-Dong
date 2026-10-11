@@ -9,7 +9,13 @@
    NỀN TẢNG
    ========================================================================= */
 @layer base {
-  html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; color-scheme: light; }
+  html.dark { color-scheme: dark; }
+  /* Bấm không chờ 300ms để phân biệt chạm đôi (phóng to vẫn dùng được bằng hai ngón). */
+  a, button, [role='button'], [role='tab'], label, select, summary { touch-action: manipulation; }
+  /* Tiêu đề ngắt dòng cân đối, đoạn văn tránh một chữ mồ côi ở dòng cuối. */
+  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
   /* Chế độ chữ lớn: mọi kích thước dùng rem nên to theo một dòng này. */
   html.chu-lon { font-size: 125%; }
 
@@ -109,7 +115,7 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.45; }
 
   .o-nhap {
     @apply w-full rounded-[10px] px-3 py-2.5 text-[15px] outline-none;
-    background: rgb(var(--c-surface)); border: 1px solid rgb(var(--c-line-strong) / .7);
+    background-color: rgb(var(--c-surface)); color: rgb(var(--c-ink)); border: 1px solid rgb(var(--c-line-strong) / .7);
     transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
   }
   .o-nhap:focus { border-color: rgb(var(--c-action)); box-shadow: 0 0 0 3px rgb(var(--c-action) / .18); }
@@ -339,6 +345,18 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.45; }
   @keyframes chu-day { from { color: rgb(var(--c-ink) / .18); } to { color: rgb(var(--c-ink)); } }
 }
 
+/* Tiêu đề trang chủ: hai câu, mỗi câu một dòng trên màn rộng. */
+.tieu-de-hero { font-size: clamp(2.5rem, 1.2rem + 3.4vw, 3.9rem); }
+
+/* Chuyển trang (useChuyenTrang): trang cũ mờ nhanh, trang mới trồi lên chậm hơn (ra nhanh hơn vào).
+   Đầu trang đứng yên; ảnh điểm đến bay từ thẻ sang trang chi tiết (anh-<id>). */
+.dau-trang { view-transition-name: dau-trang; }
+:root.chuyen-trang::view-transition-old(root) { animation: trang-ra .18s cubic-bezier(.4, 0, 1, 1) both; }
+:root.chuyen-trang::view-transition-new(root) { animation: trang-vao .5s var(--ease-expo) .06s both; }
+:root.chuyen-trang::view-transition-group(*) { animation-duration: .6s; }
+@keyframes trang-ra { to { opacity: 0; transform: translateY(-8px); } }
+@keyframes trang-vao { from { opacity: 0; transform: translateY(18px); } }
+
 /* Ba ô vùng: ảnh thật nhuộm màu vùng, ô đang rê/tập trung mở rộng ra. */
 .vung-sac .vung-o {
   position: relative; overflow: hidden; isolation: isolate; min-height: 15rem; flex: 1 1 0; border-radius: 22px;
@@ -373,6 +391,37 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.45; }
 /* Ô vùng: đường đồng mức trắng mờ trên mặt màu (lộ rõ khi chưa có ảnh). */
 .vung-o::after { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: rgb(255 255 255 / .12);
   -webkit-mask: url('/nen/dong-muc.svg') center / 1100px auto; mask: url('/nen/dong-muc.svg') center / 1100px auto; }
+
+
+/* Nền cực quang (CucQuang.tsx): ba vầng màu ba vùng loang chậm. Chỉ transform. */
+.cuc-quang { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.cuc-quang > i { position: absolute; width: 62vmax; height: 62vmax; border-radius: 9999px; opacity: .17;
+  background: radial-gradient(closest-side, var(--cq), transparent); will-change: transform;
+  animation: cq-troi var(--cq-t, 12s) ease-in-out infinite alternate; }
+.cuc-quang > i:nth-child(1) { --cq: rgb(var(--c-hoa)); left: -22vmax; top: -30vmax; --dx: 14%; --dy: 10%; }
+.cuc-quang > i:nth-child(2) { --cq: rgb(var(--c-bien)); right: -26vmax; top: -8vmax; --dx: -12%; --dy: 14%; --cq-t: 14s; animation-delay: -5s; }
+.cuc-quang > i:nth-child(3) { --cq: rgb(var(--c-quy)); left: 18%; bottom: -40vmax; --dx: 10%; --dy: -12%; --cq-t: 10s; animation-delay: -3s; }
+.cuc-quang-toi > i { opacity: .3; mix-blend-mode: screen; }
+.dark .cuc-quang:not(.cuc-quang-toi) > i { opacity: .2; mix-blend-mode: screen; }
+@keyframes cq-troi { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(var(--dx), var(--dy), 0) scale(1.18); } }
+
+/* Khối kết trang: hạt nhạt dần ở giữa, nơi có chữ. */
+.hat-loi-moi { -webkit-mask: radial-gradient(60% 55% at 50% 50%, rgb(0 0 0 / .18), #000 85%); mask: radial-gradient(60% 55% at 50% 50%, rgb(0 0 0 / .18), #000 85%); }
+@supports (animation-timeline: view()) {
+  .chu-do-mau-toi > span { animation-name: chu-day-toi; }
+  @keyframes chu-day-toi { from { color: rgb(247 245 239 / .22); } to { color: #F7F5EF; } }
+}
+
+/* Điểm dừng tô màu vùng của điểm (lộ trình đi qua vùng nào thấy ngay). */
+.cham-diem { background: var(--vm, rgb(var(--c-route))); }
+
+/* Trang chi tiết điểm đến: vầng sáng màu vùng sau đầu trang. */
+.vang-vung { position: absolute; inset: 0 0 auto 0; height: 34rem; z-index: -1; pointer-events: none;
+  background: radial-gradient(60% 70% at 85% 0%, rgb(var(--vm2, 28 140 114) / .2), transparent 70%),
+              radial-gradient(45% 60% at 0% 10%, rgb(var(--vm2, 28 140 114) / .1), transparent 70%); }
+
+/* Ô biểu tượng màu (tin tức theo loại, hướng dẫn khách quốc tế) */
+.o-bieu-tuong { display: grid; place-items: center; flex-shrink: 0; border-radius: 16px; color: #fff; background: var(--vm); box-shadow: 0 8px 18px -10px var(--vm); }
 
 /* Chip vùng: chấm màu vùng; chọn rồi thì nền màu vùng. */
 .chip .cham-vung { width: 9px; height: 9px; border-radius: 9999px; background: var(--vm); }
@@ -412,4 +461,5 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.45; }
   ::view-transition-group(*) { animation: none; }
   .hero-hien.ba-sac > i, .chu-do-mau > span { animation: none; }
   .vung-sac .vung-o, .vung-anh, .vung-them { transition: none; }
+  .cuc-quang > i { animation: none; }
 }

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { PenLine, X } from 'lucide-react';
 import { HienSao, TieuDeKhoi } from '../du-lich/GiaoDien';
+import CucQuang from '../hieu-ung/CucQuang';
 import { layDanhGiaMoiNhat } from '../../services/api';
 import { useNN } from '../../i18n/NgonNgu';
 import { TIEU_CHI, DI_CUNG } from '../../utils/hangSo';
@@ -36,7 +37,7 @@ function ChonDiem({ ds, onChon, onDong }: { ds: DiaDiem[]; onChon: (id: string) 
   return (
     <div className="fixed inset-0 z-[1100] flex items-end justify-center bg-[#0C2925]/60 md:items-center md:p-6" role="dialog" aria-modal="true" aria-labelledby="chon-diem-dg"
       onClick={(e) => e.target === e.currentTarget && onDong()}>
-      <div className="animate-page the max-h-[80vh] w-full max-w-lg overflow-auto rounded-b-none p-6 md:rounded-b-[16px]">
+      <div className="animate-page the max-h-[80vh] w-full max-w-lg overflow-auto overscroll-contain rounded-b-none p-6 md:rounded-b-[16px]">
         <div className="mb-3 flex items-center justify-between gap-3"><h2 id="chon-diem-dg" className="tieu-de-vua">{t('chonDiemDanhGia')}</h2>
           <button ref={dong} type="button" onClick={onDong} aria-label={t('dong')} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl hover:bg-sunken"><X className="h-5 w-5" /></button></div>
         <ul className="-mx-2">{ds.map((p) => (
@@ -63,7 +64,8 @@ export default function DanhGiaKhach({ ds, tk, onViet }: { ds: DiaDiem[]; tk: Th
   const nutViet = <button type="button" className="nut nut-chinh" onClick={() => setChonDiem(true)}><PenLine className="h-4 w-4" />{t('vietDanhGia')}</button>;
 
   return (
-    <section id="danh-gia" className="border-t border-line/60 bg-sunken/50 py-20 sm:py-28">
+    <section id="danh-gia" className="relative isolate overflow-hidden border-t border-line/60 bg-sunken/50 py-20 sm:py-28">
+      <CucQuang />
       <div className="container-page">
         <TieuDeKhoi tieuDe={t('danhGiaTieuDe')} moTa={t('danhGiaMoTa')} />
         {!dg || !dg.so ? (

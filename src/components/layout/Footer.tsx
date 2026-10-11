@@ -4,6 +4,7 @@ import { Phone } from 'lucide-react';
 import { layTinTuc } from '../../services/api';
 import { useNN } from '../../i18n/NgonNgu';
 import { DauHieu } from './Header';
+import CucQuang from '../hieu-ung/CucQuang';
 
 /** Chân trang trên mảng rừng đêm: số điện thoại cần biết (cán bộ quản lý), lối đi nhanh, nguồn bản đồ. */
 export default function Footer() {
@@ -13,9 +14,11 @@ export default function Footer() {
   const LOI = [['/', t('khamPha')], ['/lo-trinh', t('goiYLoTrinh')], ['/luu-tru', t('luuTru')], ['/tin-tuc', t('tinTuc')],
     ['/phan-anh', t('phanAnh')], ['/khach-quoc-te', t('khachQuocTe')], ['/thong-ke', t('thongKe')]];
   return (
-    <footer className="nen-toi nen-dong-muc" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+    <footer className="nen-toi nen-dong-muc relative overflow-hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <CucQuang toi />
       <div className="container-page grid gap-10 py-16 md:grid-cols-12">
         <div className="md:col-span-4">
+          <span className="ba-sac mb-6" aria-hidden="true"><i /><i /><i /></span>
           <div className="flex items-center gap-3"><DauHieu co={40} /><b className="font-serif text-[24px] font-medium">{t('tenTrang')}</b></div>
           <p className="mt-4 max-w-xs text-[15px] leading-relaxed text-[#B9C7C1]">{t('chanTrangMoTa')}</p>
         </div>
