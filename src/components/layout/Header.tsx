@@ -24,7 +24,16 @@ export default function Header() {
     document.documentElement.classList.toggle('dark', toi);
     try { localStorage.setItem('dldn_giao_dien', toi ? 'dark' : 'light'); } catch { /* bỏ qua */ }
   }, [toi]);
-  useEffect(() => { const f = () => setCuon(window.scrollY > 40); f(); window.addEventListener('scroll', f, { passive: true }); return () => window.removeEventListener('scroll', f); }, []);
+  /* Đã cuộn quá 40px chưa: theo dõi một mốc 1px bằng IntersectionObserver, không nghe sự kiện cuộn từng khung hình. */
+  useEffect(() => {
+    const moc = document.createElement('div');
+    moc.setAttribute('aria-hidden', 'true');
+    moc.style.cssText = 'position:absolute;top:40px;left:0;width:1px;height:1px;pointer-events:none;visibility:hidden';
+    document.body.prepend(moc);
+    const io = new IntersectionObserver(([m]) => setCuon(!m.isIntersecting));
+    io.observe(moc);
+    return () => { io.disconnect(); moc.remove(); };
+  }, []);
   useEffect(() => { setMoMenu(false); }, [pathname]);
   useEffect(() => { if (!moMenu) return; const k = (e: KeyboardEvent) => e.key === 'Escape' && setMoMenu(false); window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [moMenu]);
   const trenCanh = pathname === '/' && !cuon && !moMenu;
@@ -41,7 +50,7 @@ export default function Header() {
     ${trenCanh ? 'text-[#F7F5EF]' : 'text-ink'}`;
   const nutPhu = `grid h-11 min-w-[44px] place-items-center rounded-xl px-2 text-[13px] font-semibold transition-colors ${trenCanh ? 'text-[#F7F5EF] hover:bg-white/10' : 'text-ink-2 hover:bg-sunken'}`;
   return (
-    <header className={`sticky top-0 z-[600] transition-[background-color,box-shadow] duration-300 ${trenCanh ? 'bg-transparent' : 'bg-ivory/[.97] shadow-[0_1px_0_rgb(var(--c-line))]'}`}
+    <header className={`dau-trang sticky top-0 z-[600] transition-[background-color,box-shadow] duration-300 ${trenCanh ? 'bg-transparent' : 'bg-ivory/[.97] shadow-[0_1px_0_rgb(var(--c-line))]'}`}
       style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="container-page flex h-16 items-center gap-2">
         <Link to="/" className="mr-auto flex min-w-0 items-center gap-2.5" aria-label={t('tenTrang')}>

@@ -147,7 +147,7 @@ const TU: Record<string, [string, string]> = {
   heroDong2: ['Khám phá theo cách của bạn.', 'Explore your own way.'],
   heroDan: ['{diem} điểm đến và {tuyen} lộ trình gợi ý, từ đỉnh Langbiang trên cao nguyên tới đảo Phú Quý ngoài khơi.',
     '{diem} destinations and {tuyen} suggested itineraries, from Langbiang peak on the plateau to Phu Quy island out at sea.'],
-  timGoiY: ['Tìm điểm đến, xã, phường', 'Search places, communes, wards'], tim: ['Tìm', 'Search'],
+  timGoiY: ['Tìm điểm đến, xã, phường…', 'Search places, communes, wards…'], tim: ['Tìm', 'Search'],
   khongThayDiem: ['Không thấy điểm nào tên "{q}".', 'No place matches "{q}".'],
   xemBanDo: ['Xem bản đồ', 'Open the map'],
   quanSat360: ['Quan sát 360°', '360° viewpoints'],

@@ -24,7 +24,7 @@ function TheDiem({ p, kieu, i, onXemBanDo }: { p: DiaDiem; kieu: 'lon' | 'vua' |
      {/* Lớp ngoài lo phần hiện khi cuộn, lớp trong lo phần nghiêng: hai transform không đè nhau. */}
      <div className="fx-the relative h-full" data-nghieng={kieu === 'lon' ? 4 : 7}>
       <Link to={`/dia-diem/${p.id}`} className="the-anh group" aria-label={chon(p.ten, p.tenEn)}>
-        <span className="khung"><KhungAnh p={p} /></span>
+        <span className="khung" style={{ viewTransitionName: 'anh-' + p.id } as CSSProperties}><KhungAnh p={p} /></span>
         <span className="man" />
         {p.vung && <span className={`fx-noi-it nhan-vung vung-${VUNG[p.vung].token} absolute left-3 top-3 z-[4]`}>{nn === 'en' ? VUNG[p.vung].nganEn : VUNG[p.vung].ngan}</span>}
         <span className={`fx-noi absolute inset-x-0 bottom-0 block p-5 text-[#F7F5EF] ${kieu === 'lon' ? 'sm:p-7' : ''}`}>

@@ -177,7 +177,7 @@ export default function ChiTiet({ p, onDong, vietNgay = false }: { p: DiaDiem; o
   return (
     <div className="fixed inset-0 z-[1100] flex items-end justify-center bg-[#0C2925]/60 md:items-center md:p-6" role="dialog" aria-modal="true" aria-labelledby="ct-ten"
       onClick={(e) => e.target === e.currentTarget && onDong()}>
-      <div className="hop-thoai max-h-[90vh] w-full max-w-2xl overflow-auto rounded-t-[24px] bg-paper pb-[calc(1.5rem+env(safe-area-inset-bottom))] text-ink shadow-sh-3 md:rounded-[24px]">
+      <div className="hop-thoai max-h-[90vh] w-full max-w-2xl overflow-auto overscroll-contain rounded-t-[24px] bg-paper pb-[calc(1.5rem+env(safe-area-inset-bottom))] text-ink shadow-sh-3 md:rounded-[24px]">
         <div className="relative h-44 overflow-hidden bg-sunken sm:h-56"><KhungAnh p={p} />
           <button ref={dongRef} type="button" onClick={onDong} aria-label={t('dong')} className="kinh absolute right-4 top-4 z-[3] grid h-10 w-10 place-items-center rounded-xl shadow-sh-2"><X className="h-5 w-5" /></button></div>
         <div className="p-6"><ThongTinDiaDiem p={p} vietNgay={vietNgay} /></div>

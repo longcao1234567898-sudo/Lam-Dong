@@ -37,7 +37,7 @@ function ChonDiem({ ds, onChon, onDong }: { ds: DiaDiem[]; onChon: (id: string) 
   return (
     <div className="fixed inset-0 z-[1100] flex items-end justify-center bg-[#0C2925]/60 md:items-center md:p-6" role="dialog" aria-modal="true" aria-labelledby="chon-diem-dg"
       onClick={(e) => e.target === e.currentTarget && onDong()}>
-      <div className="animate-page the max-h-[80vh] w-full max-w-lg overflow-auto rounded-b-none p-6 md:rounded-b-[16px]">
+      <div className="animate-page the max-h-[80vh] w-full max-w-lg overflow-auto overscroll-contain rounded-b-none p-6 md:rounded-b-[16px]">
         <div className="mb-3 flex items-center justify-between gap-3"><h2 id="chon-diem-dg" className="tieu-de-vua">{t('chonDiemDanhGia')}</h2>
           <button ref={dong} type="button" onClick={onDong} aria-label={t('dong')} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl hover:bg-sunken"><X className="h-5 w-5" /></button></div>
         <ul className="-mx-2">{ds.map((p) => (

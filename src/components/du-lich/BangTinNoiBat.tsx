@@ -60,7 +60,7 @@ export default function BangTinNoiBat({ ds }: { ds: TinTuc[] }) {
         <div className="flex items-center gap-1.5">
           {ds.map((tin, k) => <button key={tin.id} type="button" onClick={() => setI(k)} aria-label={`${t('tinSo', { n: k + 1 })}: ${chon(tin.tieuDe, tin.tieuDeEn)}`}
             aria-current={k === i % n} className="grid h-8 w-8 place-items-center">
-            <span className={`block h-1.5 rounded-full transition-all ${k === i % n ? 'w-6 bg-[#F17C5B]' : 'w-1.5 bg-[#F7F5EF]/50'}`} /></button>)}
+            <span className={`block h-1.5 rounded-full transition-[width,background-color] ${k === i % n ? 'w-6 bg-[#F17C5B]' : 'w-1.5 bg-[#F7F5EF]/50'}`} /></button>)}
         </div>
         <div className="flex gap-1.5 text-[#F7F5EF]">
           <button type="button" onClick={() => di(-1)} aria-label={t('tinTruoc')} className="grid h-10 w-10 place-items-center rounded-full bg-white/10 hover:bg-white/20"><ChevronLeft className="h-5 w-5" /></button>

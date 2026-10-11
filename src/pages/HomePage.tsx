@@ -68,12 +68,17 @@ export default function HomePage() {
         <div className="container-page">
           <div className="hien-dan mb-6 flex flex-wrap items-end justify-between gap-3"><h2 className="tieu-de-vua">{t('tinMoi')}</h2>
             <Link to="/tin-tuc" className="text-[15px] font-semibold text-action underline-offset-2 hover:underline">{t('tinTuc')}</Link></div>
-          <div className="grid gap-4 md:grid-cols-3">{suKien.map((x, i) => (
-            <Link key={x.id} to={`/tin-tuc/${x.id}`} className="hien-dan the block p-5 transition-shadow hover:shadow-sh-2" style={{ '--i': i } as React.CSSProperties}>
-              <span className="flex items-center gap-1.5 text-[13px] font-medium text-muted"><CalendarDays className="h-4 w-4" />
-                {x.loai === 'su-kien' ? t('suKien') : t('thongBao')}{x.tuNgay ? `, ${ngay(x.tuNgay)}` : ''}{x.denNgay && x.denNgay !== x.tuNgay ? ` – ${ngay(x.denNgay)}` : ''}</span>
-              <b className="mt-2 block text-[17px] font-semibold leading-snug">{dich(x.tieuDe, x.tieuDeEn)}</b>
-              {dich(x.noiDung, x.noiDungEn) && <p className="mt-1.5 line-clamp-2 text-[15px] text-ink-2">{dich(x.noiDung, x.noiDungEn)}</p>}</Link>))}</div>
+          {/* Tin đầu (nổi bật) lớn bên trái, các tin sau xếp dọc bên phải — không dàn ba thẻ đều nhau. */}
+          <div className={`grid gap-4 ${suKien.length > 1 ? 'md:grid-cols-12' : ''}`}>{suKien.map((x, i) => (
+            <Link key={x.id} to={`/tin-tuc/${x.id}`} style={{ '--i': i } as React.CSSProperties}
+              className={`hien-dan the group flex gap-4 transition-shadow hover:shadow-sh-2 ${i === 0 ? `flex-col p-6 sm:p-8 ${suKien.length > 1 ? 'md:col-span-7 md:row-span-2' : ''}` : 'items-start p-5 md:col-span-5'}`}>
+              <span className={`o-bieu-tuong ${x.loai === 'su-kien' ? 'vung-hoa' : 'vung-bien'} ${i === 0 ? 'h-12 w-12' : 'h-10 w-10 rounded-xl'}`}><CalendarDays className={i === 0 ? 'h-6 w-6' : 'h-5 w-5'} aria-hidden="true" /></span>
+              <span className="min-w-0">
+                <span className="block text-[13px] font-medium text-muted">
+                  {x.loai === 'su-kien' ? t('suKien') : t('thongBao')}{x.tuNgay ? `, ${ngay(x.tuNgay)}` : ''}{x.denNgay && x.denNgay !== x.tuNgay ? ` – ${ngay(x.denNgay)}` : ''}</span>
+                <b className={`mt-1.5 block leading-snug group-hover:text-action ${i === 0 ? 'tieu-de-vua' : 'text-[17px] font-semibold'}`}>{dich(x.tieuDe, x.tieuDeEn)}</b>
+                {dich(x.noiDung, x.noiDungEn) && <span className={`mt-2 block text-ink-2 ${i === 0 ? 'line-clamp-4 text-[16px] leading-relaxed' : 'line-clamp-2 text-[15px]'}`}>{dich(x.noiDung, x.noiDungEn)}</span>}
+              </span></Link>))}</div>
         </div>
       </section>}
 

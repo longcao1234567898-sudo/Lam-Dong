@@ -20,6 +20,11 @@ Thêm `sim` `#7B5CD6` (hoa sim) chỉ dùng cho hạt chuyển động. Quy tắ
 - **Khối "Ba sắc"** (`trang-chu/VungSac.tsx`) ngay dưới hero: ba ô ảnh thật nhuộm màu vùng; rê chuột hoặc Tab tới thì ô mở rộng; bấm là lọc khối Khám phá theo vùng (trạng thái vùng nay do `HomePage` giữ). Tiêu đề đổ màu từng chữ theo nhịp cuộn (`.chu-do-mau`, chỉ trình duyệt có `animation-timeline`).
 - **Dải ba sắc** (`.ba-sac`, ba khúc màu rời, không gradient): trên tiêu đề hero, đầu trang con, và gạch dưới mục đang mở ở thanh đầu trang.
 - Chip vùng có chấm màu, chọn rồi nền màu vùng; thẻ điểm có nhãn vùng; thẻ chưa có ảnh nhuộm màu vùng thay cho xanh rừng.
+- **Nền cực quang** (`hieu-ung/CucQuang.tsx`): ba vầng màu ba vùng loang chậm 10–14 giây ở đầu trang con, khối đánh giá, bản đồ, chân trang. **Khối kết trang chủ** (`trang-chu/LoiMoi.tsx`) có cánh hoa xoáy theo chuột.
+- **Chuyển trang** (`hooks/useChuyenTrang.ts`): View Transitions của trình duyệt, trang cũ mờ nhanh, trang mới trồi lên; ảnh thẻ điểm đến bay sang ảnh trang chi tiết (`view-transition-name: anh-<id>`). Mở trang mới thì về đầu trang. Không dùng `<ViewTransition>` của React vì cần bản React canary.
+- Đã rà theo Web Interface Guidelines (Vercel) và Taste Skill: tiêu đề hero tối đa 2 dòng, không dàn ba thẻ tin đều nhau, `color-scheme` theo chế độ sáng/tối, `text-wrap: balance` cho tiêu đề, `overscroll-behavior: contain` cho hộp thoại, không nghe sự kiện cuộn (dùng IntersectionObserver), không `transition: all`.
+- Biểu đồ thống kê: trong nước = biển, quốc tế = mai anh đào, số sao 1→5 = một sắc dã quỳ nhạt tới đậm; bảng màu đã kiểm bằng `validate_palette.js` (sáng, tối, mù màu).
+- Chưa thêm GSAP hay Motion: mọi chuyển động hiện có làm được bằng CSS và canvas. Chỉ nên thêm khi cần ghim khung theo cuộn (ScrollTrigger).
 
 ## Cập nhật: bỏ cảnh 3D, dùng ảnh thật
 

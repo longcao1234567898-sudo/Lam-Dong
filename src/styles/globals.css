@@ -9,7 +9,13 @@
    NỀN TẢNG
    ========================================================================= */
 @layer base {
-  html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; color-scheme: light; }
+  html.dark { color-scheme: dark; }
+  /* Bấm không chờ 300ms để phân biệt chạm đôi (phóng to vẫn dùng được bằng hai ngón). */
+  a, button, [role='button'], [role='tab'], label, select, summary { touch-action: manipulation; }
+  /* Tiêu đề ngắt dòng cân đối, đoạn văn tránh một chữ mồ côi ở dòng cuối. */
+  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
   /* Chế độ chữ lớn: mọi kích thước dùng rem nên to theo một dòng này. */
   html.chu-lon { font-size: 125%; }
 
@@ -109,7 +115,7 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.45; }
 
   .o-nhap {
     @apply w-full rounded-[10px] px-3 py-2.5 text-[15px] outline-none;
-    background: rgb(var(--c-surface)); border: 1px solid rgb(var(--c-line-strong) / .7);
+    background-color: rgb(var(--c-surface)); color: rgb(var(--c-ink)); border: 1px solid rgb(var(--c-line-strong) / .7);
     transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
   }
   .o-nhap:focus { border-color: rgb(var(--c-action)); box-shadow: 0 0 0 3px rgb(var(--c-action) / .18); }
@@ -338,6 +344,18 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.45; }
   }
   @keyframes chu-day { from { color: rgb(var(--c-ink) / .18); } to { color: rgb(var(--c-ink)); } }
 }
+
+/* Tiêu đề trang chủ: hai câu, mỗi câu một dòng trên màn rộng. */
+.tieu-de-hero { font-size: clamp(2.5rem, 1.2rem + 3.4vw, 3.9rem); }
+
+/* Chuyển trang (useChuyenTrang): trang cũ mờ nhanh, trang mới trồi lên chậm hơn (ra nhanh hơn vào).
+   Đầu trang đứng yên; ảnh điểm đến bay từ thẻ sang trang chi tiết (anh-<id>). */
+.dau-trang { view-transition-name: dau-trang; }
+:root.chuyen-trang::view-transition-old(root) { animation: trang-ra .18s cubic-bezier(.4, 0, 1, 1) both; }
+:root.chuyen-trang::view-transition-new(root) { animation: trang-vao .5s var(--ease-expo) .06s both; }
+:root.chuyen-trang::view-transition-group(*) { animation-duration: .6s; }
+@keyframes trang-ra { to { opacity: 0; transform: translateY(-8px); } }
+@keyframes trang-vao { from { opacity: 0; transform: translateY(18px); } }
 
 /* Ba ô vùng: ảnh thật nhuộm màu vùng, ô đang rê/tập trung mở rộng ra. */
 .vung-sac .vung-o {
