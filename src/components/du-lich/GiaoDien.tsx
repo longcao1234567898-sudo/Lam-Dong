@@ -29,7 +29,7 @@ export function HienSao({ gt, co = 16 }: { gt: number; co?: number }) {
  *  công cộng — không bắt buộc ghi tác giả, xem utils/anhMacDinh.ts); chưa có cả hai thì khung
  *  chờ. Khung cha phải có position: relative và overflow: hidden. */
 export function KhungAnh({ p, sizes = '(min-width: 1024px) 50vw, 100vw', uuTien = false }: { p: DiaDiem; sizes?: string; uuTien?: boolean }) {
-  const { t, chon } = useNN();
+  const { chon } = useNN();
   const a = p.anh?.[0];
   if (a) return <img src={anhUrl(a.id)} alt={a.chuThich || chon(p.ten, p.tenEn)} loading={uuTien ? 'eager' : 'lazy'} decoding="async"
     width={a.rong || undefined} height={a.cao || undefined} className="fx-anh-troi absolute inset-0 h-full w-full object-cover"
@@ -38,8 +38,10 @@ export function KhungAnh({ p, sizes = '(min-width: 1024px) 50vw, 100vw', uuTien 
   if (m) return <img src={m.nho} srcSet={srcSetMacDinh(m)} sizes={sizes} alt={chon(p.ten, p.tenEn)} width={m.rong} height={m.cao}
     loading={uuTien ? 'eager' : 'lazy'} decoding="async" className="fx-anh-troi absolute inset-0 h-full w-full object-cover" />;
   const Ic = IC_LOAI[p.loai] || Leaf;
-  /* Chưa có ảnh: khung chờ nhuộm màu vùng của điểm, thẻ vẫn rực mà không bịa ảnh. */
-  return <span className={`anh-cho ${p.vung ? 'vung-' + VUNG[p.vung].token : ''}`}><Ic className="h-7 w-7" strokeWidth={1.5} /><span className="text-xs font-medium">{t('chuaCoAnh')}</span></span>;
+  /* Chưa có ảnh: bìa màu vùng của điểm, đường đồng mức, biểu tượng loại hình lớn và mờ như
+     hoạ tiết — thẻ vẫn rực mà không bịa ảnh. Không ghi "chưa có ảnh": đó là việc của cán bộ
+     (trang quản trị tự nhắc), du khách không cần biết. Thuần trang trí nên ẩn khỏi trình đọc màn hình. */
+  return <span className={`anh-cho ${p.vung ? 'vung-' + VUNG[p.vung].token : ''}`} aria-hidden="true"><Ic className="anh-cho-ic" strokeWidth={1} /></span>;
 }
 
 export function TieuDeKhoi({ tieuDe, moTa, phai, toi = false }: { tieuDe: string; moTa: string; phai?: ReactNode; toi?: boolean }) {
@@ -77,5 +79,5 @@ export const coAnh = (p: DiaDiem) => !!p.anh?.length || !!anhMacDinh(p.id);
 /** Ảnh của một lộ trình: ảnh điểm dừng đầu tiên có ảnh. */
 export function AnhTuyen({ diem, sizes }: { diem: DiaDiem[]; sizes?: string }) {
   const p = diem.find(coAnh) || diem[0];
-  return p ? <KhungAnh p={p} sizes={sizes} /> : <span className="anh-cho" />;
+  return p ? <KhungAnh p={p} sizes={sizes} /> : <span className="anh-cho" aria-hidden="true" />;
 }

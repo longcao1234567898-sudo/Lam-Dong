@@ -273,10 +273,18 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.45; }
 @keyframes troi-nhe { from { transform: translateY(0); } to { transform: translateY(-7px); } }
 
 /* Khung ảnh: ảnh hiện dần khi có; khung chờ có đường đồng mức. */
-.anh-cho { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 6px; isolation: isolate; padding-bottom: 22%;
+.anh-cho { position: absolute; inset: 0; overflow: hidden; isolation: isolate;
   color: rgb(247 245 239 / .6); background: radial-gradient(120% 90% at 70% 0%, #2C5248, #16342D 70%); }
 .anh-cho::before { content: ''; position: absolute; inset: 0; z-index: -1; background: rgb(247 245 239 / .1);
   -webkit-mask: url('/nen/dong-muc.svg') center / 900px auto; mask: url('/nen/dong-muc.svg') center / 900px auto; }
+/* Vầng sáng như nắng sớm ở góc trên: bìa có chiều sâu thay vì một mảng màu phẳng. */
+.anh-cho::after { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(55% 60% at 16% 8%, rgb(255 248 230 / .22), transparent 70%); }
+/* Biểu tượng loại hình làm hoạ tiết: lớn, mờ, nghiêng, tràn mép phải — đọc như hình in trên
+   bìa sách, không như biểu tượng "thiếu ảnh". Cỡ theo khung (cqi), khung nhỏ không bị lấn. */
+.anh-cho { container-type: size; }
+.anh-cho-ic { position: absolute; right: -7%; top: 50%; width: min(58cqh, 46cqw); height: auto; aspect-ratio: 1;
+  transform: translateY(-62%) rotate(-10deg); color: rgb(255 255 255 / .17); }
 
 /* Thẻ bento: ảnh tràn thẻ, chữ trên màn che đáy, chữ nổi lên khỏi mặt ảnh khi nghiêng. */
 .the-anh { position: relative; display: block; height: 100%; border-radius: 18px; box-shadow: var(--sh-2); background: rgb(var(--c-sunken)); }

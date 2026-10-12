@@ -178,7 +178,6 @@ const TU: Record<string, [string, string]> = {
   xemTatCaDiem: ['Xem tất cả {n} điểm', 'Show all {n} places'], thuGon: ['Thu gọn', 'Show fewer'],
   locRong: ['Chưa có điểm nào khớp bộ lọc này.', 'No place matches these filters.'], boLoc: ['Bỏ lọc', 'Clear filters'],
   ketQuaCho: ['Kết quả cho "{q}"', 'Results for "{q}"'],
-  chuaCoAnh: ['Chưa có ảnh', 'No photo yet'],
   xemTrenBanDo: ['Xem trên bản đồ', 'Show on map'], xemChiTiet: ['Xem chi tiết', 'View details'],
   banDoMoTa2: ['Chọn một điểm, hoặc chọn lộ trình để xem đường đi giữa các điểm.', 'Pick a place, or an itinerary to see the way between its stops.'],
   tabDiemDen: ['Điểm đến', 'Places'], tabLoTrinh: ['Lộ trình', 'Itineraries'],
