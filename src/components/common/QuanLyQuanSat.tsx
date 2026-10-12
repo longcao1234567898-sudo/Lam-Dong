@@ -107,6 +107,7 @@ export default function QuanLyQuanSat({ diaDiemId }: { diaDiemId: string }) {
           <li>Mở Google Maps trên máy tính, tìm địa điểm. Kéo hình người vàng vào chỗ có đường xanh (Street View), hoặc bấm vào một ảnh 360° trong mục Ảnh của địa điểm.</li>
           <li>Xoay tới hướng muốn du khách nhìn đầu tiên.</li>
           <li>Bấm ⋮ hoặc Chia sẻ → <b>Chia sẻ hoặc nhúng hình ảnh</b> → thẻ <b>Nhúng bản đồ</b> → <b>Sao chép HTML</b>, dán vào ô dưới.</li>
+          <li>Cũng nhận mã Street View theo toạ độ dạng <code>maps.google.com/maps?layer=c&amp;cbll=vĩ độ,kinh độ…&amp;output=svembed</code> — Google tự lấy ảnh 360° gần toạ độ nhất, nên mở trang xem lại cho chắc.</li>
           <li>Chỗ nào Google Maps không có ảnh 360° thì bỏ qua — trang không hiện mục 360° cho điểm đó.</li>
         </ol>
         <input className={o + ' mt-2'} value={tenG} onChange={(e) => setTenG(e.target.value)} maxLength={120} placeholder="Tên vị trí, ví dụ: Cổng chính, Bờ hồ" />

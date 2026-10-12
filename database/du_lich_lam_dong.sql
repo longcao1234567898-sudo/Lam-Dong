@@ -1328,4 +1328,37 @@ CREATE TABLE IF NOT EXISTS anh_tin (
   FOREIGN KEY (nguoi_tai) REFERENCES staff(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ============================================================================
+-- ẢNH 360° GOOGLE GẮN SẴN CHO 15 ĐIỂM ĐẾN
+-- ============================================================================
+-- Mỗi điểm đến một điểm quan sát Street View theo toạ độ (kiểu "svembed", không
+-- cần khoá API), hiện đầu tiên ở mục "Quan sát 360°" (thu_tu 0). Toạ độ là vị trí
+-- khởi đầu, Google tự lấy ảnh 360° gần nhất — cán bộ mở trang từng điểm để kiểm,
+-- điểm nào không có ảnh thì xoá ở mục Địa điểm và dán mã nhúng khác.
+-- Đường dẫn đúng dạng chuẩn máy chủ tự dựng (routes/noi-dung.js, docNhungGoogle).
+-- Chạy lại không thêm trùng; không vượt 10 điểm quan sát mỗi địa điểm; địa điểm
+-- đã bị xoá thì bỏ qua. Cần MySQL 8.0.19 trở lên (VALUES ROW).
+INSERT INTO diem_quan_sat (dia_diem_id, ten, ten_en, nguon, google_url, thu_tu)
+SELECT t.column_0, t.column_1, t.column_2, 'google', t.column_3, 0
+  FROM (VALUES
+  ROW('ho-xuan-huong', 'Hồ Xuân Hương', 'Xuan Huong Lake', 'https://maps.google.com/maps?layer=c&cbll=11.944252,108.447478&cbp=12,0,0,0,0&output=svembed'),
+  ROW('ga-da-lat', 'Ga Đà Lạt', 'Da Lat Railway Station', 'https://maps.google.com/maps?layer=c&cbll=11.9445,108.4583&cbp=12,0,0,0,0&output=svembed'),
+  ROW('thien-vien-truc-lam', 'Thiền viện Trúc Lâm - hồ Tuyền Lâm', 'Truc Lam Zen Monastery - Tuyen Lam Lake', 'https://maps.google.com/maps?layer=c&cbll=11.90417,108.43485&cbp=12,0,0,0,0&output=svembed'),
+  ROW('dinh-bao-dai', 'Dinh Bảo Đại (Dinh III)', 'Bao Dai Palace (Palace III)', 'https://maps.google.com/maps?layer=c&cbll=11.93005,108.42967&cbp=12,0,0,0,0&output=svembed'),
+  ROW('nui-langbiang', 'Núi Langbiang', 'Langbiang Mountain', 'https://maps.google.com/maps?layer=c&cbll=12.04726,108.44058&cbp=12,0,0,0,0&output=svembed'),
+  ROW('thac-pongour', 'Thác Pongour', 'Pongour Waterfall', 'https://maps.google.com/maps?layer=c&cbll=11.68929,108.2655&cbp=12,0,0,0,0&output=svembed'),
+  ROW('doi-cat-mui-ne', 'Đồi cát bay Mũi Né', 'Mui Ne Flying Sand Dunes', 'https://maps.google.com/maps?layer=c&cbll=10.9334,108.2825&cbp=12,0,0,0,0&output=svembed'),
+  ROW('bau-trang', 'Bàu Trắng', 'Bau Trang White Dunes', 'https://maps.google.com/maps?layer=c&cbll=11.06791,108.41692&cbp=12,0,0,0,0&output=svembed'),
+  ROW('thap-po-sah-inu', 'Tháp Po Sah Inư', 'Po Sah Inu Cham Towers', 'https://maps.google.com/maps?layer=c&cbll=10.93595,108.14617&cbp=12,0,0,0,0&output=svembed'),
+  ROW('hai-dang-ke-ga', 'Hải đăng Kê Gà', 'Ke Ga Lighthouse', 'https://maps.google.com/maps?layer=c&cbll=10.69529,107.99158&cbp=12,0,0,0,0&output=svembed'),
+  ROW('nui-ta-cu', 'Núi Tà Cú', 'Ta Cu Mountain', 'https://maps.google.com/maps?layer=c&cbll=10.81507,107.9001&cbp=12,0,0,0,0&output=svembed'),
+  ROW('dao-phu-quy', 'Đảo Phú Quý', 'Phu Quy Island', 'https://maps.google.com/maps?layer=c&cbll=10.53086,108.94276&cbp=12,0,0,0,0&output=svembed'),
+  ROW('ho-ta-dung', 'Hồ Tà Đùng - điểm ngắm toàn cảnh', 'Ta Dung Lake - panoramic viewpoint', 'https://maps.google.com/maps?layer=c&cbll=11.86029,107.92353&cbp=12,0,0,0,0&output=svembed'),
+  ROW('thac-dray-sap', 'Thác Dray Sáp', 'Dray Sap Waterfall', 'https://maps.google.com/maps?layer=c&cbll=12.53785,107.89017&cbp=12,0,0,0,0&output=svembed'),
+  ROW('hang-dong-nui-lua-krong-no', 'Hang động núi lửa Krông Nô - khu hang C3', 'Krong No Volcanic Caves - C3 cave area', 'https://maps.google.com/maps?layer=c&cbll=12.51731,107.89645&cbp=12,0,0,0,0&output=svembed')
+  ) AS t
+  JOIN dia_diem d ON d.id = t.column_0
+ WHERE NOT EXISTS (SELECT 1 FROM diem_quan_sat q WHERE q.dia_diem_id = t.column_0 AND q.google_url = t.column_3)
+   AND (SELECT COUNT(*) FROM diem_quan_sat c WHERE c.dia_diem_id = t.column_0) < 10;
+
 SELECT COUNT(*) AS so_dia_diem, (SELECT COUNT(*) FROM xa_phuong) AS so_xa_phuong FROM dia_diem;

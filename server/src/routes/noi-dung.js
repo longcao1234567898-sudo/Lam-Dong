@@ -165,15 +165,37 @@ const TOI_DA_QUAN_SAT = 10;
 const nhanAnh360 = express.raw({ type: ['image/jpeg', 'image/png', 'image/webp'], limit: '6mb' });
 const gocNgang = (v) => { const n = Math.round(Number(v)); return n >= 30 && n <= 360 ? n : null; };
 const huongDau = (v) => { const n = Math.round(Number(v)); return Number.isFinite(n) && n >= -180 && n <= 180 ? n : null; };
+/* Số thập phân có dấu, tối đa 3 chữ số phần nguyên, 8 chữ số lẻ — đủ cho toạ độ và góc. */
+const SO_THAP_PHAN = /^-?\d{1,3}(\.\d{1,8})?$/;
+/** Street View kiểu "svembed" (maps.google.com/maps?layer=c&cbll=VĨ,KINH&cbp=12,HƯỚNG,…&output=svembed):
+    không cần khoá API, chỉ cần toạ độ. KHÔNG giữ chuỗi người dán — chỉ lấy toạ độ và hướng
+    nhìn (số đã kiểm) rồi dựng lại đường dẫn, nên không tham số lạ nào lọt vào iframe. */
+function docSvembed(u) {
+  if (u.searchParams.get('layer') !== 'c') return { loi: 'Đường dẫn Google Maps này chưa phải ảnh 360° (thiếu layer=c).' };
+  const [lat, lng, ...du] = (u.searchParams.get('cbll') || '').split(',');
+  const vi = Number(lat), kinh = Number(lng);
+  if (du.length || !SO_THAP_PHAN.test(lat || '') || !SO_THAP_PHAN.test(lng || '') || Math.abs(vi) > 90 || Math.abs(kinh) > 180) {
+    return { loi: 'Toạ độ trong mã nhúng (cbll=vĩ độ,kinh độ) không đúng.' };
+  }
+  const cbp = u.searchParams.get('cbp');
+  const huong = cbp ? cbp.split(',')[1] : '0';
+  if (!SO_THAP_PHAN.test(huong || '') || Number(huong) < 0 || Number(huong) > 360) return { loi: 'Hướng nhìn trong mã nhúng (cbp) không đúng.' };
+  return { url: `https://maps.google.com/maps?layer=c&cbll=${lat},${lng}&cbp=12,${huong},0,0,0&output=svembed` };
+}
+
 /** Mã nhúng Google Maps (cả thẻ <iframe> hoặc chỉ đường dẫn) -> đường dẫn nhúng đã kiểm.
-    Chỉ nhận https://www.google.com/maps/embed?pb=… và phải là ảnh 360° (có đoạn !6m của
-    khung xem toàn cảnh), không nhận bản đồ thường hay trang nào khác. */
+    Nhận hai kiểu, đều phải là ảnh 360°:
+      - https://www.google.com/maps/embed?pb=… có đoạn !6m (khung xem toàn cảnh) — Chia sẻ → Nhúng bản đồ;
+      - https://maps.google.com/maps?layer=c&cbll=…&output=svembed — Street View theo toạ độ.
+    Không nhận bản đồ thường hay trang nào khác. */
 export function docNhungGoogle(ma) {
   const chuoi = String(ma || '').trim();
   if (!chuoi) return { loi: 'Dán mã nhúng lấy từ Google Maps (Chia sẻ → Nhúng bản đồ → Sao chép HTML).' };
   const src = (chuoi.match(/src\s*=\s*["']([^"']+)["']/i)?.[1] ?? chuoi).replace(/&amp;/g, '&');
   let u;
   try { u = new URL(src); } catch { return { loi: 'Không đọc được mã nhúng. Sao chép lại toàn bộ mã HTML từ Google Maps.' }; }
+  if (u.protocol === 'https:' && /^(maps|www)\.google\.com$/.test(u.hostname) && u.pathname === '/maps'
+    && u.searchParams.get('output') === 'svembed') return docSvembed(u);
   const pb = u.searchParams.get('pb') || '';
   if (u.protocol !== 'https:' || !/^(www\.)?google\.com$/.test(u.hostname) || u.pathname !== '/maps/embed' || !/^[A-Za-z0-9!._\-:@,+*~]+$/.test(pb) || pb.length > 1500) {
     return { loi: 'Mã nhúng không phải của Google Maps. Lấy đúng ở Google Maps: Chia sẻ → Nhúng bản đồ → Sao chép HTML.' };
