@@ -464,7 +464,8 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.45; }
   .so-chang { animation: none; }
   .hero-chu .dong, .hero-hien, .hero-noi, .hero-anh.dang-chieu img, .hero-troi { animation: none; }
   .chon-sao.vua-chon, .hop-thoai { animation: none; }
-  .duong-ke-vach, .duong-ke-cham, .thanh-sao { transform: none; opacity: 1; transition: none; }
+  /* Kể cả đường dọc trên điện thoại: bộ chọn của nó (scaleY(0)) mạnh hơn, thiếu dòng này là đường biến mất. */
+  .duong-ke-vach, .duong-ke.doc .duong-ke-vach, .duong-ke-cham, .thanh-sao { transform: none; opacity: 1; transition: none; }
   .da-hien .duong-ke-vach, .da-hien .duong-ke-cham { animation: none; }
   ::view-transition-group(*) { animation: none; }
   .hero-hien.ba-sac > i, .chu-do-mau > span { animation: none; }
