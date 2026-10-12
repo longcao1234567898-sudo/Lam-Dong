@@ -6,7 +6,7 @@ import { useNN } from '../../i18n/NgonNgu';
 import { LOAI, VUNG } from '../../utils/hangSo';
 import { chuyenCanh } from '../../utils/hieuUng';
 import { HienSao, KhungAnh, TieuDeKhoi } from '../du-lich/GiaoDien';
-import { boDau } from './Hero';
+import { khopDiem } from '../../utils/timDiem';
 import type { DiaDiem, Loai, Vung } from '../../utils/kieu';
 
 /* Mẫu bento lặp mỗi 8 thẻ: 1 thẻ lớn 2×2, 6 thẻ vuông, 1 thẻ ngang. */
@@ -49,9 +49,9 @@ export default function KhamPha({ ds, dangTai, tuKhoa, onBoTuKhoa, onXemBanDo, v
   const { t, nn } = useNN();
   const [loai, setLoai] = useState<Loai | null>(null);
   const [moHet, setMoHet] = useState(false);
-  const q = boDau(tuKhoa.trim());
-  const khop = (p: DiaDiem, v: Vung | null, l: Loai | null) => (!v || p.vung === v) && (!l || p.loai === l)
-    && (!q || boDau(`${p.ten} ${p.tenEn || ''} ${p.xa || ''} ${p.diaChi || ''}`).includes(q));
+  const q = tuKhoa.trim();
+  /* Cùng cách tìm với gợi ý ở ô tìm đầu trang (utils/timDiem.ts): bấm Tìm ra đúng các điểm vừa gợi ý. */
+  const khop = (p: DiaDiem, v: Vung | null, l: Loai | null) => (!v || p.vung === v) && (!l || p.loai === l) && khopDiem(p, q);
   const loc = useMemo(() => ds.filter((p) => khop(p, vung, loai)), // eslint-disable-next-line react-hooks/exhaustive-deps
     [ds, vung, loai, q]);
   /* Số trên chip tính theo các bộ lọc còn lại, để không bấm vào một chip rồi ra rỗng. */

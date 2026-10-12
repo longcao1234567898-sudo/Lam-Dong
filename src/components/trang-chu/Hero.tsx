@@ -1,56 +1,104 @@
 /** Khối mở đầu: trình chiếu ảnh thật các điểm nổi bật, tiêu đề, ô tìm kiếm, hai lối vào chính. */
-import { useEffect, useId, useMemo, useState, type CSSProperties } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Map as IcBanDo, Route, Pause, Play } from 'lucide-react';
+import { Search, Map as IcBanDo, Route, Pause, Play, X, ArrowRight, MapPin } from 'lucide-react';
 import { useNN } from '../../i18n/NgonNgu';
-import { LOAI, giamChuyenDong } from '../../utils/hangSo';
+import { LOAI, VUNG, giamChuyenDong } from '../../utils/hangSo';
+import { timDiem, toDam } from '../../utils/timDiem';
 import { anhUrl } from '../../services/api';
 import { anhMacDinh, srcSetMacDinh } from '../../utils/anhMacDinh';
 import { AnhTuyen } from '../du-lich/GiaoDien';
 import TruongHat from '../hieu-ung/TruongHat';
 import type { DiaDiem, LoTrinh } from '../../utils/kieu';
 
-/** Bỏ dấu để tìm "tri an" vẫn ra "Trị An". */
-export const boDau = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'd').toLowerCase();
 const CHUYEN_SAU = 7000;   // mỗi ảnh đứng 7 giây
+const SO_GOI_Y = 6;
 
+/** Ảnh nhỏ cho dòng gợi ý: ảnh cán bộ tải lên, không thì ảnh mặc định (bản nhỏ). */
+const anhNho = (p: DiaDiem) => (p.anh?.[0] ? anhUrl(p.anh[0].id) : anhMacDinh(p.id)?.nho || null);
+
+/**
+ * Ô tìm đầu trang: gõ là hiện gợi ý ngay (có ảnh, tô đậm chỗ khớp); mũi tên lên/xuống
+ * để chọn, Enter để mở. Enter khi chưa chọn dòng nào: chỉ một điểm khớp thì mở luôn,
+ * nhiều điểm thì cuộn xuống danh sách Khám phá đã lọc sẵn.
+ */
 function TimKiem({ ds, onTim }: { ds: DiaDiem[]; onTim: (q: string) => void }) {
   const { t, chon, nn } = useNN();
   const di = useNavigate();
   const id = useId();
+  const o = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const [q, setQ] = useState(''); const [mo, setMo] = useState(false); const [hl, setHl] = useState(-1);
-  const goiY = useMemo(() => {
-    const k = boDau(q.trim()); if (!k) return [];
-    return ds.filter((p) => boDau(`${p.ten} ${p.tenEn || ''} ${p.xa || ''} ${p.diaChi || ''}`).includes(k)).slice(0, 6);
-  }, [q, ds]);
-  const hienDs = mo && q.trim().length > 0;
-  const gui = () => { if (hl >= 0 && goiY[hl]) di(`/dia-diem/${goiY[hl].id}`); else if (q.trim()) { onTim(q.trim()); setMo(false); } };
+  const khop = useMemo(() => timDiem(ds, q), [q, ds]);
+  const goiY = khop.slice(0, SO_GOI_Y);
+  const coChu = q.trim().length > 0;
+  const hienDs = mo && coChu;
+  const moDiem = (p: DiaDiem) => { setMo(false); di(`/dia-diem/${p.id}`); };
+  const xemHet = () => { onTim(q.trim()); setMo(false); setHl(-1); o.current?.blur(); };
+  const gui = () => {
+    if (hl >= 0 && goiY[hl]) moDiem(goiY[hl]);
+    else if (khop.length === 1) moDiem(khop[0]);
+    else if (coChu) xemHet();
+  };
+  const phu = (p: DiaDiem) => [p.vung ? (nn === 'en' ? VUNG[p.vung].nganEn : VUNG[p.vung].ngan) : null,
+    nn === 'en' ? LOAI[p.loai]?.en : LOAI[p.loai]?.ten].filter(Boolean).join(' · ');
   return (
-    <form role="search" className="relative mt-7 max-w-[36rem]" onSubmit={(e) => { e.preventDefault(); gui(); }}>
-      <div className="kinh flex items-center gap-2 rounded-2xl p-1.5 pl-4 shadow-sh-3 focus-within:ring-2 focus-within:ring-[#F7F5EF] focus-within:ring-offset-2 focus-within:ring-offset-[#123C35]">
+    <form ref={formRef} role="search" className="relative mt-7 max-w-[36rem] scroll-mt-20" onSubmit={(e) => { e.preventDefault(); gui(); }}>
+      <div className="kinh flex items-center gap-1 rounded-2xl p-1.5 pl-4 shadow-sh-3 focus-within:ring-2 focus-within:ring-[#F7F5EF] focus-within:ring-offset-2 focus-within:ring-offset-[#123C35]">
         <Search className="h-5 w-5 shrink-0 text-[#3E4C48]" aria-hidden="true" />
-        <input type="search" value={q} placeholder={t('timGoiY')} aria-label={t('timGoiY')}
+        {/* Ô kiểu search nhưng tắt nút xoá sẵn của trình duyệt (mỗi trình duyệt một kiểu,
+            Chrome còn tô xanh) — dùng nút xoá riêng cùng kiểu với trang. */}
+        <input ref={o} type="search" value={q} placeholder={t('timGoiY')} aria-label={t('timGoiY')} enterKeyHint="search"
+          autoComplete="off" spellCheck={false}
           role="combobox" aria-autocomplete="list" aria-expanded={hienDs} aria-controls={id + 'ds'}
-          aria-activedescendant={hl >= 0 ? `${id}-${hl}` : undefined}
-          onChange={(e) => { setQ(e.target.value); setMo(true); setHl(-1); }} onFocus={() => setMo(true)} onBlur={() => setTimeout(() => setMo(false), 150)}
+          aria-activedescendant={hienDs && hl >= 0 ? `${id}-${hl}` : undefined}
+          onChange={(e) => { setQ(e.target.value); setMo(true); setHl(-1); }} onFocus={() => {
+            setMo(true);
+            /* Điện thoại: ô tìm nằm sát đáy ảnh, bàn phím bật lên che mất gợi ý — đẩy ô lên gần đầu màn hình. */
+            if (window.matchMedia('(max-width: 639px)').matches) {
+              setTimeout(() => formRef.current?.scrollIntoView({ block: 'start', behavior: giamChuyenDong() ? 'auto' : 'smooth' }), 50);
+            }
+          }} onBlur={() => setTimeout(() => setMo(false), 150)}
           onKeyDown={(e) => {
-            if (e.key === 'ArrowDown') { e.preventDefault(); setMo(true); setHl((h) => Math.min(h + 1, goiY.length - 1)); }
-            else if (e.key === 'ArrowUp') { e.preventDefault(); setHl((h) => Math.max(h - 1, -1)); }
-            else if (e.key === 'Escape') { setMo(false); setHl(-1); }
+            if (e.key === 'ArrowDown') { e.preventDefault(); setMo(true); setHl((h) => (goiY.length ? (h + 1) % goiY.length : -1)); }
+            else if (e.key === 'ArrowUp') { e.preventDefault(); setHl((h) => (h <= 0 ? goiY.length - 1 : h - 1)); }
+            else if (e.key === 'Escape') { if (hienDs) { e.preventDefault(); setMo(false); setHl(-1); } else setQ(''); }
           }}
-          className="min-h-[46px] w-full min-w-0 bg-transparent text-[16px] text-[#192522] outline-none placeholder:text-[#3E4C48]" />
+          className="min-h-[46px] w-full min-w-0 bg-transparent text-[16px] text-[#192522] outline-none placeholder:text-[#3E4C48] [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none" />
+        {coChu && <button type="button" aria-label={t('xoaTuKhoa')} title={t('xoaTuKhoa')}
+          onMouseDown={(e) => e.preventDefault()} onClick={() => { setQ(''); setHl(-1); o.current?.focus(); }}
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[#3E4C48] transition-colors hover:bg-[#192522]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#123C35]">
+          <X className="h-[18px] w-[18px]" aria-hidden="true" /></button>}
         <button type="submit" className="nut nut-chinh min-h-[46px] rounded-xl px-5">{t('tim')}</button>
       </div>
-      {hienDs && <ul id={id + 'ds'} role="listbox" className="absolute inset-x-0 top-full z-20 mt-2 overflow-hidden rounded-2xl bg-[#FFFEFB] p-1.5 text-[#192522] shadow-sh-3">
-        {goiY.map((p, i) => (
-          <li key={p.id} id={`${id}-${i}`} role="option" aria-selected={hl === i}>
-            <button type="button" tabIndex={-1} onMouseDown={(e) => e.preventDefault()} onClick={() => di(`/dia-diem/${p.id}`)} onMouseEnter={() => setHl(i)}
-              className={`flex w-full items-baseline justify-between gap-3 rounded-xl px-3 py-2.5 text-left ${hl === i ? 'bg-[#EFEBE1]' : ''}`}>
-              <span className="font-semibold">{chon(p.ten, p.tenEn)}</span>
-              <span className="shrink-0 text-[13px] text-[#5B6B66]">{p.xa || (nn === 'en' ? LOAI[p.loai]?.en : LOAI[p.loai]?.ten)}</span>
-            </button></li>))}
-        {!goiY.length && <li className="px-3 py-2.5 text-sm text-[#5B6B66]">{t('khongThayDiem', { q: q.trim() })}</li>}
-      </ul>}
+      {hienDs && <div className="absolute inset-x-0 top-full z-30 mt-2 overflow-hidden rounded-2xl bg-[#FFFEFB] text-[#192522] shadow-sh-3 ring-1 ring-[#192522]/5">
+        {goiY.length > 0 && <p className="px-4 pb-1 pt-3 text-[12px] font-semibold uppercase tracking-wide text-[#5B6B66]" aria-hidden="true">{t('goiYTim')}</p>}
+        <ul id={id + 'ds'} role="listbox" aria-label={t('goiYTim')} className="max-h-[min(22rem,50svh)] overflow-y-auto overscroll-contain px-1.5 pb-1.5">
+          {goiY.map((p, i) => {
+            const a = anhNho(p);
+            return (
+              <li key={p.id} id={`${id}-${i}`} role="option" aria-selected={hl === i}>
+                <button type="button" tabIndex={-1} onMouseDown={(e) => e.preventDefault()} onClick={() => moDiem(p)} onMouseEnter={() => setHl(i)}
+                  className={`flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left transition-colors ${hl === i ? 'bg-[#EFEBE1]' : ''}`}>
+                  <span className="h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-[#EFEBE1]">
+                    {a ? <img src={a} alt="" width={44} height={44} loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                      : <MapPin className="m-auto mt-3 h-5 w-5 text-[#5B6B66]" aria-hidden="true" />}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[15px]">
+                      {toDam(chon(p.ten, p.tenEn), q).map((d, k) => (d.khop ? <b key={k} className="font-bold">{d.chu}</b> : <span key={k}>{d.chu}</span>))}</span>
+                    <span className="block truncate text-[13px] text-[#5B6B66]">{p.xa || phu(p)}</span>
+                  </span>
+                  <ArrowRight className={`h-4 w-4 shrink-0 text-[#5B6B66] transition-opacity ${hl === i ? 'opacity-100' : 'opacity-0'}`} aria-hidden="true" />
+                </button></li>);
+          })}
+          {!goiY.length && <li className="px-3 py-3 text-sm text-[#3E4C48]">
+            <span className="block font-semibold">{t('khongThayDiem', { q: q.trim() })}</span>
+            <span className="mt-0.5 block text-[#5B6B66]">{t('khongThayDiemGoiY')}</span></li>}
+        </ul>
+        {khop.length > 1 && <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={xemHet}
+          className="flex w-full items-center justify-between gap-3 border-t border-[#192522]/10 px-4 py-3 text-left text-[14px] font-semibold text-[#123C35] hover:bg-[#EFEBE1]">
+          {t('xemHetKetQua', { n: khop.length })}<ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" /></button>}
+      </div>}
     </form>);
 }
 
@@ -93,9 +141,13 @@ export default function Hero({ ds, loTrinh, onTim, onToiBanDo, onToiLoTrinh }: {
   const tre = (ms: number) => ({ '--tre': `${ms}ms` }) as CSSProperties;
 
   return (
-    <section className="relative isolate flex min-h-[max(620px,min(94svh,920px))] flex-col overflow-hidden bg-[#0C2925] text-[#F7F5EF]"
+    /* Không cắt tràn ở cả khối (chỉ cắt lớp nền bên dưới) và z-10: danh sách gợi ý của ô tìm
+       được thò xuống dưới mép ảnh, nổi trên phần tiếp theo của trang — trên điện thoại ô tìm
+       nằm sát đáy ảnh, cắt tràn ở đây là danh sách chỉ còn hai dòng. */
+    <section className="relative isolate z-10 flex min-h-[max(620px,min(94svh,920px))] flex-col bg-[#0C2925] text-[#F7F5EF]"
       style={{ marginTop: 'calc(-4rem - env(safe-area-inset-top))' }} aria-labelledby="hero-tieu-de">
-      <div className="hero-nen absolute inset-0" aria-hidden="true" />
+      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
+      <div className="hero-nen absolute inset-0" />
       {/* Lớp ảnh trôi chậm hơn trang khi cuộn (thị sai); ảnh đang chiếu phóng chậm (Ken Burns). */}
       <div className="hero-troi absolute inset-0" aria-hidden="true">
         {chieu.map((c, k) => (
@@ -106,6 +158,8 @@ export default function Hero({ ds, loTrinh, onTim, onToiBanDo, onToiLoTrinh }: {
       </div>
       <div className="hero-man pointer-events-none absolute inset-0" aria-hidden="true" />
       {/* Cánh hoa ba sắc trôi trên ảnh, xoáy quanh con trỏ. */}
+      </div>
+      {/* Ngoài lớp cắt tràn: trường hạt lắng nghe con trỏ trên phần tử cha (cả khối hero). */}
       <TruongHat toi matDo={0.55} doDam={0.9} className="hat-hero" />
 
       <div className="container-page relative z-10 flex flex-1 flex-col justify-end pb-24 pt-36 sm:pb-28">
@@ -117,7 +171,9 @@ export default function Hero({ ds, loTrinh, onTim, onToiBanDo, onToiLoTrinh }: {
           </h1>
           {ds.length > 0 && <p className="hero-hien mt-5 max-w-[34rem] text-[17px] leading-relaxed text-[#E4EAE7] sm:text-lg" style={tre(420)}>
             {t('heroDan', { diem: ds.length, tuyen: loTrinh.length })}</p>}
-          <div className="hero-hien" style={tre(520)}><TimKiem ds={ds} onTim={onTim} /></div>
+          {/* relative z-20: mỗi khối hero-hien có hiệu ứng transform nên là một lớp xếp chồng
+              riêng; không nâng khối tìm thì hàng nút ngay sau đè lên danh sách gợi ý. */}
+          <div className="hero-hien relative z-20" style={tre(520)}><TimKiem ds={ds} onTim={onTim} /></div>
           <div className="hero-hien mt-4 flex flex-wrap gap-3" style={tre(620)}>
             <button type="button" onClick={onToiBanDo} className="nut nut-chinh"><IcBanDo className="h-[18px] w-[18px]" />{t('xemBanDo')}</button>
             {loTrinh.length > 0 && <button type="button" onClick={onToiLoTrinh} className="nut nut-coral"><Route className="h-[18px] w-[18px]" />{t('goiYLoTrinh')}</button>}
