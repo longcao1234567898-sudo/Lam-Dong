@@ -20,7 +20,8 @@ function TheDiem({ p, kieu, i, onXemBanDo }: { p: DiaDiem; kieu: 'lon' | 'vua' |
     ? <span className="flex items-center gap-1.5 text-[13px]"><HienSao gt={p.saoTb} co={14} /><b className="font-semibold">{p.saoTb.toLocaleString(nn === 'en' ? 'en' : 'vi', { maximumFractionDigits: 1 })}</b><span className="opacity-75">({p.soDanhGia})</span></span>
     : <span className="text-[13px] opacity-80">{t('chuaCoDanhGia')}</span>;
   return (
-    <article className={`hien-dan min-h-[260px] sm:min-h-0 ${LOP_O[kieu]}`} style={{ '--i': i % 8, viewTransitionName: 'dd-' + p.id } as CSSProperties}>
+    /* Điện thoại: thẻ lớn cao hơn để tên, mô tả hai dòng và nhãn vùng không chồng lên nhau. */
+    <article className={`hien-dan ${kieu === 'lon' ? 'min-h-[340px]' : 'min-h-[260px]'} sm:min-h-0 ${LOP_O[kieu]}`} style={{ '--i': i % 8, viewTransitionName: 'dd-' + p.id } as CSSProperties}>
      {/* Lớp ngoài lo phần hiện khi cuộn, lớp trong lo phần nghiêng: hai transform không đè nhau. */}
      <div className="fx-the relative h-full" data-nghieng={kieu === 'lon' ? 4 : 7}>
       <Link to={`/dia-diem/${p.id}`} className="the-anh group" aria-label={chon(p.ten, p.tenEn)}>
@@ -30,7 +31,8 @@ function TheDiem({ p, kieu, i, onXemBanDo }: { p: DiaDiem; kieu: 'lon' | 'vua' |
         <span className={`fx-noi absolute inset-x-0 bottom-0 block p-5 text-[#F7F5EF] ${kieu === 'lon' ? 'sm:p-7' : ''}`}>
           <span className="text-[13px] font-medium text-[#DCE4E0]">{nn === 'en' ? LOAI[p.loai]?.en : LOAI[p.loai]?.ten}</span>
           <b className={`mt-0.5 block ${kieu === 'lon' ? 'tieu-de-vua' : 'text-[19px] font-semibold leading-snug'}`}>{chon(p.ten, p.tenEn)}</b>
-          {kieu === 'lon' && chon(p.moTa, p.moTaEn) && <span className="mt-2 line-clamp-2 block max-w-xl text-[15px] leading-relaxed text-[#DCE4E0]">{chon(p.moTa, p.moTaEn)}</span>}
+          {/* Không thêm "block": nó đè display của line-clamp, mô tả không bị cắt và tràn lên nhãn vùng. */}
+          {kieu === 'lon' && chon(p.moTa, p.moTaEn) && <span className="mt-2 line-clamp-2 max-w-xl text-[15px] leading-relaxed text-[#DCE4E0] lg:line-clamp-3">{chon(p.moTa, p.moTaEn)}</span>}
           <span className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">{khuVuc && <span className="text-[13px] text-[#DCE4E0]">{khuVuc}</span>}{sao}</span>
         </span>
       </Link>
