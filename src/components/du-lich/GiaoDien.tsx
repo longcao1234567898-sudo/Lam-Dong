@@ -74,6 +74,22 @@ export function DauTrang({ tieuDe, moTa, phai, quayLai, children }: { tieuDe: Re
     </header>);
 }
 
+/**
+ * Trạng thái trống của một danh sách phía người dân: nói thẳng là chưa có, nói khi nào sẽ
+ * có, và mời đi tiếp (nguyên tắc "khi không có dữ liệu: nói thẳng và mời hành động").
+ */
+export function TrongRong({ Ic, mau = 'vung-bien', tieuDe, moTa, children }: {
+  Ic: typeof Leaf; mau?: 'vung-hoa' | 'vung-bien' | 'vung-quy'; tieuDe: string; moTa: string; children?: ReactNode;
+}) {
+  return (
+    <div className="the nen-dong-muc relative overflow-hidden px-6 py-12 text-center sm:py-16">
+      <span className={`o-bieu-tuong mx-auto h-14 w-14 ${mau}`} aria-hidden="true"><Ic className="h-6 w-6" /></span>
+      <h2 className="tieu-de-vua mx-auto mt-5 max-w-lg text-ink">{tieuDe}</h2>
+      <p className="mx-auto mt-2 max-w-md text-[16px] leading-relaxed text-muted">{moTa}</p>
+      {children && <div className="mt-7 flex flex-wrap justify-center gap-2">{children}</div>}
+    </div>);
+}
+
 /** Điểm có ảnh để hiện (ảnh cán bộ tải lên hoặc ảnh mặc định). */
 export const coAnh = (p: DiaDiem) => !!p.anh?.length || !!anhMacDinh(p.id);
 /** Ảnh của một lộ trình: ảnh điểm dừng đầu tiên có ảnh. */

@@ -117,7 +117,8 @@ const TU: Record<string, [string, string]> = {
   luuTruTieuDe: ['Resort, khu nghỉ dưỡng', 'Resorts and retreats'],
   luuTruMoTa: ['Danh sách cơ sở lưu trú do cán bộ xác nhận, kèm hạng sao đã được công nhận.', 'Accommodation verified by local officials, with their official star rating.'],
   chuaXepHangSao: ['Chưa xếp hạng sao', 'Not yet star-rated'],
-  khongCoLuuTru: ['Chưa có cơ sở nào được công bố.', 'No listings published yet.'],
+  khongCoLuuTru: ['Chưa có cơ sở lưu trú nào được công bố', 'No accommodation listed yet'],
+  khongCoLuuTruMoTa: ['Khu nghỉ dưỡng, khách sạn đã được cán bộ du lịch xác nhận sẽ hiện ở đây, kèm hạng sao được công nhận.', 'Resorts and hotels verified by the provincial tourism office will appear here, with their official star rating.'],
   luuYTamTru: ['Khách nước ngoài: nơi lưu trú có trách nhiệm khai báo tạm trú cho bạn — nhớ xuất trình hộ chiếu khi nhận phòng.', 'Foreign visitors: your accommodation must register your temporary residence — show your passport at check-in.'],
   // ---------- phản ánh
   phanAnhTieuDe: ['Gửi phản ánh', 'Report a problem'],
@@ -136,7 +137,8 @@ const TU: Record<string, [string, string]> = {
   // ---------- tin tức, thống kê
   docTin: ['Đọc tin', 'Read more'],
   tinTucMoTa: ['Cảnh báo, sự kiện và thông báo từ cán bộ du lịch của tỉnh.', 'Alerts, events and notices from provincial tourism officials.'],
-  khongCoTin: ['Hiện chưa có tin nào.', 'No news at the moment.'],
+  khongCoTin: ['Chưa có tin mới', 'No news right now'],
+  khongCoTinMoTa: ['Cảnh báo thời tiết, sự kiện và thông báo của tỉnh sẽ hiện ở đây ngay khi cán bộ đăng.', 'Weather warnings, events and notices from the province will appear here as soon as they are posted.'],
   canhBao: ['Cảnh báo', 'Alert'], suKien: ['Sự kiện', 'Event'], thongBao: ['Thông báo', 'Notice'],
   tu: ['Từ', 'From'], den: ['đến', 'to'],
   khachTheoXa: ['Khách du lịch theo xã/phường', 'Visitors by commune/ward'],

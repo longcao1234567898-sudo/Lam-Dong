@@ -3,7 +3,7 @@ import type { CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { AlertTriangle, CalendarDays, Megaphone, Phone, ArrowUpRight } from 'lucide-react';
-import { DauTrang } from '../../components/du-lich/GiaoDien';
+import { DauTrang, TrongRong } from '../../components/du-lich/GiaoDien';
 import BangTinNoiBat from '../../components/du-lich/BangTinNoiBat';
 import { layTinTuc, layDiaDiem, anhTinUrl } from '../../services/api';
 import { useNN } from '../../i18n/NgonNgu';
@@ -25,7 +25,9 @@ export default function TinTucPage() {
       <section className="container-page grid items-start gap-8 py-12 lg:grid-cols-12">
         <div className="space-y-4 lg:col-span-8">
           {isLoading && <p className="text-muted">{t('dangTai')}</p>}
-          {!isLoading && !ds2.length && <p className="the p-8 text-center text-[17px] text-muted">{t('khongCoTin')}</p>}
+          {!isLoading && !ds2.length && <TrongRong Ic={Megaphone} mau="vung-bien" tieuDe={t('khongCoTin')} moTa={t('khongCoTinMoTa')}>
+            <Link to="/lo-trinh" className="nut nut-vien">{t('goiYLoTrinh')}<ArrowUpRight className="h-4 w-4" /></Link>
+          </TrongRong>}
           {ds2.map((x, i) => { const Ic = IC[x.loai]; const p = ds.find((d) => d.id === x.diaDiemId); const canh = x.loai === 'canh-bao'; return (
             <article key={x.id} className={`hien-dan the overflow-hidden ${x.anh?.length ? 'sm:grid sm:grid-cols-[minmax(0,240px)_1fr]' : ''} ${canh ? 'border-[#E0B54A] bg-[#FCEFC7] dark:bg-[#3a3216]' : ''}`} style={{ '--i': i % 3 } as CSSProperties}>
               {x.anh?.[0] && <Link to={`/tin-tuc/${x.id}`} tabIndex={-1} aria-hidden="true" className="block aspect-[16/9] bg-sunken sm:aspect-auto">

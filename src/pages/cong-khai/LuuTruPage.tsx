@@ -1,8 +1,9 @@
 /** Resort, khu nghỉ dưỡng cán bộ đã xác nhận (bảng 3, chỉ cơ sở được đánh dấu hiện cho người dân). */
 import type { CSSProperties } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { MapPin, Info } from 'lucide-react';
-import { DauTrang, HienSao } from '../../components/du-lich/GiaoDien';
+import { Link } from 'react-router-dom';
+import { MapPin, Info, BedDouble, Compass, Route } from 'lucide-react';
+import { DauTrang, HienSao, TrongRong } from '../../components/du-lich/GiaoDien';
 import { layLuuTru } from '../../services/api';
 import { useNN } from '../../i18n/NgonNgu';
 
@@ -16,7 +17,10 @@ export default function LuuTruPage() {
       </DauTrang>
       <section className="container-page py-12">
         {isLoading && <p className="py-10 text-center text-muted">{t('dangTai')}</p>}
-        {!isLoading && !ds.length && <p className="the p-8 text-center text-[17px] text-muted">{t('khongCoLuuTru')}</p>}
+        {!isLoading && !ds.length && <TrongRong Ic={BedDouble} mau="vung-hoa" tieuDe={t('khongCoLuuTru')} moTa={t('khongCoLuuTruMoTa')}>
+          <Link to="/" className="nut nut-chinh"><Compass className="h-4 w-4" />{t('khamPhaTieuDe')}</Link>
+          <Link to="/lo-trinh" className="nut nut-vien"><Route className="h-4 w-4" />{t('goiYLoTrinh')}</Link>
+        </TrongRong>}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{ds.map((x, i) => (
           <div key={x.id} className="hien-dan" style={{ '--i': i % 3 } as CSSProperties}>
             <article className="fx-the the relative h-full p-6" data-nghieng="5">
