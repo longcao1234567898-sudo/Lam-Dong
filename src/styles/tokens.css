@@ -35,7 +35,7 @@
   --c-danger-bg: 253 236 234;
   --c-warning-bg: 252 239 199;
 
-  --font-serif: Newsreader, "Noto Serif Display", Georgia, serif;
+  --font-serif: "Newsreader Variable", Newsreader, "Noto Serif Display", Georgia, serif;
   --font-sans: "Be Vietnam Pro", system-ui, -apple-system, sans-serif;
 
   /* Bóng: lớp tiếp xúc sát + lớp ánh sáng môi trường toả xa, nhuộm màu rừng */

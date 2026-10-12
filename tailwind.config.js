@@ -50,7 +50,7 @@ export default {
       fontFamily: {
         // Be Vietnam Pro: dấu hai tầng (Ố, Ộ, Ữ) đầy đủ. Newsreader: serif biên tập, có bộ tiếng Việt.
         sans: ['"Be Vietnam Pro"', 'system-ui', '-apple-system', 'sans-serif'],
-        serif: ['Newsreader', '"Noto Serif Display"', 'Georgia', 'serif'],
+        serif: ['"Newsreader Variable"', 'Newsreader', '"Noto Serif Display"', 'Georgia', 'serif'],
       },
       boxShadow: {
         // Bóng hai lớp nhuộm màu rừng: một lớp bám sát (tiếp xúc), một lớp toả xa (ánh sáng môi trường).
