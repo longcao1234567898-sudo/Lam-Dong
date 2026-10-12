@@ -37,7 +37,9 @@ export default function LoTrinhNoiBat({ ds, loTrinh, onXemBanDo }: { ds: DiaDiem
   const [lonId, setLonId] = useState<number | null>(null);
   if (!loTrinh.length) return null;
   const lon = loTrinh.find((l) => l.id === lonId) || loTrinh[0];
-  const con = loTrinh.filter((l) => l.id !== lon.id);
+  /* Cột bên cạnh tối đa 4 lộ trình (cán bộ thêm nhiều thì khối không dài vô hạn); còn nữa thì có lối xem tất cả. */
+  const conHet = loTrinh.filter((l) => l.id !== lon.id);
+  const con = conHet.slice(0, 4);
   const diemCua = (l: LoTrinh) => l.diem.map((d) => ds.find((p) => p.id === d.id)).filter((p): p is DiaDiem => !!p);
   const dsLon = diemCua(lon);
   return (
@@ -47,8 +49,10 @@ export default function LoTrinhNoiBat({ ds, loTrinh, onXemBanDo }: { ds: DiaDiem
           phai={<Link to="/tu-tao-lo-trinh" className="nut nut-vien"><Plus className="h-4 w-4" />{t('tuTaoLoTrinh')}</Link>} />
         <div className="grid gap-5 lg:grid-cols-12">
           <article className="hien-dan lg:col-span-8" style={{ viewTransitionName: 'tuyen-lon' } as CSSProperties}>
-            <div className="fx-the the relative h-full" data-nghieng="3">
-              <div className="relative h-56 overflow-hidden rounded-t-[15px] bg-sunken sm:h-72"><AnhTuyen diem={dsLon} sizes="(min-width: 1024px) 60vw, 100vw" /></div>
+            {/* Màn rộng: ảnh giãn lấp phần cao thêm khi cột lộ trình bên phải dài hơn — trước đây
+                ảnh cao cố định nên thẻ lớn để trống một khoảng dưới nút. */}
+            <div className="fx-the the relative flex h-full flex-col" data-nghieng="3">
+              <div className="relative h-56 shrink-0 overflow-hidden rounded-t-[15px] bg-sunken sm:h-72 lg:h-auto lg:min-h-[18rem] lg:flex-1"><AnhTuyen diem={dsLon} sizes="(min-width: 1024px) 60vw, 100vw" /></div>
               <div className="fx-noi-it p-6 sm:p-8">
                 <h3 className="tieu-de-vua">{chon(lon.ten, lon.tenEn)}</h3>
                 <p className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-ink-2">
@@ -68,17 +72,20 @@ export default function LoTrinhNoiBat({ ds, loTrinh, onXemBanDo }: { ds: DiaDiem
           <div className="khong-thanh-cuon -mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2 lg:col-span-4 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0">
             {con.map((l, i) => (
               <article key={l.id} className="hien-dan w-[80%] shrink-0 snap-start sm:w-[46%] lg:w-auto" style={{ '--i': i + 1, viewTransitionName: 'tuyen-' + l.id } as CSSProperties}>
+                {/* Màn rộng: thẻ nằm ngang (ảnh nhỏ bên trái) để cột này cao xấp xỉ thẻ lớn bên cạnh. */}
                 <button type="button" onClick={() => chuyenCanh(() => setLonId(l.id))}
-                  className="fx-the the group relative block h-full w-full text-left" data-nghieng="7">
-                  <span className="relative block h-36 overflow-hidden rounded-t-[15px] bg-sunken"><AnhTuyen diem={diemCua(l)} sizes="(min-width: 1024px) 30vw, 80vw" /></span>
-                  <span className="fx-noi-it block p-5">
-                    <b className="block text-[19px] font-semibold leading-snug">{chon(l.ten, l.tenEn)}</b>
+                  className="fx-the the group relative block h-full w-full text-left lg:flex lg:items-stretch" data-nghieng="7">
+                  <span className="relative block h-36 overflow-hidden rounded-t-[15px] bg-sunken lg:h-auto lg:min-h-[7.5rem] lg:w-32 lg:shrink-0 lg:rounded-l-[15px] lg:rounded-tr-none xl:w-36"><AnhTuyen diem={diemCua(l)} sizes="(min-width: 1024px) 10rem, 80vw" /></span>
+                  <span className="fx-noi-it block p-5 lg:min-w-0 lg:self-center lg:px-4 lg:py-3.5">
+                    <b className="block text-[19px] font-semibold leading-snug lg:text-[17px]">{chon(l.ten, l.tenEn)}</b>
                     <span className="mt-1 block text-sm text-muted">{[l.thoiGian, t('soDiemDung', { n: diemCua(l).length })].filter(Boolean).join(', ')}</span>
                     <span className="mt-3 flex items-center" aria-hidden="true">{diemCua(l).map((q, k, a) => (
                       <span key={k} className="flex items-center"><span className={`cham-diem ${lopVung(q.vung)} h-2.5 w-2.5 ${k === a.length - 1 ? 'rounded-[3px]' : 'rounded-full'}`} />{k < a.length - 1 && <span className="h-[2px] w-6 bg-route/50" />}</span>))}</span>
                   </span>
                 </button>
               </article>))}
+            {conHet.length > con.length && <Link to="/lo-trinh" className="nut nut-vien w-[80%] shrink-0 snap-start self-center sm:w-[46%] lg:w-auto">
+              {t('tatCaLoTrinh')} ({loTrinh.length})<ArrowUpRight className="h-4 w-4" /></Link>}
           </div>
         </div>
       </div>
