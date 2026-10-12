@@ -10,7 +10,7 @@
 import { lazy, Suspense, useRef, useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { Orbit, Trash2, ArrowUp, ArrowDown, Loader2, Eye, X, Compass, MapPin } from 'lucide-react';
+import { Orbit, Trash2, ArrowUp, ArrowDown, Loader2, Eye, X, Compass, MapPin, Plus } from 'lucide-react';
 import { adminFetch, adminLayBlob } from '../../services/adminService';
 import { nutVien, nutChinh } from './KhoiQt';
 import type { KhungXem360Ref } from '../du-lich/KhungXem360';
@@ -68,6 +68,7 @@ export default function QuanLyQuanSat({ diaDiemId }: { diaDiemId: string }) {
   const [dang, setDang] = useState(false);
   const [xem, setXem] = useState<QS | null>(null);
   const [tenG, setTenG] = useState(''); const [maG, setMaG] = useState('');
+  const [moThem, setMoThem] = useState(false); const [cach, setCach] = useState<'google' | 'anh'>('google');
   const { data: ds = [] } = useQuery({ queryKey: ['qt-quan-sat', diaDiemId], queryFn: () => adminFetch<QS[]>(`/dia-diem/${encodeURIComponent(diaDiemId)}/quan-sat`) });
   const lamMoi = () => { qc.invalidateQueries({ queryKey: ['qt-quan-sat', diaDiemId] }); qc.invalidateQueries({ queryKey: ['dia-diem'] }); };
   const doi = useMutation({ mutationFn: ({ id, body }: { id: number; body: object }) => adminFetch(`/quan-sat/${id}`, { method: 'PATCH', body: JSON.stringify(body) }), onSuccess: lamMoi,
@@ -85,44 +86,25 @@ export default function QuanLyQuanSat({ diaDiemId }: { diaDiemId: string }) {
       await adminFetch(`/dia-diem/${encodeURIComponent(diaDiemId)}/quan-sat?${new URLSearchParams({ ten: ten.trim(), rong: String(x.rong), cao: String(x.cao), gocNgang: String(goc) })}`,
         { method: 'POST', body: x.blob, headers: { 'Content-Type': 'image/jpeg' } });
       toast.success(goc === 360 ? 'Đã thêm điểm quan sát 360°.' : `Đã thêm điểm quan sát (ảnh ${goc}°).`);
-      setTen(''); lamMoi();
+      setTen(''); setMoThem(false); lamMoi();
     } catch (e) { toast.error((e as Error).message); }
     setDang(false);
     if (chonTep.current) chonTep.current.value = '';
   };
   const themGoogle = useMutation({
     mutationFn: () => adminFetch(`/dia-diem/${encodeURIComponent(diaDiemId)}/quan-sat-google`, { method: 'POST', body: JSON.stringify({ ten: tenG.trim(), ma: maG }) }),
-    onSuccess: () => { toast.success('Đã thêm điểm quan sát từ Google Maps.'); setTenG(''); setMaG(''); lamMoi(); },
+    onSuccess: () => { toast.success('Đã thêm điểm quan sát từ Google Maps.'); setTenG(''); setMaG(''); setMoThem(false); lamMoi(); },
     onError: (e: Error) => toast.error(e.message) });
   const doiCho = (i: number, j: number) => { doi.mutate({ id: ds[i].id, body: { thuTu: j + 1 } }); doi.mutate({ id: ds[j].id, body: { thuTu: i + 1 } }); };
   const o = 'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900';
 
+  /* Khung thêm mở sẵn khi chưa có điểm nào; có rồi thì gọn lại thành nút "Thêm điểm quan sát"
+     (trước đây khung Google tự thu lại thành một dòng chữ, cán bộ tưởng chỉ thêm được một điểm). */
+  const hienThem = moThem || ds.length === 0;
   return (
     <div className="mt-4 rounded-xl border border-slate-200 p-3 dark:border-slate-700">
       <b className="flex items-center gap-1.5 text-sm"><Orbit className="h-4 w-4" />Điểm quan sát 360° ({ds.length}/{TOI_DA})</b>
-      <p className="mt-1 text-xs text-slate-500">Hai cách: lấy ảnh 360° có sẵn trên Google Maps (ô xám ngay dưới, dán mã nhúng vào đó), hoặc tự chụp ảnh 360° tại một vị trí của địa điểm (máy ảnh 360°, hoặc chế độ toàn cảnh / Photo Sphere của điện thoại). Du khách đứng "tại chỗ" đó, kéo để nhìn xung quanh. Ảnh tỉ lệ 2:1 tự nhận là 360° trọn vòng.</p>
-      {ds.length < TOI_DA && <details open={ds.length === 0} className="mt-3 rounded-lg bg-slate-50 p-3 dark:bg-slate-800/50">
-        <summary className="flex cursor-pointer items-center gap-1.5 text-sm font-semibold"><MapPin className="h-4 w-4" />Lấy ảnh 360° từ Google Maps (Street View, ảnh 360° người dùng đăng)</summary>
-        <ol className="mt-2 list-decimal space-y-0.5 pl-5 text-xs text-slate-600 dark:text-slate-300">
-          <li>Mở Google Maps trên máy tính, tìm địa điểm. Kéo hình người vàng vào chỗ có đường xanh (Street View), hoặc bấm vào một ảnh 360° trong mục Ảnh của địa điểm.</li>
-          <li>Xoay tới hướng muốn du khách nhìn đầu tiên.</li>
-          <li>Bấm ⋮ hoặc Chia sẻ → <b>Chia sẻ hoặc nhúng hình ảnh</b> → thẻ <b>Nhúng bản đồ</b> → <b>Sao chép HTML</b>, dán vào ô dưới.</li>
-          <li>Cũng nhận mã Street View theo toạ độ dạng <code>maps.google.com/maps?layer=c&amp;cbll=vĩ độ,kinh độ…&amp;output=svembed</code> — Google tự lấy ảnh 360° gần toạ độ nhất, nên mở trang xem lại cho chắc.</li>
-          <li>Chỗ nào Google Maps không có ảnh 360° thì bỏ qua — trang không hiện mục 360° cho điểm đó.</li>
-        </ol>
-        <input className={o + ' mt-2'} value={tenG} onChange={(e) => setTenG(e.target.value)} maxLength={120} placeholder="Tên vị trí, ví dụ: Cổng chính, Bờ hồ" />
-        <textarea className={o + ' mt-2 font-mono text-xs'} rows={3} value={maG} onChange={(e) => setMaG(e.target.value)} placeholder={'<iframe src="https://www.google.com/maps/embed?pb=..." ...></iframe>'} />
-        <button type="button" className={nutVien + ' mt-2 gap-1.5'} disabled={themGoogle.isPending || !tenG.trim() || !maG.trim()} onClick={() => themGoogle.mutate()}>
-          {themGoogle.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <MapPin className="h-3.5 w-3.5" />}Thêm từ Google Maps</button>
-      </details>}
-      {ds.length < TOI_DA && <div className="mt-3 flex flex-wrap gap-2">
-        <input className={o + ' basis-full'} value={ten} onChange={(e) => setTen(e.target.value)} maxLength={120} placeholder="Tên vị trí (ảnh tự chụp), ví dụ: Đỉnh núi, Cổng chính" />
-        <select className={o + ' w-auto flex-1'} value={gocMoi} onChange={(e) => setGocMoi(Number(e.target.value))} title="Chỉ dùng khi ảnh không phải tỉ lệ 2:1" aria-label="Góc chụp ngang (ảnh panorama thường)">
-          {GOC.map(([g, nhan]) => <option key={g} value={g}>Ảnh thường: {nhan}</option>)}</select>
-        <button type="button" className={nutVien + ' gap-1.5'} disabled={dang} onClick={() => chonTep.current?.click()}>
-          {dang ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Orbit className="h-3.5 w-3.5" />}{dang ? 'Đang tải lên…' : 'Chọn ảnh 360°'}</button>
-        <input ref={chonTep} type="file" accept="image/*" hidden onChange={(e) => taiLen(e.target.files?.[0])} />
-      </div>}
+      <p className="mt-1 text-xs text-slate-500">Mỗi địa điểm thêm được tối đa {TOI_DA} điểm quan sát (cổng chính, bờ hồ, đỉnh núi…); du khách bấm tên từng điểm để đổi chỗ đứng. Hai cách lấy ảnh: ảnh 360° có sẵn trên Google Maps, hoặc tự chụp (máy ảnh 360°, hoặc chế độ toàn cảnh / Photo Sphere của điện thoại).</p>
       {ds.length > 0 && <ul className="mt-3 divide-y divide-slate-200 dark:divide-slate-700">{ds.map((q, i) => (
         <li key={q.id} className="flex flex-wrap items-center gap-2 py-2 text-sm">
           <input className={o + ' max-w-[16rem] flex-1'} defaultValue={q.ten} aria-label="Tên vị trí"
@@ -137,6 +119,41 @@ export default function QuanLyQuanSat({ diaDiemId }: { diaDiemId: string }) {
             <button type="button" className={nutVien} onClick={() => window.confirm(`Xoá điểm quan sát "${q.ten}"?`) && xoa.mutate(q.id)} aria-label="Xoá"><Trash2 className="h-3 w-3" /></button>
           </div>
         </li>))}</ul>}
+      {ds.length >= TOI_DA && <p className="mt-3 text-xs text-amber-700 dark:text-amber-400">Đã đủ {TOI_DA} điểm — xoá bớt một điểm để thêm điểm mới.</p>}
+      {ds.length < TOI_DA && !hienThem && <button type="button" className={nutChinh + ' mt-3 gap-1.5'} onClick={() => setMoThem(true)}>
+        <Plus className="h-4 w-4" />Thêm điểm quan sát</button>}
+      {ds.length < TOI_DA && hienThem && <div className="mt-3 rounded-lg bg-slate-50 p-3 dark:bg-slate-800/50">
+        <div className="flex flex-wrap items-center gap-2">
+          <b className="text-sm">Thêm điểm quan sát mới</b>
+          <div className="ml-auto flex gap-1" role="tablist" aria-label="Cách lấy ảnh 360°">
+            <button type="button" role="tab" aria-selected={cach === 'google'} onClick={() => setCach('google')}
+              className={cach === 'google' ? nutChinh + ' gap-1.5' : nutVien + ' gap-1.5'}><MapPin className="h-3.5 w-3.5" />Từ Google Maps</button>
+            <button type="button" role="tab" aria-selected={cach === 'anh'} onClick={() => setCach('anh')}
+              className={cach === 'anh' ? nutChinh + ' gap-1.5' : nutVien + ' gap-1.5'}><Orbit className="h-3.5 w-3.5" />Ảnh tự chụp</button>
+            {ds.length > 0 && <button type="button" className={nutVien} onClick={() => setMoThem(false)} aria-label="Đóng khung thêm"><X className="h-3.5 w-3.5" /></button>}
+          </div>
+        </div>
+        {cach === 'google' ? <>
+          <ol className="mt-2 list-decimal space-y-0.5 pl-5 text-xs text-slate-600 dark:text-slate-300">
+            <li>Mở Google Maps trên máy tính, tìm địa điểm. Kéo hình người vàng vào chỗ có đường xanh (Street View), hoặc bấm vào một ảnh 360° trong mục Ảnh của địa điểm.</li>
+            <li>Xoay tới hướng muốn du khách nhìn đầu tiên.</li>
+            <li>Bấm ⋮ hoặc Chia sẻ → <b>Chia sẻ hoặc nhúng hình ảnh</b> → thẻ <b>Nhúng bản đồ</b> → <b>Sao chép HTML</b>, dán vào ô dưới.</li>
+            <li>Cũng nhận mã Street View theo toạ độ dạng <code>maps.google.com/maps?layer=c&amp;cbll=vĩ độ,kinh độ…&amp;output=svembed</code> — Google tự lấy ảnh 360° gần toạ độ nhất, nên mở trang xem lại cho chắc.</li>
+            <li>Chỗ nào Google Maps không có ảnh 360° thì bỏ qua — trang không hiện mục 360° cho điểm đó.</li>
+          </ol>
+          <input className={o + ' mt-2'} value={tenG} onChange={(e) => setTenG(e.target.value)} maxLength={120} placeholder="Tên vị trí, ví dụ: Cổng chính, Bờ hồ" />
+          <textarea className={o + ' mt-2 font-mono text-xs'} rows={3} aria-label="Mã nhúng Google Maps" value={maG} onChange={(e) => setMaG(e.target.value)} placeholder={'<iframe src="https://www.google.com/maps/embed?pb=..." ...></iframe>'} />
+          <button type="button" className={nutChinh + ' mt-2 gap-1.5'} disabled={themGoogle.isPending || !tenG.trim() || !maG.trim()} onClick={() => themGoogle.mutate()}>
+            {themGoogle.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}Thêm điểm này</button>
+        </> : <div className="mt-2 flex flex-wrap gap-2">
+          <input className={o + ' basis-full'} value={ten} onChange={(e) => setTen(e.target.value)} maxLength={120} placeholder="Tên vị trí, ví dụ: Đỉnh núi, Cổng chính" />
+          <select className={o + ' w-auto flex-1'} value={gocMoi} onChange={(e) => setGocMoi(Number(e.target.value))} title="Chỉ dùng khi ảnh không phải tỉ lệ 2:1" aria-label="Góc chụp ngang (ảnh panorama thường)">
+            {GOC.map(([g, nhan]) => <option key={g} value={g}>Ảnh thường: {nhan}</option>)}</select>
+          <button type="button" className={nutChinh + ' gap-1.5'} disabled={dang} onClick={() => chonTep.current?.click()}>
+            {dang ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Orbit className="h-3.5 w-3.5" />}{dang ? 'Đang tải lên…' : 'Chọn ảnh 360° và thêm'}</button>
+          <input ref={chonTep} type="file" accept="image/*" hidden onChange={(e) => taiLen(e.target.files?.[0])} />
+        </div>}
+      </div>}
       {xem && <XemTruoc q={xem} onDong={() => setXem(null)} onLuuHuong={(h) => { doi.mutate({ id: xem.id, body: { huongDau: h } }); toast.success(`Đã lưu hướng mở đầu (${h}°).`); setXem(null); }} />}
     </div>);
 }
