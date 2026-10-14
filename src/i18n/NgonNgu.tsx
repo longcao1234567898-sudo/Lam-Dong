@@ -174,7 +174,7 @@ const TU: Record<string, [string, string]> = {
   vungSacMoTa: ['Chọn một vùng để xem các điểm đến ở đó.', 'Pick an area to see its places.'],
   xemDiemVung: ['Xem điểm đến vùng', 'Show places in'],
   soDiemDen: ['{n} điểm đến', '{n} places'],
-  soLoTrinh: ['Lộ trình', 'Itineraries'], soDanhGia: ['Đánh giá', 'Reviews'], diemTrungBinh: ['Điểm trung bình', 'Avg. rating'],
+  nhanDiemDen: ['Điểm đến', 'Places'], soLoTrinh: ['Lộ trình', 'Itineraries'], soDanhGia: ['Đánh giá', 'Reviews'], diemTrungBinh: ['Điểm trung bình', 'Avg. rating'],
   cuonXuong: ['Cuộn xuống', 'Scroll down'], lenDau: ['Lên đầu trang', 'Back to top'],
   khamPhaMoTa: ['Chọn vùng và loại hình để thu hẹp. Bấm một điểm để xem chi tiết.', 'Narrow down by area and type. Select a place to see details.'],
   vung: ['Vùng', 'Area'], loaiHinh: ['Loại hình', 'Type'],
