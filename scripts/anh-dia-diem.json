@@ -1,0 +1,37 @@
+{
+  "_ghi_chu": "Mỗi địa điểm: danh sách tên tệp trên Wikimedia Commons (dạng \"File:...\"), ảnh đầu là ảnh chính. Chỉ ảnh CC0 hoặc phạm vi công cộng, đúng địa điểm, đã xem tận mắt. Chọn từ scripts/anh-ung-vien.html (node scripts/tai-anh-dia-diem.mjs goi-y), rồi chạy: node scripts/tai-anh-dia-diem.mjs tai.",
+  "ho-xuan-huong": [
+    "File:Ho Xuan Huong 02.JPG",
+    "File:Xuan Huong Lake 08.jpg",
+    "File:Xuan Huong Lake 06.jpg"
+  ],
+  "ga-da-lat": [
+    "File:Da Lat train station 02.JPG"
+  ],
+  "thien-vien-truc-lam": [
+    "File:Tuyen Lam Lake 05.jpg",
+    "File:Tuyen Lam Lake 06.jpg",
+    "File:Tuyen Lam Lake 01.jpg"
+  ],
+  "dinh-bao-dai": [
+    "File:Bao Dai's Summer Palace 00.jpg",
+    "File:Bao Dai's Summer Palace 08.jpg",
+    "File:Dinh Bảo Đại Đà Lạt.jpg"
+  ],
+  "nui-langbiang": [
+    "File:Langbiang Mountain.JPG"
+  ],
+  "doi-cat-mui-ne": [
+    "File:Sand dune Mui Né 2003.jpg"
+  ],
+  "bau-trang": [
+    "File:20180411-38Mũi Né Đồi Cát Trắng White Sand Dunes Kim Euncheol.jpg"
+  ],
+  "thap-po-sah-inu": [
+    "File:ChamMuiNe.jpg",
+    "File:Thap Po Sah Inu temples complex, Phu Hai, Vietnam 01.jpg"
+  ],
+  "dao-phu-quy": [
+    "File:Chualinhsonphuquy.jpg"
+  ]
+}

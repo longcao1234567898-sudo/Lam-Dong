@@ -1,0 +1,130 @@
+HƯỚNG DẪN DỰNG WEB DU LỊCH LÂM ĐỒNG
+=====================================
+
+Trong gói có:
+  Lam-Dong/                       toàn bộ mã nguồn, đã có sẵn .env và server/.env
+  render-env-lam-dong.txt         các biến dán vào Render (CÓ MẬT KHẨU, cất kỹ)
+  phu-luc-lam-dong-thuong.sql     số liệu phụ lục bảng 1, 2, 3, 5, 6
+  phu-luc-lam-dong-mat.sql        số liệu phụ lục bảng 4, 7, 7a, 8, 9 (THÔNG TIN NHẠY CẢM)
+  HUONG-DAN-LAM-DONG.txt          tệp này
+
+Tên gợi ý (đặt đúng thì không phải sửa gì):
+  Trang Netlify:  dulichlamdong   -> https://dulichlamdong.netlify.app
+  Dịch vụ Render: lam-dong        -> https://lam-dong.onrender.com
+
+
+BƯỚC 1. ĐƯA MÃ NGUỒN LÊN GITHUB
+-------------------------------
+Làm theo Lam-Dong/DAY-LEN-GITHUB.txt. Nên chọn kho Private.
+Kéo thả trên trang GitHub thì KHÔNG kéo hai tệp .env và server/.env.
+
+
+BƯỚC 2. MÁY CHỦ TRÊN RENDER
+---------------------------
+1. Render -> New -> Web Service -> chọn kho du-lich-lam-dong.
+   Name: lam-dong
+   Root Directory: server
+   Build Command: npm install --omit=dev
+   Start Command: node src/index.js
+2. Trước khi bấm tạo, vào mục Environment:
+   a. Secret Files -> Add Secret File
+      Filename: ca.pem
+      Contents: mở trang Aiven của dịch vụ MySQL mới, dòng "CA certificate" bấm Show,
+                chép toàn bộ (kể cả dòng BEGIN CERTIFICATE và END CERTIFICATE) dán vào.
+      (Dùng CA của dịch vụ Aiven MỚI, không dùng lại ca.pem của Đồng Nai.)
+   b. Environment Variables -> Add from .env -> dán toàn bộ nội dung render-env-lam-dong.txt.
+3. Tạo dịch vụ. Lần chạy đầu, máy chủ thấy cơ sở dữ liệu trống sẽ tự tạo bảng và nạp
+   15 điểm đến, 5 lộ trình. Nhật ký Render có dòng "Đã nâng cấp cơ sở dữ liệu".
+4. Mở https://lam-dong.onrender.com/api/health phải thấy "ok":true,"db":true.
+   Render cấp địa chỉ khác (ví dụ lam-dong-abcd.onrender.com) thì sửa dòng VITE_API_URL
+   trong Lam-Dong/netlify.toml cho đúng rồi đẩy lại lên GitHub.
+
+
+BƯỚC 3. GIAO DIỆN TRÊN NETLIFY
+------------------------------
+1. Netlify -> Add new site -> Import from GitHub -> chọn kho du-lich-lam-dong.
+   Không phải khai biến: netlify.toml đã có sẵn địa chỉ máy chủ và khoá Turnstile.
+2. Site configuration -> Change site name -> dulichlamdong.
+   Tên đã có người dùng thì chọn tên khác, rồi trên Render sửa CORS_ORIGIN và
+   CLIENT_URL thành địa chỉ mới (không có dấu / ở cuối).
+
+
+BƯỚC 4. CHO PHÉP Ô KIỂM TRA NGƯỜI MÁY CHẠY Ở TRANG MỚI
+------------------------------------------------------
+Web Lâm Đồng dùng chung khoá Turnstile với Đồng Nai, nên phải khai thêm tên miền:
+Cloudflare -> Turnstile -> bấm vào widget đang dùng cho Đồng Nai -> Settings ->
+Hostname Management -> Add -> dulichlamdong.netlify.app -> Save.
+Không làm bước này thì du khách bị kẹt ở ô kiểm tra khi mới vào trang.
+
+
+BƯỚC 5. NẠP SỐ LIỆU PHỤ LỤC BẰNG HEIDISQL
+-----------------------------------------
+Làm SAU bước 2 (máy chủ đã chạy một lần, đã có bảng).
+1. HeidiSQL -> New -> MySQL (TCP/IP)
+   Hostname: mysql-96a222f-phanngochoanglong2508-b6b6.c.aivencloud.com
+   User: avnadmin     Password: (trong render-env-lam-dong.txt)     Port: 22299
+   Thẻ SSL: tick "Use SSL", ô "SSL CA certificate" chọn tệp ca.pem tải từ Aiven.
+2. Bấm chọn cơ sở dữ liệu defaultdb ở cột bên trái.
+3. Tệp -> Chạy tệp SQL... -> phu-luc-lam-dong-thuong.sql
+4. Tệp -> Chạy tệp SQL... -> phu-luc-lam-dong-mat.sql
+   Tệp này có tên người, vụ việc an ninh, số liệu quân số: cần cán bộ an ninh của đơn vị
+   duyệt trước khi đưa lên máy chủ thuê ngoài. Số hộ chiếu, CCCD, biển số xe đã được che.
+Chạy lại nhiều lần không bị trùng. Đừng dán vào ô truy vấn (dễ báo lỗi 1064).
+
+
+BƯỚC 6. TẠO TÀI KHOẢN CÁN BỘ
+----------------------------
+Mở Lam-Dong/cong-cu/tao-tai-khoan.html bằng trình duyệt (bấm đúp), điền họ tên, tên đăng
+nhập, mật khẩu -> chép câu lệnh SQL -> HeidiSQL (đang kết nối Aiven mới) -> dán -> F9.
+Tài khoản bên Đồng Nai KHÔNG dùng được ở Lâm Đồng: hai web có cơ sở dữ liệu riêng.
+
+
+BƯỚC 7. VIỆC CỦA CÁN BỘ SAU KHI WEB CHẠY
+----------------------------------------
+- Quản trị -> Địa điểm: kiểm tra lại toạ độ từng điểm (đang là toạ độ ước lượng), bài
+  giới thiệu, chọn xã/phường cho các điểm ở Đà Lạt và vùng Đắk Nông cũ (đang để trống),
+  rồi đánh dấu "đã kiểm tra".
+- Tải ảnh cho từng điểm (web chưa có ảnh mặc định nào).
+- Thêm các xã/phường còn thiếu ở mục Xã/phường, theo văn bản sắp xếp đơn vị hành chính.
+
+
+=====================================================================
+CÁCH TỰ THAY KHOÁ (JWT_SECRET) VÀ MÃ BĂM (HASH_PEPPER) KHI RẢNH
+=====================================================================
+Hiện web Lâm Đồng dùng chung hai giá trị này với Đồng Nai. Phiên đăng nhập hai bên vẫn
+tách riêng (máy chủ Lâm Đồng trộn thêm tên web vào khoá ký). Muốn tách hẳn thì làm như sau.
+Chỉ cần thay ở web Lâm Đồng, web Đồng Nai giữ nguyên.
+
+1. TẠO KHOÁ MỚI TRÊN MÁY TÍNH (chọn một cách)
+
+   Cách A: máy đã cài Node.js
+     Mở cửa sổ lệnh trong thư mục Lam-Dong\server, gõ:
+       node scripts-tao-khoa.js
+     Màn hình in ra hai dòng JWT_SECRET=... và HASH_PEPPER=..., mỗi dòng 96 ký tự.
+
+   Cách B: máy Windows không cài gì thêm
+     Bấm Start, gõ PowerShell, mở lên, dán dòng dưới rồi Enter:
+       $b = New-Object byte[] 48; [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b); -join ($b | ForEach-Object { $_.ToString('x2') })
+     Màn hình in một chuỗi 96 ký tự. Chạy 2 lần để có 2 chuỗi khác nhau:
+     chuỗi thứ nhất cho JWT_SECRET, chuỗi thứ hai cho HASH_PEPPER.
+
+   Chép ra giấy hoặc tệp cất ở chỗ an toàn. Không gửi qua Zalo, Facebook, email,
+   không đưa lên GitHub.
+
+2. THAY TRÊN RENDER
+   Render -> dịch vụ lam-dong -> Environment -> bấm biểu tượng sửa ở dòng JWT_SECRET,
+   dán chuỗi mới -> làm tương tự với HASH_PEPPER -> Save Changes.
+   Render tự khởi động lại máy chủ trong 1 đến 2 phút.
+   Nếu có chạy web trên máy tính thì sửa luôn hai dòng đó trong Lam-Dong\server\.env.
+
+3. ĐỔI XONG THÌ CHUYỆN GÌ XẢY RA
+   - Đổi JWT_SECRET: mọi cán bộ đang đăng nhập bị đăng xuất, đăng nhập lại là xong.
+     Du khách đang mở trang phải qua lại ô kiểm tra người máy một lần. Không mất dữ liệu.
+   - Đổi HASH_PEPPER: không mất dữ liệu. Chỉ là hệ thống không còn nhận ra thiết bị đã
+     đánh giá trước đó, nên mỗi máy gửi thêm được một đánh giá cho mỗi điểm; bộ đếm giới
+     hạn gửi bài cũng bắt đầu lại từ đầu. Vì vậy chỉ nên đổi HASH_PEPPER một lần.
+
+4. NÊN ĐỔI LUÔN MẬT KHẨU CƠ SỞ DỮ LIỆU
+   Mật khẩu Aiven mới đã được gửi qua tin nhắn. Khi rảnh: trang Aiven của dịch vụ MySQL,
+   dòng Password bấm biểu tượng vòng tròn mũi tên (Reset) -> chép mật khẩu mới ->
+   Render -> Environment -> sửa DB_PASSWORD -> Save Changes; sửa cả kết nối HeidiSQL.
