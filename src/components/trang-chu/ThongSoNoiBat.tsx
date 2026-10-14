@@ -15,9 +15,9 @@ interface ThongSoProps {
 }
 
 const THONG_SO = [
-  { khoa: 'soDiemDen' as const, Ic: MapPin, layGt: (p: ThongSoProps) => p.ds.length },
-  { khoa: 'soLoTrinh' as const, Ic: Route, layGt: (p: ThongSoProps) => p.loTrinh.length },
-  { khoa: 'soDanhGia' as const, Ic: MessageSquare, layGt: (p: ThongSoProps) => p.tk?.danhGia?.so ?? 0 },
+  { khoa: 'nhanDiemDen' as const, Ic: MapPin, layGt: (p: ThongSoProps) => p.ds.length, laSoLe: false },
+  { khoa: 'soLoTrinh' as const, Ic: Route, layGt: (p: ThongSoProps) => p.loTrinh.length, laSoLe: false },
+  { khoa: 'soDanhGia' as const, Ic: MessageSquare, layGt: (p: ThongSoProps) => p.tk?.danhGia?.so ?? 0, laSoLe: false },
   { khoa: 'diemTrungBinh' as const, Ic: Star, layGt: (p: ThongSoProps) => p.tk?.danhGia?.saoTb ?? 0, laSoLe: true },
 ] as const;
 
