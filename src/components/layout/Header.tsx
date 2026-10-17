@@ -12,7 +12,8 @@ export const DauHieu = ({ co = 36 }: { co?: number }) => (
     <path d="M6 22c5-1 6-7 11-8s6 3 9-1" fill="none" stroke="#F17C5B" strokeWidth="2.6" strokeLinecap="round" />
   </svg>);
 
-/** Đầu trang. Ở trang chủ, khi chưa cuộn, nằm trong suốt trên cảnh 3D; cuộn xuống thì thành nền giấy. */
+/** Đầu trang: viên thuốc kính mờ nổi cách mép trên. Ở trang chủ, khi chưa cuộn, kính tối trong
+ *  suốt trên ảnh đầu trang; cuộn xuống (và ở trang con) thì thành kính sáng. */
 export default function Header() {
   const { staff } = useAdminAuth();
   const { t, nn, doi } = useNN();
@@ -45,22 +46,22 @@ export default function Header() {
     { to: '/phan-anh', ten: t('phanAnh') },
     { to: '/thong-ke', ten: t('thongKe') },
   ];
-  const lop = ({ isActive }: { isActive: boolean }) => `gach-ba-sac relative inline-flex min-h-[44px] items-center whitespace-nowrap px-3 text-[15px] font-medium transition-colors
+  const lop = ({ isActive }: { isActive: boolean }) => `gach-ba-sac relative inline-flex min-h-[44px] items-center whitespace-nowrap rounded-full px-3 text-[14.5px] font-medium transition-colors ${trenCanh ? 'hover:bg-white/10' : 'hover:bg-sunken/80'}
     after:absolute after:inset-x-3 after:bottom-1.5 after:h-[2px] after:rounded-full after:transition-transform after:duration-300 ${isActive ? 'after:scale-x-100' : 'after:scale-x-0 hover:after:scale-x-50'}
     ${trenCanh ? 'text-[#F7F5EF]' : 'text-ink'}`;
-  const nutPhu = `grid h-11 min-w-[44px] place-items-center rounded-xl px-2 text-[13px] font-semibold transition-colors ${trenCanh ? 'text-[#F7F5EF] hover:bg-white/10' : 'text-ink-2 hover:bg-sunken'}`;
+  const nutPhu = `grid h-11 min-w-[44px] place-items-center rounded-full px-2 text-[13px] font-semibold transition-colors ${trenCanh ? 'text-[#F7F5EF] hover:bg-white/10' : 'text-ink-2 hover:bg-sunken'}`;
   return (
-    <header className={`dau-trang sticky top-0 z-[600] transition-[background-color,box-shadow] duration-300 ${trenCanh ? 'bg-transparent' : 'bg-ivory/[.97] shadow-[0_1px_0_rgb(var(--c-line))]'}`}
-      style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-      <div className="container-page flex h-16 items-center gap-2">
-        <Link to="/" className="mr-auto flex min-w-0 items-center gap-2.5" aria-label={t('tenTrang')}>
-          <DauHieu co={34} />
-          <span className={`truncate font-serif text-[21px] font-medium tracking-[-0.01em] ${trenCanh ? 'text-[#F7F5EF]' : 'text-forest dark:text-ink'}`}>{t('tenTrang')}</span>
+    /* Cao tổng cộng 4.25rem (0.75rem khoảng hở + 3.5rem viên thuốc): đầu trang chủ kéo lên đúng chừng đó để ảnh nằm dưới. */
+    <header className="dau-trang pointer-events-none sticky top-0 z-[600] px-2 sm:px-4" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 0.75rem)' }}>
+      <div className={`vien-dau pointer-events-auto mx-auto flex h-14 max-w-[1280px] items-center gap-1 rounded-full pl-2 pr-1.5 sm:pl-3 ${trenCanh ? 'vien-dau-toi' : 'vien-dau-sang'}`}>
+        <Link to="/" className="mr-auto flex min-w-0 items-center gap-2.5 rounded-full py-1 pr-2" aria-label={t('tenTrang')}>
+          <DauHieu co={36} />
+          <span className={`truncate font-serif text-[19px] font-medium tracking-[-0.01em] sm:text-[21px] ${trenCanh ? 'text-[#F7F5EF]' : 'text-forest dark:text-ink'}`}>{t('tenTrang')}</span>
         </Link>
         <nav className="hidden lg:flex" aria-label={t('tenTrang')}>
           {MUC.map((m) => <NavLink key={m.to} to={m.to} end={m.end} className={lop}>{m.ten}</NavLink>)}
         </nav>
-        <Link to="/lo-trinh" className={`nut ${trenCanh ? 'nut-coral' : 'nut-chinh'} hidden min-h-[38px] px-4 text-[13px] lg:inline-flex`}>
+        <Link to="/lo-trinh" className={`nut ${trenCanh ? 'nut-coral' : 'nut-chinh'} ml-1 hidden min-h-[40px] rounded-full px-4 text-[13px] xl:inline-flex`}>
           <Route className="h-4 w-4" />{t('goiYLoTrinh')}
         </Link>
         {staff && <Link to="/quan-tri" className={`${nutPhu} gap-1.5`} title={t('quanTri')}><ShieldCheck className="h-[18px] w-[18px]" /><span className="sr-only">{t('quanTri')}</span></Link>}
@@ -69,9 +70,11 @@ export default function Header() {
         <button type="button" onClick={() => setMoMenu((m) => !m)} aria-expanded={moMenu} aria-controls="menu-nho" aria-label={t('danhMuc')} className={`${nutPhu} lg:hidden`}>
           {moMenu ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}</button>
       </div>
-      {moMenu && <nav id="menu-nho" className="hop-thoai border-t border-line bg-ivory pb-4 lg:hidden" aria-label={t('tenTrang')}>
-        <div className="container-page flex flex-col py-2">
-          {MUC.map((m) => <NavLink key={m.to} to={m.to} end={m.end} className={({ isActive }) => `flex min-h-[52px] items-center border-b border-line/60 font-serif text-[22px] ${isActive ? 'text-action' : 'text-ink'}`}>{m.ten}</NavLink>)}
+      {moMenu && <nav id="menu-nho" className="hop-thoai vien-dau vien-dau-sang vien-menu pointer-events-auto mx-auto mt-2 max-w-[1280px] overflow-y-auto overscroll-contain rounded-[28px] p-2 lg:hidden"
+        style={{ maxHeight: 'calc(100svh - 6rem)' }} aria-label={t('tenTrang')}>
+        <div className="flex flex-col">
+          {MUC.map((m) => <NavLink key={m.to} to={m.to} end={m.end} className={({ isActive }) => `flex min-h-[52px] items-center rounded-2xl px-4 font-serif text-[22px] ${isActive ? 'bg-sunken text-action' : 'text-ink'}`}>{m.ten}</NavLink>)}
+          <Link to="/lo-trinh" className="nut nut-chinh mx-2 mb-2 mt-2 rounded-full"><Route className="h-4 w-4" />{t('goiYLoTrinh')}</Link>
         </div></nav>}
     </header>
   );

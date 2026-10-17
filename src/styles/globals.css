@@ -431,6 +431,39 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.45; }
 /* Ô biểu tượng màu (tin tức theo loại, hướng dẫn khách quốc tế) */
 .o-bieu-tuong { display: grid; place-items: center; flex-shrink: 0; border-radius: 16px; color: #fff; background: var(--vm); box-shadow: 0 8px 18px -10px var(--vm); }
 
+
+/* Đầu trang dạng viên thuốc kính mờ (Header.tsx). Không hỗ trợ làm mờ nền thì dùng nền đặc. */
+.vien-dau { transition: background-color var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out); }
+.vien-dau-sang { background: rgb(var(--c-surface) / .8); border: 1px solid rgb(var(--c-line) / .9); box-shadow: var(--sh-2), var(--vien-sang);
+  -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%); }
+.vien-dau-toi { background: rgb(10 30 26 / .32); border: 1px solid rgb(247 245 239 / .16);
+  -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%); }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .vien-dau-sang { background: rgb(var(--c-surface)); }
+  .vien-dau-toi { background: rgb(10 30 26 / .75); }
+}
+/* Menu xổ xuống trên điện thoại: gần như đặc, chữ phía sau không lẫn vào. */
+.vien-dau-sang.vien-menu { background: rgb(var(--c-surface)); }
+/* Gạch ba sắc dưới mục đang mở nằm gọn trong viên thuốc. */
+.vien-dau .gach-ba-sac::after { bottom: 7px; }
+
+/* Ảnh nhỏ chọn nhanh ở đầu trang chủ (Hero.tsx) */
+.hero-o-nho > span:nth-child(2) { outline: 2px solid transparent; outline-offset: 2px; opacity: .72;
+  transition: opacity var(--dur-base) var(--ease-out), outline-color var(--dur-base) var(--ease-out); }
+.hero-o-nho:hover > span:nth-child(2), .hero-o-nho.dang-chon > span:nth-child(2) { opacity: 1; }
+.hero-o-nho.dang-chon > span:nth-child(2) { outline-color: #F7F5EF; }
+.hero-tien-trinh { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: #F7F5EF; transform-origin: left; animation: tien-trinh linear both; }
+.hero-tien-trinh.dung { animation-play-state: paused; }
+@keyframes tien-trinh { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Nhãn "có ảnh 360°" trên thẻ điểm đến */
+.nhan-360 { display: inline-flex; align-items: center; gap: 4px; border-radius: 9999px; padding: 4px 9px 4px 7px;
+  font-size: 12px; font-weight: 700; line-height: 1.4; color: #192522; background: rgb(247 245 239 / .92); }
+
+/* Thanh công cụ kính mờ của khung 360° */
+.thanh-360 { background: rgb(10 30 26 / .55); border: 1px solid rgb(247 245 239 / .18);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+
 /* Chip vùng: chấm màu vùng; chọn rồi thì nền màu vùng. */
 .chip .cham-vung { width: 9px; height: 9px; border-radius: 9999px; background: var(--vm); }
 .chip.vung-hoa[aria-pressed='true'], .chip.vung-bien[aria-pressed='true'], .chip.vung-quy[aria-pressed='true'] { background: var(--vm); border-color: var(--vm); color: #fff; }
@@ -471,4 +504,5 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.45; }
   .hero-hien.ba-sac > i, .chu-do-mau > span { animation: none; }
   .vung-sac .vung-o, .vung-anh, .vung-them { transition: none; }
   .cuc-quang > i { animation: none; }
+  .hero-tien-trinh { animation: none; transform: scaleX(1); }
 }
