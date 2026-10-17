@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { X, MapPin, Star, Phone, Globe, Clock, Loader2, ExternalLink, MessageSquareWarning, Flag, Navigation } from 'lucide-react';
+import { X, MapPin, Star, Phone, Globe, Clock, Loader2, ExternalLink, MessageSquareWarning, Flag, Navigation, Maximize2, Users, CalendarDays } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { HienSao, KhungAnh } from './GiaoDien';
 import { layDanhGia, layDanhGiaCuaToi, guiDanhGia, baoDanhGia, anhUrl } from '../../services/api';
@@ -88,15 +88,18 @@ function FormDanhGia({ p, onXong }: { p: DiaDiem; onXong: () => void }) {
 
 /** Dải ảnh: trang riêng hiện lớn, cửa sổ nổi hiện hàng ảnh nhỏ. Bấm ảnh mở ảnh gốc. */
 export function DaiAnh({ p, lon = false }: { p: DiaDiem; lon?: boolean }) {
-  const { chon } = useNN();
+  const { t, chon } = useNN();
   if (!p.anh?.length) return null;
   return (
     <div className={lon ? 'grid grid-cols-2 gap-2 sm:grid-cols-3' : 'khong-thanh-cuon mt-3 flex gap-2 overflow-x-auto pb-1'}>
       {p.anh.map((a, i) => (
-        <a key={a.id} href={anhUrl(a.id)} target="_blank" rel="noopener noreferrer" className={`block overflow-hidden rounded-xl bg-sunken ${lon ? (i === 0 ? 'col-span-2 row-span-2' : '') : 'h-28 shrink-0'}`}
+        <a key={a.id} href={anhUrl(a.id)} target="_blank" rel="noopener noreferrer" title={t('xemAnhGoc')}
+          className={`group relative block overflow-hidden rounded-xl bg-sunken ${lon ? (i === 0 ? 'col-span-2 row-span-2' : '') : 'h-28 shrink-0'}`}
           style={!lon && a.rong && a.cao ? { aspectRatio: `${a.rong} / ${a.cao}` } : undefined}>
           <img src={anhUrl(a.id)} alt={a.chuThich || chon(p.ten, p.tenEn)} loading="lazy" width={a.rong || undefined} height={a.cao || undefined}
-            className={`h-full w-full object-cover ${lon ? 'aspect-[4/3]' : ''}`} />
+            className={`h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 ${lon ? 'aspect-[4/3]' : ''}`} />
+          <span className="pointer-events-none absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full bg-[#0C2925]/55 text-[#F7F5EF] opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100" aria-hidden="true">
+            <Maximize2 className="h-3.5 w-3.5" /></span>
         </a>))}
     </div>);
 }
@@ -112,10 +115,6 @@ export function ThongTinDiaDiem({ p, trangRieng = false, vietNgay = false, giua 
   const web = webAnToan(p.web), sdt = String(p.sdt || '').replace(/[^0-9+]/g, '');
   const tc = TIEU_CHI.filter(([k]) => p.tieuChi[k] !== null);
   const so1 = (n: number) => n.toLocaleString(nn === 'en' ? 'en' : 'vi', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-  const metaDg = (ten: string | null, diCung: string | null, thoiDiem: string | null) => [ten || t('duKhach'),
-    diCung && DI_CUNG[diCung] ? (nn === 'en' ? 'with ' : 'đi cùng ') + DI_CUNG[diCung][nn === 'en' ? 1 : 0].toLowerCase() : '',
-    thoiDiem && /^\d{4}-\d{2}$/.test(thoiDiem) ? (nn === 'en' ? `visited ${thoiDiem.slice(5)}/${thoiDiem.slice(0, 4)}` : `đi tháng ${Number(thoiDiem.slice(5))}/${thoiDiem.slice(0, 4)}`) : '']
-    .filter(Boolean).join(', ');
   const khuVuc = [p.xa, p.vung ? VUNG[p.vung][nn === 'en' ? 'en' : 'ten'] : null].filter(Boolean).join(', ');
   return (<>
     {p.vung && <span className={`nhan-vung ${lopVung(p.vung)} mb-2.5`}>{nn === 'en' ? VUNG[p.vung].nganEn : VUNG[p.vung].ngan}</span>}
@@ -124,12 +123,18 @@ export function ThongTinDiaDiem({ p, trangRieng = false, vietNgay = false, giua 
     {trangRieng && nn === 'en' && p.tenEn && <p className="text-sm text-muted">{p.ten}</p>}
     {!trangRieng && <DaiAnh p={p} />}
     {chon(p.moTa, p.moTaEn) && <p className="mt-3 max-w-[68ch] text-[16px] leading-relaxed text-ink-2">{chon(p.moTa, p.moTaEn)}</p>}
-    <dl className="mt-4 space-y-1.5 text-[15px]">
-      {p.diaChi && <div className="flex gap-2"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted" /><dd>{p.diaChi}</dd></div>}
-      {p.gioMo && <div className="flex gap-2"><Clock className="mt-0.5 h-4 w-4 shrink-0 text-muted" /><dd>{p.gioMo}</dd></div>}
-      {sdt && <div className="flex gap-2"><Phone className="mt-0.5 h-4 w-4 shrink-0 text-muted" /><dd><a className="text-action" href={`tel:${sdt}`}>{p.sdt}</a></dd></div>}
-      {web && <div className="flex gap-2"><Globe className="mt-0.5 h-4 w-4 shrink-0 text-muted" /><dd><a className="text-action" href={web} target="_blank" rel="noopener noreferrer">{web.replace(/^https?:\/\//, '')}</a></dd></div>}
-    </dl>
+    {(p.diaChi || p.gioMo || sdt || web) && <dl className="mt-5 grid gap-2 sm:grid-cols-2">
+      {([
+        p.diaChi && [MapPin, t('nhanDiaChi'), p.diaChi],
+        p.gioMo && [Clock, t('nhanGioMo'), p.gioMo],
+        sdt && [Phone, t('nhanDienThoai'), <a className="font-semibold text-action underline-offset-2 hover:underline" href={`tel:${sdt}`}>{p.sdt}</a>],
+        web && [Globe, t('nhanWebsite'), <a className="font-semibold text-action underline-offset-2 hover:underline [overflow-wrap:anywhere]" href={web} target="_blank" rel="noopener noreferrer">{web.replace(/^https?:\/\//, '')}</a>],
+      ].filter(Boolean) as [typeof MapPin, string, ReactNode][]).map(([Ic, nhan, gt]) => (
+        <div key={nhan} className="flex items-start gap-3 rounded-2xl border border-line/60 bg-sunken/50 p-3">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-paper text-action shadow-sh-1"><Ic className="h-4 w-4" aria-hidden="true" /></span>
+          <div className="min-w-0"><dt className="text-[12px] font-medium text-muted">{nhan}</dt><dd className="mt-0.5 text-[15px] leading-snug text-ink">{gt}</dd></div>
+        </div>))}
+    </dl>}
     <div className="mt-5 flex flex-wrap gap-2">
       <a className="nut nut-chinh" target="_blank" rel="noopener noreferrer" href={`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}`}><Navigation className="h-4 w-4" />{t('chiDuong')}</a>
       <button type="button" onClick={() => setViet((v) => !v)} aria-expanded={viet} className="nut nut-vien"><Star className="h-4 w-4" />{viet ? t('dongFormDanhGia') : t('vietDanhGia')}</button>
@@ -157,30 +162,48 @@ export function ThongTinDiaDiem({ p, trangRieng = false, vietNgay = false, giua 
           <button key={k} type="button" className="chip min-h-[36px]" aria-pressed={sx === k} onClick={() => setSx(k)}>{ten}</button>))}</div>
       </div>
       {isLoading ? <p className="py-6 text-center text-sm text-muted">{t('dangTaiDanhGia')}</p> : (
-        <ul className="mt-2 divide-y divide-line/70">
-          {dg.map((x) => <li key={x.id} className="py-4">
-            <div className="flex items-center justify-between gap-2 text-[13px] text-muted"><HienSao gt={x.sao} co={14} /><span>{ngay(x.luc)}</span></div>
-            <div className="mt-1 text-[13px] text-muted">{metaDg(x.ten, x.diCung, x.thoiDiem)}</div>
-            {x.nhanXet && <p className="mt-1.5 text-[15.5px] leading-relaxed">{x.nhanXet}</p>}
+        <ul className="mt-3 space-y-3">
+          {dg.map((x) => { const tenHien = x.ten || t('duKhach'), diCung = x.diCung && DI_CUNG[x.diCung] ? DI_CUNG[x.diCung][nn === 'en' ? 1 : 0] : null,
+            thang = x.thoiDiem && /^\d{4}-\d{2}$/.test(x.thoiDiem) ? `${Number(x.thoiDiem.slice(5))}/${x.thoiDiem.slice(0, 4)}` : null;
+            return <li key={x.id} className="rounded-2xl border border-line/60 bg-sunken/40 p-4">
+            <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-paper font-serif text-[18px] text-forest shadow-sh-1 dark:text-ink" aria-hidden="true">{tenHien.trim().charAt(0).toUpperCase()}</span>
+                <div className="min-w-0"><b className="block truncate text-[15px] font-semibold">{tenHien}</b>
+                  <span className="flex flex-wrap items-center gap-x-2 text-[13px] text-muted"><HienSao gt={x.sao} co={13} /><span className="sr-only">{x.sao} {t('sao')}</span><span>{ngay(x.luc)}</span></span></div>
+              </div>
+              {(diCung || thang) && <div className="flex flex-wrap gap-1.5 text-[12px] font-medium text-ink-2">
+                {diCung && <span className="inline-flex items-center gap-1 rounded-full border border-line/60 bg-paper px-2.5 py-1"><Users className="h-3 w-3 text-muted" aria-hidden="true" />{nn === 'en' ? 'With ' + diCung.toLowerCase() : 'Đi cùng ' + diCung.toLowerCase()}</span>}
+                {thang && <span className="inline-flex items-center gap-1 rounded-full border border-line/60 bg-paper px-2.5 py-1"><CalendarDays className="h-3 w-3 text-muted" aria-hidden="true" />{nn === 'en' ? 'Visited ' : 'Đi tháng '}{thang}</span>}
+              </div>}
+            </div>
+            {x.nhanXet && <p className="mt-3 text-[15.5px] leading-relaxed">{x.nhanXet}</p>}
             {x.nhanXet && <button type="button" disabled={daBao.includes(x.id) || bao.isPending} onClick={() => bao.mutate(x.id)}
-              className="mt-1.5 inline-flex min-h-[32px] items-center gap-1 text-xs text-muted hover:text-[#B42318] disabled:hover:text-muted"><Flag className="h-3 w-3" />{daBao.includes(x.id) ? t('daBao') : t('baoViPham')}</button>}
-          </li>)}
+              className="mt-1 inline-flex min-h-[32px] items-center gap-1 text-xs text-muted hover:text-[#B42318] disabled:hover:text-muted"><Flag className="h-3 w-3" />{daBao.includes(x.id) ? t('daBao') : t('baoViPham')}</button>}
+          </li>; })}
         </ul>)}
-    </>) : <p className="mt-6 text-[15px] text-muted">{t('chuaCoDanhGiaNao')}</p>}
+    </>) : <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-dashed border-line-strong/50 bg-sunken/40 p-5">
+      <p className="text-[15px] text-ink-2">{t('chuaCoDanhGiaNao')}</p>
+      {!viet && <button type="button" onClick={() => setViet(true)} className="nut nut-vien"><Star className="h-4 w-4" />{t('vietDanhGia')}</button>}
+    </div>}
   </>);
 }
 
 export default function ChiTiet({ p, onDong, vietNgay = false }: { p: DiaDiem; onDong: () => void; vietNgay?: boolean }) {
-  const { t } = useNN();
+  const { t, nn } = useNN();
   const dongRef = useRef<HTMLButtonElement>(null);
   useEffect(() => { dongRef.current?.focus(); const k = (e: KeyboardEvent) => e.key === 'Escape' && onDong(); window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [onDong]);
   return (
     <div className="fixed inset-0 z-[1100] flex items-end justify-center bg-[#0C2925]/60 md:items-center md:p-6" role="dialog" aria-modal="true" aria-labelledby="ct-ten"
       onClick={(e) => e.target === e.currentTarget && onDong()}>
       <div className="hop-thoai max-h-[90vh] w-full max-w-2xl overflow-auto overscroll-contain rounded-t-[24px] bg-paper pb-[calc(1.5rem+env(safe-area-inset-bottom))] text-ink shadow-sh-3 md:rounded-[24px]">
-        <div className="relative h-44 overflow-hidden bg-sunken sm:h-56"><KhungAnh p={p} />
-          <button ref={dongRef} type="button" onClick={onDong} aria-label={t('dong')} className="kinh absolute right-4 top-4 z-[3] grid h-10 w-10 place-items-center rounded-xl shadow-sh-2"><X className="h-5 w-5" /></button></div>
-        <div className="p-6"><ThongTinDiaDiem p={p} vietNgay={vietNgay} /></div>
+        <div className="relative h-52 overflow-hidden bg-sunken sm:h-64"><KhungAnh p={p} />
+          <span className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-[#0C2925]/55 via-transparent to-transparent" aria-hidden="true" />
+          {p.saoTb !== null && p.soDanhGia > 0 && <span className="kinh absolute bottom-4 left-5 z-[3] inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[13px] font-semibold shadow-sh-1">
+            <HienSao gt={p.saoTb} co={13} />{p.saoTb.toLocaleString(nn === 'en' ? 'en' : 'vi', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+            <span className="font-normal text-[#3E4C48]">({p.soDanhGia})</span></span>}
+          <button ref={dongRef} type="button" onClick={onDong} aria-label={t('dong')} className="kinh absolute right-4 top-4 z-[3] grid h-10 w-10 place-items-center rounded-full shadow-sh-2"><X className="h-5 w-5" /></button></div>
+        <div className="p-6 sm:p-7"><ThongTinDiaDiem p={p} vietNgay={vietNgay} /></div>
       </div>
     </div>);
 }
