@@ -1,13 +1,16 @@
 /** Khối "Khám phá điểm đến": lọc theo vùng và loại hình, lưới bento có thứ bậc. */
 import { useMemo, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, X } from 'lucide-react';
+import { MapPin, Orbit, X } from 'lucide-react';
 import { useNN } from '../../i18n/NgonNgu';
 import { LOAI, VUNG } from '../../utils/hangSo';
 import { chuyenCanh } from '../../utils/hieuUng';
 import { HienSao, KhungAnh, TieuDeKhoi } from '../du-lich/GiaoDien';
 import { khopDiem } from '../../utils/timDiem';
 import type { DiaDiem, Loai, Vung } from '../../utils/kieu';
+
+/** Điểm có ít nhất một ảnh 360° xem được. */
+export const co360 = (p: DiaDiem) => !!p.quanSat?.some((q) => q.nguon !== 'google' || !!q.googleUrl);
 
 /* Mẫu bento lặp mỗi 8 thẻ: 1 thẻ lớn 2×2, 6 thẻ vuông, 1 thẻ ngang. */
 const kieuO = (i: number) => (i % 8 === 0 ? 'lon' : i % 8 === 7 ? 'ngang' : 'vua');
@@ -27,7 +30,11 @@ function TheDiem({ p, kieu, i, onXemBanDo }: { p: DiaDiem; kieu: 'lon' | 'vua' |
       <Link to={`/dia-diem/${p.id}`} className="the-anh group" aria-label={chon(p.ten, p.tenEn)}>
         <span className="khung" style={{ viewTransitionName: 'anh-' + p.id } as CSSProperties}><KhungAnh p={p} /></span>
         <span className="man" />
-        {p.vung && <span className={`fx-noi-it nhan-vung vung-${VUNG[p.vung].token} absolute left-3 top-3 z-[4]`}>{nn === 'en' ? VUNG[p.vung].nganEn : VUNG[p.vung].ngan}</span>}
+        <span className="fx-noi-it absolute left-3 top-3 z-[4] flex flex-wrap gap-1.5">
+          {p.vung && <span className={`nhan-vung vung-${VUNG[p.vung].token}`}>{nn === 'en' ? VUNG[p.vung].nganEn : VUNG[p.vung].ngan}</span>}
+          {/* Chỉ gắn khi điểm thật sự có ảnh 360° (ảnh tải lên, hoặc mã nhúng Google còn đường dẫn). */}
+          {co360(p) && <span className="nhan-360" title={t('coAnh360')}><Orbit className="h-3.5 w-3.5" aria-hidden="true" />360°<span className="sr-only">: {t('coAnh360')}</span></span>}
+        </span>
         <span className={`fx-noi absolute inset-x-0 bottom-0 block p-5 text-[#F7F5EF] ${kieu === 'lon' ? 'sm:p-7' : ''}`}>
           <span className="text-[13px] font-medium text-[#DCE4E0]">{nn === 'en' ? LOAI[p.loai]?.en : LOAI[p.loai]?.ten}</span>
           <b className={`mt-0.5 block ${kieu === 'lon' ? 'tieu-de-vua' : 'text-[19px] font-semibold leading-snug'}`}>{chon(p.ten, p.tenEn)}</b>
