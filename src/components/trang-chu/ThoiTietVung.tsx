@@ -7,7 +7,7 @@ import { useState, type CSSProperties } from 'react';
 import { useNN } from '../../i18n/NgonNgu';
 import { VUNG, DIEM_THOI_TIET } from '../../utils/hangSo';
 import { TieuDeKhoi } from '../du-lich/GiaoDien';
-import { useThoiTiet, moTaMa, mucUv, do_, BayNgay, NguonThoiTiet, LoiThoiTiet } from '../du-lich/ThoiTiet';
+import { useThoiTiet, moTaMa, mucUv, do_, BayNgay, LoiThoiTiet } from '../du-lich/ThoiTiet';
 import type { Vung } from '../../utils/kieu';
 
 const CAC_VUNG = Object.keys(VUNG) as Vung[];
@@ -59,7 +59,6 @@ export default function ThoiTietVung() {
               </div>
               {db && <div className="mt-auto border-t border-line/60 px-5 pb-2"><BayNgay db={db} /></div>}
             </article>); })}</div>}
-        <NguonThoiTiet nguon={data?.[0]?.nguon} className="mt-4" />
       </div>
     </section>);
 }
