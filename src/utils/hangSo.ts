@@ -21,6 +21,13 @@ export const lopVung = (v: Vung | null | undefined) => (v ? `vung-${VUNG[v].toke
 export const mauVung = (v: Vung | null | undefined, dam = false, alpha = 1) =>
   v ? `rgb(var(--c-${VUNG[v].token}${dam ? '-dam' : ''}) / ${alpha})` : `rgb(var(--c-emerald) / ${alpha})`;
 export const TIEU_CHI: [keyof TieuChi, string, string][] = [['canhQuan', 'Cảnh quan', 'Scenery'], ['dichVu', 'Dịch vụ', 'Service'], ['veSinh', 'Vệ sinh', 'Cleanliness'], ['giaCa', 'Giá cả', 'Price']];
+/** Nơi tiêu biểu để xem thời tiết từng vùng: toạ độ trung tâm, đủ cho dự báo theo ô lưới vài km. */
+export const DIEM_THOI_TIET: Record<Vung, { ten: string; en: string; lat: number; lng: number }[]> = {
+  'cao-nguyen': [{ ten: 'Đà Lạt', en: 'Da Lat', lat: 11.9404, lng: 108.4583 }],
+  'bien-dao': [{ ten: 'Phan Thiết', en: 'Phan Thiet', lat: 10.9289, lng: 108.1021 }, { ten: 'Mũi Né', en: 'Mui Ne', lat: 10.9483, lng: 108.3005 },
+    { ten: 'Đảo Phú Quý', en: 'Phu Quy Island', lat: 10.52, lng: 108.935 }],
+  'dai-ngan': [{ ten: 'Gia Nghĩa', en: 'Gia Nghia', lat: 12.0042, lng: 107.6907 }, { ten: 'Hồ Tà Đùng', en: 'Ta Dung Lake', lat: 11.867, lng: 107.983 }],
+};
 /** Số khẩn cấp toàn quốc, gọi miễn phí từ mọi máy: [số, tiếng Việt, tiếng Anh]. */
 export const SO_KHAN: [string, string, string][] = [['113', 'Công an', 'Police'], ['114', 'Cứu hoả, cứu nạn', 'Fire & rescue'], ['115', 'Cấp cứu', 'Ambulance']];
 export const DI_CUNG: Record<string, [string, string]> = { 'gia-dinh': ['Gia đình', 'Family'], 'ban-be': ['Bạn bè', 'Friends'], 'cap-doi': ['Cặp đôi', 'Couple'], 'mot-minh': ['Một mình', 'Solo'] };
