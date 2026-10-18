@@ -5,14 +5,16 @@ import { layTinTuc } from '../../services/api';
 import { useNN } from '../../i18n/NgonNgu';
 import { DauHieu } from './Header';
 import CucQuang from '../hieu-ung/CucQuang';
+import { SO_KHAN } from '../../utils/hangSo';
 
 /** Chân trang trên mảng rừng đêm: số điện thoại cần biết (cán bộ quản lý), lối đi nhanh, nguồn bản đồ. */
 export default function Footer() {
-  const { t, chon } = useNN();
+  const { t, chon, nn } = useNN();
   const { data: tin = [] } = useQuery({ queryKey: ['tin-tuc'], queryFn: layTinTuc });
   const lienHe = tin.filter((x) => x.loai === 'lien-he');
-  const LOI = [['/', t('khamPha')], ['/lo-trinh', t('goiYLoTrinh')], ['/luu-tru', t('luuTru')], ['/tin-tuc', t('tinTuc')],
-    ['/phan-anh', t('phanAnh')], ['/khach-quoc-te', t('khachQuocTe')], ['/thong-ke', t('thongKe')]];
+  const NHOM: [string, string[][]][] = [
+    [t('nhomLenKeHoach'), [['/', t('khamPha')], ['/lo-trinh', t('goiYLoTrinh')], ['/tu-tao-lo-trinh', t('tuTaoLoTrinh')], ['/luu-tru', t('luuTru')]]],
+    [t('nhomCanBiet'), [['/tin-tuc', t('tinTuc')], ['/khach-quoc-te', t('khachQuocTe')], ['/thong-ke', t('thongKe')], ['/phan-anh', t('phanAnh')]]]];
   return (
     <footer className="nen-toi nen-dong-muc relative overflow-hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <CucQuang toi />
@@ -21,10 +23,16 @@ export default function Footer() {
           <span className="ba-sac mb-6" aria-hidden="true"><i /><i /><i /></span>
           <div className="flex items-center gap-3"><DauHieu co={40} /><b className="font-serif text-[24px] font-medium">{t('tenTrang')}</b></div>
           <p className="mt-4 max-w-xs text-[15px] leading-relaxed text-[#B9C7C1]">{t('chanTrangMoTa')}</p>
+          <p className="mt-5 flex flex-wrap items-center gap-2 text-[13px] text-[#B9C7C1]"><Phone className="h-3.5 w-3.5" aria-hidden="true" />{t('khanCapNgan')}
+            {SO_KHAN.map(([so, vi, en]) => <a key={so} href={`tel:${so}`} title={nn === 'en' ? en : vi} aria-label={`${so}: ${nn === 'en' ? en : vi}`}
+              className="inline-flex min-h-[32px] items-center rounded-full bg-white/10 px-3 font-semibold tabular-nums text-[#F7F5EF] ring-1 ring-white/15 hover:bg-white/20">{so}</a>)}</p>
         </div>
-        <nav className="md:col-span-4" aria-label={t('tenTrang')}>
-          <ul className="grid grid-cols-2 gap-x-6 gap-y-1 md:grid-cols-1">{LOI.map(([to, ten]) => (
-            <li key={to}><Link to={to} className="inline-flex min-h-[40px] items-center text-[15px] text-[#F7F5EF] underline-offset-4 hover:underline">{ten}</Link></li>))}</ul>
+        <nav className="grid grid-cols-2 gap-6 md:col-span-4" aria-label={t('tenTrang')}>
+          {NHOM.map(([tieuDe, ds]) => <div key={tieuDe}>
+            <h2 className="mb-1 text-[13px] font-semibold text-[#B9C7C1]">{tieuDe}</h2>
+            <ul>{ds.map(([to, ten]) => (
+              <li key={to}><Link to={to} className="inline-flex min-h-[40px] items-center text-[15px] leading-snug text-[#F7F5EF] underline-offset-4 hover:underline">{ten}</Link></li>))}</ul>
+          </div>)}
         </nav>
         {lienHe.length > 0 && <div className="order-first md:order-none md:col-span-4">
           <h2 className="flex items-center gap-2 text-[15px] font-semibold"><Phone className="h-4 w-4" />{t('soCanBiet')}</h2>

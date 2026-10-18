@@ -1,5 +1,5 @@
 /** Tin tức, sự kiện, cảnh báo, số điện thoại cần biết — cán bộ đăng ở khu quản trị. */
-import type { CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { AlertTriangle, CalendarDays, Megaphone, Phone, ArrowUpRight } from 'lucide-react';
@@ -7,12 +7,17 @@ import { DauTrang, TrongRong } from '../../components/du-lich/GiaoDien';
 import BangTinNoiBat from '../../components/du-lich/BangTinNoiBat';
 import { layTinTuc, layDiaDiem, anhTinUrl } from '../../services/api';
 import { useNN } from '../../i18n/NgonNgu';
+import type { TinTuc } from '../../utils/kieu';
 
 export default function TinTucPage() {
   const { t, chon, ngay } = useNN();
   const { data: tin = [], isLoading } = useQuery({ queryKey: ['tin-tuc'], queryFn: layTinTuc });
   const { data: ds = [] } = useQuery({ queryKey: ['dia-diem'], queryFn: layDiaDiem });
+  const [loc, setLoc] = useState<TinTuc['loai'] | null>(null);
   const ds2 = tin.filter((x) => x.loai !== 'lien-he'), lienHe = tin.filter((x) => x.loai === 'lien-he');
+  /* Chỉ hiện nút lọc cho loại tin đang có; một loại thì không cần lọc. */
+  const cacLoai = (['canh-bao', 'su-kien', 'thong-bao'] as const).filter((k) => ds2.some((x) => x.loai === k));
+  const dsHien = loc ? ds2.filter((x) => x.loai === loc) : ds2;
   const noiBat = ds2.filter((x) => x.noiBat);
   const IC = { 'canh-bao': AlertTriangle, 'su-kien': CalendarDays, 'thong-bao': Megaphone, 'lien-he': Phone };
   /* Màu theo loại tin: cảnh báo vàng dã quỳ, sự kiện hồng, thông báo xanh biển. Luôn kèm chữ. */
@@ -28,10 +33,16 @@ export default function TinTucPage() {
           {!isLoading && !ds2.length && <TrongRong Ic={Megaphone} mau="vung-bien" tieuDe={t('khongCoTin')} moTa={t('khongCoTinMoTa')}>
             <Link to="/lo-trinh" className="nut nut-vien">{t('goiYLoTrinh')}<ArrowUpRight className="h-4 w-4" /></Link>
           </TrongRong>}
-          {ds2.map((x, i) => { const Ic = IC[x.loai]; const p = ds.find((d) => d.id === x.diaDiemId); const canh = x.loai === 'canh-bao'; return (
-            <article key={x.id} className={`hien-dan the overflow-hidden ${x.anh?.length ? 'sm:grid sm:grid-cols-[minmax(0,240px)_1fr]' : ''} ${canh ? 'border-[#E0B54A] bg-[#FCEFC7] dark:bg-[#3a3216]' : ''}`} style={{ '--i': i % 3 } as CSSProperties}>
-              {x.anh?.[0] && <Link to={`/tin-tuc/${x.id}`} tabIndex={-1} aria-hidden="true" className="block aspect-[16/9] bg-sunken sm:aspect-auto">
-                <img src={anhTinUrl(x.anh[0].id)} alt="" loading="lazy" className="h-full w-full object-cover" /></Link>}
+          {cacLoai.length > 1 && <div className="flex flex-wrap gap-2" role="group" aria-label={t('locLoaiTin')}>
+            <button type="button" className="chip" aria-pressed={!loc} onClick={() => setLoc(null)}>{t('tatCa')}<span className="chip-so">{ds2.length}</span></button>
+            {cacLoai.map((k) => (
+              <button key={k} type="button" className={`chip ${MAU[k]}`} aria-pressed={loc === k} onClick={() => setLoc(loc === k ? null : k)}>
+                <span className="cham-vung" aria-hidden="true" />{NHAN[k]}<span className="chip-so">{ds2.filter((x) => x.loai === k).length}</span></button>))}
+          </div>}
+          {dsHien.map((x, i) => { const Ic = IC[x.loai]; const p = ds.find((d) => d.id === x.diaDiemId); const canh = x.loai === 'canh-bao'; return (
+            <article key={x.id} className={`group hien-dan the overflow-hidden ${x.anh?.length ? 'sm:grid sm:grid-cols-[minmax(0,240px)_1fr]' : ''} ${canh ? 'border-[#E0B54A] border-l-4 bg-[#FCEFC7] dark:bg-[#3a3216]' : ''}`} style={{ '--i': i % 3 } as CSSProperties}>
+              {x.anh?.[0] && <Link to={`/tin-tuc/${x.id}`} tabIndex={-1} aria-hidden="true" className="block aspect-[16/9] overflow-hidden bg-sunken sm:aspect-auto">
+                <img src={anhTinUrl(x.anh[0].id)} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 ease-out motion-safe:group-hover:scale-105" /></Link>}
               <div className="p-6">
               <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-medium text-muted"><span className={`o-bieu-tuong h-8 w-8 rounded-[10px] ${MAU[x.loai]}`}><Ic className="h-4 w-4" aria-hidden="true" /></span><span className={canh ? 'font-semibold text-ink' : ''}>{NHAN[x.loai]}</span>
                 {(x.tuNgay || x.denNgay) && <span>{x.tuNgay ? `${t('tu')} ${ngay(x.tuNgay)} ` : ''}{x.denNgay ? `${t('den')} ${ngay(x.denNgay)}` : ''}</span>}</p>

@@ -26,7 +26,7 @@ export default function DiaDiemPage() {
       {/* Vầng sáng màu vùng của điểm sau đầu trang. */}
       <div className="vang-vung" aria-hidden="true" />
       <div className="container-page pt-8">
-        <Link to="/" className="inline-flex min-h-[40px] items-center gap-1.5 text-sm font-semibold text-action"><ArrowLeft className="h-4 w-4" />{t('khamPha')}</Link>
+        <Link to="/" className="inline-flex min-h-[40px] items-center gap-1.5 rounded-full border border-line/80 bg-paper/80 px-4 text-sm font-semibold text-action shadow-sh-1 backdrop-blur transition-transform hover:-translate-x-0.5"><ArrowLeft className="h-4 w-4" />{t('khamPha')}</Link>
         <div className="mt-4 grid gap-8 lg:grid-cols-12">
           {/* Điện thoại: ảnh đại diện lên đầu, trước phần chữ. Màn rộng: ảnh nằm cột phải. */}
           <div className="relative aspect-[3/2] overflow-hidden rounded-[20px] bg-sunken shadow-sh-2 lg:hidden" style={{ viewTransitionName: 'anh-' + p.id }}><KhungAnh p={p} uuTien sizes="100vw" /></div>

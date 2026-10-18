@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { Home, CalendarClock, Mountain, IdCard, Phone, BadgeDollarSign, Info } from 'lucide-react';
 import { useNN } from '../../i18n/NgonNgu';
 import { DauTrang } from '../../components/du-lich/GiaoDien';
+import { SO_KHAN } from '../../utils/hangSo';
 
 const MUC: { ic: typeof Home; vi: [string, string]; en: [string, string] }[] = [
   { ic: Home,
@@ -40,9 +41,12 @@ export default function KhachQuocTePage() {
             <div><h2 className="text-[19px] font-semibold leading-snug">{tieuDe}</h2><p className="mt-1.5 text-[16px] leading-relaxed text-ink-2">{noiDung}</p></div>
           </li>); })}</ol>
         <div className="hien-dan nen-toi mt-6 rounded-[20px] p-6 shadow-sh-2">
-          <h2 className="flex items-center gap-2 text-[17px] font-semibold"><Phone className="h-5 w-5" />{nn === 'en' ? 'Emergency' : 'Khẩn cấp'}</h2>
+          <h2 className="flex items-center gap-2 text-[17px] font-semibold"><Phone className="h-5 w-5" />{t('khanCapNgan')}</h2>
           <p className="mt-1.5 text-[16px] text-[#DCE4E0]">{t('khanCap')}</p>
-          <Link to="/phan-anh" className="nut nut-coral mt-4">{t('phanAnhTieuDe')}</Link>
+          <ul className="mt-4 grid gap-2 sm:grid-cols-3">{SO_KHAN.map(([so, vi, en]) => (
+            <li key={so}><a href={`tel:${so}`} className="flex min-h-[60px] items-center gap-3 rounded-2xl bg-white/10 px-4 ring-1 ring-white/20 transition-colors hover:bg-white/20">
+              <b className="font-serif text-[30px] font-medium leading-none tabular-nums">{so}</b><span className="text-[15px] leading-tight">{nn === 'en' ? en : vi}</span></a></li>))}</ul>
+          <Link to="/phan-anh" className="nut nut-coral mt-5">{t('phanAnhTieuDe')}</Link>
         </div>
         <p className="mt-6 flex gap-2 text-[13px] leading-relaxed text-muted"><Info className="mt-0.5 h-4 w-4 shrink-0" />{nn === 'en'
           ? 'Summary for reference only. The binding rules are Vietnam’s Law on Entry, Exit, Transit and Residence of Foreigners (Law No. 47/2014/QH13, as amended in 2019 and 2023) and guidance from the immigration authorities.'

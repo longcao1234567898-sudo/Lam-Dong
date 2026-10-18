@@ -55,7 +55,7 @@ export default function LoTrinhNoiBat({ ds, loTrinh, onXemBanDo }: { ds: DiaDiem
             {/* Màn rộng: ảnh giãn lấp phần cao thêm khi cột lộ trình bên phải dài hơn — trước đây
                 ảnh cao cố định nên thẻ lớn để trống một khoảng dưới nút. */}
             <div className="fx-the the relative flex h-full flex-col" data-nghieng="3">
-              <div className="relative h-56 shrink-0 overflow-hidden rounded-t-[15px] bg-sunken sm:h-72 lg:h-auto lg:min-h-[18rem] lg:flex-1"><AnhTuyen diem={dsLon} sizes="(min-width: 1024px) 60vw, 100vw" />
+              <div className="relative h-56 shrink-0 overflow-hidden rounded-t-[15px] bg-sunken sm:h-72 lg:h-auto lg:min-h-[18rem] lg:flex-1"><AnhTuyen diem={dsLon} ghep sizes="(min-width: 1024px) 40vw, 70vw" />
                 <span className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-[#0C2925]/55 via-transparent to-transparent" aria-hidden="true" />
                 <span className="absolute inset-x-5 bottom-4 z-[3] flex flex-wrap gap-2">
                   {lon.thoiGian && <span className="kinh inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[13px] font-semibold shadow-sh-1"><Clock className="h-3.5 w-3.5" aria-hidden="true" />{lon.thoiGian}</span>}

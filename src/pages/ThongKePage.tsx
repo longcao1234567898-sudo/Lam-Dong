@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid, PieChart, Pie, Cell,
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, AreaChart, Area } from 'recharts';
-import { ChartNoAxesColumn } from 'lucide-react';
+import { ChartNoAxesColumn, CalendarDays, Users, Globe2, MessageSquareText, Star } from 'lucide-react';
 import { layThongKe } from '../services/api';
 import DemSo from '../components/du-lich/DemSo';
 import { DauTrang } from '../components/du-lich/GiaoDien';
@@ -27,6 +27,11 @@ const truc = { fontSize: 12, fill: 'rgb(var(--c-muted))' };
    kể cả người mù màu): trong nước = biển, quốc tế = mai anh đào. Số sao 1→5: một sắc dã quỳ
    từ nhạt tới đậm (thang tuần tự, không dùng đỏ-xanh). */
 const M = { nd: '#1E88C8', qt: '#E0457B', mot: '#1E88C8', luoi: 'rgb(var(--c-line))', sao: ['#F7D9A6', '#F4BF6B', '#F29A1F', '#C47A08', '#8F5E00'] };
+/* Khung chú thích khi rê chuột: theo màu nền, viền của giao diện (mặc định của recharts là
+   hộp trắng viền xám, sang chế độ tối thì chói). Biểu đồ cột thêm dải nền nhạt sau cột đang chỉ. */
+const nhac = { contentStyle: { background: 'rgb(var(--c-surface))', border: '1px solid rgb(var(--c-line))', borderRadius: 12, boxShadow: 'var(--sh-2)', fontSize: 13 },
+  labelStyle: { color: 'rgb(var(--c-ink))', fontWeight: 600 }, itemStyle: { color: 'rgb(var(--c-ink-2))' } };
+const nhacCot = { ...nhac, cursor: { fill: 'rgb(var(--c-sunken) / .7)' } };
 
 const CHU: Record<string, [string, string]> = {
   tieuDe: ['Khách đến và đánh giá', 'Visitors and reviews'], moTa: ['Số liệu lượt khách do cán bộ nhập; đánh giá do du khách gửi.', 'Visitor numbers are entered by officials; reviews come from visitors.'],
@@ -61,43 +66,47 @@ export default function ThongKePage() {
   return (
     <div className="animate-page">
       <DauTrang tieuDe={c('tieuDe')} moTa={c('moTa')}
-        phai={<label className="flex items-center gap-2 text-sm font-semibold text-ink-2">{c('nam')} <select value={tk.nam} onChange={(e) => setNam(e.target.value)} className="o-nhap w-auto py-2">
+        phai={<label className="flex items-center gap-2 text-sm font-semibold text-ink-2"><CalendarDays className="h-4 w-4 text-muted" aria-hidden="true" />{c('nam')} <select value={tk.nam} onChange={(e) => setNam(e.target.value)} className="o-nhap w-auto py-2">
           {tk.nams.map((n) => <option key={n}>{n}</option>)}</select></label>} />
     <section className="container-page py-12">
       <div className="mb-5 grid grid-cols-2 gap-4 md:grid-cols-4">
-        {[[<DemSo key="a" gt={tongNd + tongQt} />, c('luotNam')], [<DemSo key="b" gt={tongQt} />, c('luotQt')],
-          [<DemSo key="c" gt={tk.danhGia.so} />, c('dg')], [tk.danhGia.saoTb ? tk.danhGia.saoTb.toFixed(1) : '–', c('saoTb')]].map(([gt, nhan], i) => (
-          <div key={i} className="hien-dan the p-5" style={{ '--i': i } as React.CSSProperties}><b className="so-lon block">{gt}</b><small className="mt-2 block text-[13px] text-muted">{nhan}</small></div>))}
+        {/* Mỗi ô một biểu tượng, màu khớp biểu đồ bên dưới: lượt khách = biển, quốc tế = mai anh đào, sao = dã quỳ. */}
+        {([[<DemSo key="a" gt={tongNd + tongQt} />, c('luotNam'), Users, 'vung-bien'], [<DemSo key="b" gt={tongQt} />, c('luotQt'), Globe2, 'vung-hoa'],
+          [<DemSo key="c" gt={tk.danhGia.so} />, c('dg'), MessageSquareText, ''],
+          [tk.danhGia.saoTb ? tk.danhGia.saoTb.toLocaleString(nn === 'en' ? 'en' : 'vi', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : '–', c('saoTb'), Star, 'vung-quy']] as const).map(([gt, nhan, Ic, mau], i) => (
+          <div key={i} className="hien-dan the p-5" style={{ '--i': i } as React.CSSProperties}>
+            <span className={`o-bieu-tuong h-10 w-10 rounded-xl ${mau}`} style={mau ? undefined : { '--vm': '#157A63' } as React.CSSProperties}><Ic className="h-5 w-5" aria-hidden="true" /></span>
+            <b className="so-lon mt-4 block">{gt}</b><small className="mt-2 block text-[13px] text-muted">{nhan}</small></div>))}
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         {tk.khachTheoXa && tk.khachTheoXa.ds.length > 0 && <Khung rong tieuDe={t('khachTheoXa')} moTa={t('khachTheoXaMoTa', { ky: tk.khachTheoXa.ky })}>
           <BarChart data={tk.khachTheoXa.ds.map((x) => ({ ...x, ten: x.xa.replace(/^(Xã|Phường|Đặc khu) /, '') }))} layout="vertical" margin={{ left: 8, right: 16 }}>
             <CartesianGrid horizontal={false} stroke={M.luoi} /><XAxis type="number" tick={truc} tickFormatter={(v) => so(v)} /><YAxis type="category" dataKey="ten" tick={truc} width={120} />
-            <Tooltip formatter={(v) => so(Number(v))} /><Legend />
+            <Tooltip {...nhacCot} formatter={(v) => so(Number(v))} /><Legend />
             <Bar dataKey="noiDia" name={t('trongNuoc')} stackId="k" fill={M.nd} stroke="rgb(var(--c-surface))" strokeWidth={2} maxBarSize={24} />
             <Bar dataKey="quocTe" name={t('quocTe')} stackId="k" fill={M.qt} stroke="rgb(var(--c-surface))" strokeWidth={2} radius={[0, 4, 4, 0]} maxBarSize={24} /></BarChart></Khung>}
         <Khung rong tieuDe={c('theoThang')} moTa={c('theoThangMoTa')} trong={khongLuot}>
           <BarChart data={tk.thang.map((x) => ({ ...x, ten: (nn === 'en' ? 'M' : 'T') + Number(x.thang.slice(5)) }))}>
             <CartesianGrid vertical={false} stroke={M.luoi} /><XAxis dataKey="ten" tick={truc} /><YAxis tick={truc} tickFormatter={(v) => so(v)} width={64} />
-            <Tooltip formatter={(v) => so(Number(v))} /><Legend /><Bar dataKey="noiDia" name={t('trongNuoc')} stackId="k" fill={M.nd} stroke="rgb(var(--c-surface))" strokeWidth={2} /><Bar dataKey="quocTe" name={t('quocTe')} stackId="k" fill={M.qt} stroke="rgb(var(--c-surface))" strokeWidth={2} radius={[4, 4, 0, 0]} />
+            <Tooltip {...nhacCot} formatter={(v) => so(Number(v))} /><Legend /><Bar dataKey="noiDia" name={t('trongNuoc')} stackId="k" fill={M.nd} stroke="rgb(var(--c-surface))" strokeWidth={2} /><Bar dataKey="quocTe" name={t('quocTe')} stackId="k" fill={M.qt} stroke="rgb(var(--c-surface))" strokeWidth={2} radius={[4, 4, 0, 0]} />
           </BarChart></Khung>
         <Khung tieuDe={c('tiLe')} moTa={c('trongNam')} trong={khongLuot}>
           <PieChart><Pie data={tongNd + tongQt ? [{ ten: t('trongNuoc'), gt: tongNd }, { ten: t('quocTe'), gt: tongQt }] : [{ ten: c('chuaCo'), gt: 1 }]} dataKey="gt" nameKey="ten" innerRadius="58%" outerRadius="85%" paddingAngle={2} stroke="rgb(var(--c-surface))" strokeWidth={2}>
-            {(tongNd + tongQt ? [M.nd, M.qt] : ['rgb(var(--c-line))']).map((m) => <Cell key={m} fill={m} />)}</Pie><Tooltip formatter={(v) => (tongNd + tongQt ? so(Number(v)) : '')} /><Legend /></PieChart></Khung>
+            {(tongNd + tongQt ? [M.nd, M.qt] : ['rgb(var(--c-line))']).map((m) => <Cell key={m} fill={m} />)}</Pie><Tooltip {...nhac} formatter={(v) => (tongNd + tongQt ? so(Number(v)) : '')} /><Legend /></PieChart></Khung>
         <Khung tieuDe={c('top')} moTa={c('topMoTa')} trong={!tk.topDiaDiem.some((x) => x.tong > 0) && { tieuDe: c('chuaCoLuot'), moTa: c('chuaCoLuotMoTa') }}>
           <BarChart data={tk.topDiaDiem} layout="vertical" margin={{ left: 8 }}><XAxis type="number" tick={truc} tickFormatter={(v) => so(v)} /><YAxis type="category" dataKey="ten" tick={truc} width={130} />
-            <Tooltip formatter={(v) => so(Number(v))} /><Bar dataKey="tong" name={c('luot')} fill={M.mot} radius={[0, 4, 4, 0]} /></BarChart></Khung>
+            <Tooltip {...nhacCot} formatter={(v) => so(Number(v))} /><Bar dataKey="tong" name={c('luot')} fill={M.mot} radius={[0, 4, 4, 0]} /></BarChart></Khung>
         <Khung tieuDe={c('tieuChi')} moTa={c('tieuChiMoTa')} trong={khongDg}>
           <RadarChart data={TIEU_CHI.map(([k, vi, en]) => ({ ten: nn === 'en' ? en : vi, gt: Number(tk.danhGia.tieuChi[k] || 0) }))}><PolarGrid stroke={M.luoi} /><PolarAngleAxis dataKey="ten" tick={truc} />
-            <PolarRadiusAxis domain={[0, 5]} tickCount={6} tick={{ fontSize: 10 }} /><Radar dataKey="gt" name={c('diem')} stroke={M.mot} strokeWidth={2} fill={M.mot} fillOpacity={0.2} /><Tooltip /></RadarChart></Khung>
+            <PolarRadiusAxis domain={[0, 5]} tickCount={6} tick={{ fontSize: 10 }} /><Radar dataKey="gt" name={c('diem')} stroke={M.mot} strokeWidth={2} fill={M.mot} fillOpacity={0.2} /><Tooltip {...nhac} /></RadarChart></Khung>
         <Khung tieuDe={c('phanBo')} moTa={c('phanBoMoTa')} trong={khongDg}>
-          <BarChart data={tk.danhGia.phanBo.map((gt, i) => ({ ten: `${i + 1} ${t('sao')}`, gt }))}><XAxis dataKey="ten" tick={truc} /><YAxis allowDecimals={false} tick={truc} /><Tooltip />
+          <BarChart data={tk.danhGia.phanBo.map((gt, i) => ({ ten: `${i + 1} ${t('sao')}`, gt }))}><XAxis dataKey="ten" tick={truc} /><YAxis allowDecimals={false} tick={truc} /><Tooltip {...nhacCot} />
             <Bar dataKey="gt" name={c('soDg')} radius={[4, 4, 0, 0]}>{M.sao.map((m) => <Cell key={m} fill={m} />)}</Bar></BarChart></Khung>
         <Khung tieuDe={c('saoDiaDiem')} moTa={c('saoDiaDiemMoTa')} trong={!tk.saoTheoDiaDiem.length && { tieuDe: c('chuaCoDg'), moTa: c('chuaCoDgMoTa') }}>
           <BarChart data={tk.saoTheoDiaDiem.map((x) => ({ ...x, ten: `${x.ten} (${x.so})`, tb: Number(x.tb.toFixed(2)) }))} layout="vertical" margin={{ left: 8 }}>
-            <XAxis type="number" domain={[0, 5]} tick={truc} /><YAxis type="category" dataKey="ten" tick={truc} width={150} /><Tooltip /><Bar dataKey="tb" name={c('saoTbNgan')} fill="#F29A1F" radius={[0, 4, 4, 0]} /></BarChart></Khung>
+            <XAxis type="number" domain={[0, 5]} tick={truc} /><YAxis type="category" dataKey="ten" tick={truc} width={150} /><Tooltip {...nhacCot} /><Bar dataKey="tb" name={c('saoTbNgan')} fill="#F29A1F" radius={[0, 4, 4, 0]} /></BarChart></Khung>
         <Khung tieuDe={c('dgThang')} moTa={c('dgThangMoTa')} trong={th12.every((x) => !x.so) && { tieuDe: c('chuaCoDg12'), moTa: c('chuaCoDgMoTa') }}>
-          <AreaChart data={th12}><XAxis dataKey="ten" tick={truc} /><YAxis allowDecimals={false} tick={truc} /><Tooltip />
+          <AreaChart data={th12}><XAxis dataKey="ten" tick={truc} /><YAxis allowDecimals={false} tick={truc} /><Tooltip {...nhac} />
             <Area type="monotone" dataKey="so" name={c('danhGia')} stroke={M.qt} strokeWidth={2} fill={M.qt} fillOpacity={0.14} /></AreaChart></Khung>
       </div>
     </section>

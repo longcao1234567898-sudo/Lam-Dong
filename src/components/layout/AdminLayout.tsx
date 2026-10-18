@@ -5,7 +5,7 @@ import { useCauHinh } from '../../utils/phuLuc';
 
 /* Một quyền duy nhất: mọi cán bộ thấy mọi mục. Các bảng phụ lục lấy theo cấu
    hình máy chủ gửi về, thêm bảng mới là tự có mục mới. */
-type Muc = { to: string; ten: string; ic: typeof MapPin; end?: boolean };
+type Muc = { to: string; ten: string; ic: typeof MapPin; end?: boolean; mat?: boolean };
 
 export default function AdminLayout() {
   const { staff, logout } = useAdminAuth();
@@ -27,7 +27,7 @@ export default function AdminLayout() {
       { to: '/quan-tri/bao-cao', ten: 'Báo cáo kỳ', ic: ClipboardCheck },
       { to: '/quan-tri/thong-ke', ten: 'Thống kê', ic: BarChart3 },
       /* Bảng nhạy cảm mang biểu tượng con mắt gạch chéo: xem là bị ghi nhật ký. */
-      ...(ch?.bang || []).map((b) => ({ to: `/quan-tri/bang/${b.key}`, ten: `${b.so}. ${b.ten}`, ic: b.mat ? EyeOff : Table2 })) ] },
+      ...(ch?.bang || []).map((b) => ({ to: `/quan-tri/bang/${b.key}`, ten: `${b.so}. ${b.ten}`, ic: b.mat ? EyeOff : Table2, mat: !!b.mat })) ] },
     { nhom: 'Hệ thống', ds: [
       { to: '/quan-tri/tai-khoan', ten: 'Tài khoản của tôi', ic: UserCog },
       { to: '/quan-tri/xa-phuong', ten: 'Xã/phường', ic: Building2 },
@@ -35,7 +35,7 @@ export default function AdminLayout() {
       { to: '/quan-tri/nhat-ky', ten: 'Nhật ký', ic: FileText } ] },
   ];
   const lop = ({ isActive }: { isActive: boolean }) => `flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
-    isActive ? 'bg-primary-600 text-white shadow-soft' : 'text-slate-600 hover:bg-white dark:text-slate-300 dark:hover:bg-slate-800'}`;
+    isActive ? 'bg-primary-600 text-white shadow-soft' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'}`;
   return (
     <section className="container-page py-5">
       <div className="nen-toi nen-dong-muc mb-5 overflow-hidden rounded-[20px] shadow-sh-2">
@@ -55,10 +55,12 @@ export default function AdminLayout() {
         {muc.flatMap((n) => n.ds).map((m) => <NavLink key={m.to} to={m.to} end={m.end} className={(a) => lop(a) + ' shrink-0 whitespace-nowrap'}><m.ic className="h-4 w-4 shrink-0" />{m.ten}</NavLink>)}
       </nav>
       <div className="flex gap-5">
-        <aside className="hidden w-60 shrink-0 lg:block"><div className="sticky top-24 space-y-5">
-          {muc.map((n) => <div key={n.nhom}><p className="mb-1.5 px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">{n.nhom}</p>
-            <div className="space-y-0.5">{n.ds.map((m) => <NavLink key={m.to} to={m.to} end={m.end} className={lop}><m.ic className="h-4 w-4 shrink-0" />{m.ten}</NavLink>)}</div></div>)}
-        </div></aside>
+        <aside className="hidden w-64 shrink-0 lg:block">
+          <nav className="sticky top-24 max-h-[calc(100svh-7rem)] space-y-5 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 shadow-soft dark:border-slate-800 dark:bg-slate-900" aria-label="Mục quản trị">
+          {muc.map((n) => <div key={n.nhom}><p className="mb-1.5 px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{n.nhom}</p>
+            <div className="space-y-0.5">{n.ds.map((m) => <NavLink key={m.to} to={m.to} end={m.end} className={lop}><m.ic className="h-4 w-4 shrink-0" /><span className="min-w-0 flex-1">{m.ten}</span>
+              {m.mat && <span className="shrink-0 rounded-md bg-amber-100 px-1.5 py-0.5 text-[10.5px] font-bold text-amber-800 dark:bg-amber-900/50 dark:text-amber-200" title="Bảng có thông tin cá nhân: mỗi lần xem đều được ghi nhật ký">Mật</span>}</NavLink>)}</div></div>)}
+          </nav></aside>
         <div className="min-w-0 flex-1"><Outlet /></div>
       </div>
     </section>
