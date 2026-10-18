@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { Navigation, ArrowUp, ArrowDown, X, Link2, Plus, Clock, Bus, ArrowLeft, ArrowUpRight } from 'lucide-react';
+import { Navigation, ArrowUp, ArrowDown, X, Link2, Plus, Clock, Bus, ArrowLeft, ArrowUpRight, MapPin, Ruler, StickyNote } from 'lucide-react';
 import BanDo from '../../components/du-lich/BanDo';
 import ChiTiet from '../../components/du-lich/ChiTiet';
 import { AnhTuyen, DauTrang, KhungAnh } from '../../components/du-lich/GiaoDien';
@@ -27,11 +27,15 @@ export function LoTrinhDanhSach() {
         <div className="grid gap-5 md:grid-cols-2">{lt.map((l, i) => { const diem = diemCua(l, ds); return (
           <div key={l.id} className="hien-dan" style={{ '--i': i % 2 } as CSSProperties}>
             <Link to={`/lo-trinh/${l.id}`} className="fx-the the group relative block h-full" data-nghieng="5">
-              <span className="relative block h-48 overflow-hidden rounded-t-[15px] bg-sunken"><AnhTuyen diem={diem} sizes="(min-width: 768px) 50vw, 100vw" /></span>
+              <span className="relative block h-48 overflow-hidden rounded-t-[15px] bg-sunken"><AnhTuyen diem={diem} sizes="(min-width: 768px) 50vw, 100vw" />
+                {/* Thông số chính nằm ngay trên ảnh bìa, trên viên kính mờ cho đọc được trên mọi ảnh. */}
+                <span className="absolute inset-x-3 bottom-3 z-[2] flex flex-wrap gap-1.5">
+                  {l.thoiGian && <span className="kinh inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[13px] font-semibold shadow-sh-1"><Clock className="h-3.5 w-3.5" aria-hidden="true" />{l.thoiGian}</span>}
+                  <span className="kinh inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[13px] font-semibold shadow-sh-1"><MapPin className="h-3.5 w-3.5" aria-hidden="true" />{t('soDiemDung', { n: diem.length })}</span>
+                  {diem.length > 1 && <span className="kinh inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[13px] font-semibold shadow-sh-1"><Ruler className="h-3.5 w-3.5" aria-hidden="true" />{t('duongChimBay', { km: tongKm(diem) })}</span>}
+                </span></span>
               <span className="fx-noi-it block p-6">
                 <b className="tieu-de-vua block">{chon(l.ten, l.tenEn)}</b>
-                <span className="mt-2 flex flex-wrap gap-x-4 text-sm text-ink-2">{l.thoiGian && <span>{l.thoiGian}</span>}<span>{t('soDiemDung', { n: diem.length })}</span>
-                  <span>{t('duongChimBay', { km: tongKm(diem) })}</span></span>
                 {chon(l.moTa, l.moTaEn) && <span className="mt-3 block text-[15px] leading-relaxed text-ink-2">{chon(l.moTa, l.moTaEn)}</span>}
                 <span className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-muted">{diem.map((p, k) => (
                   <span key={p.id + k} className="inline-flex items-center gap-2">{k > 0 && <span className="h-[2px] w-4 bg-route/60" aria-hidden="true" />}<span className={`cham-diem ${lopVung(p.vung)} h-2 w-2 rounded-full`} aria-hidden="true" />{chon(p.ten, p.tenEn)}</span>))}</span>
@@ -84,14 +88,15 @@ export function LoTrinhChiTiet() {
         <ol className="space-y-5 lg:col-span-5 lg:order-1 lg:pb-[30vh]">
           {cap.map(({ d, p }, i) => (
             <li key={p.id + i} ref={(e) => { dsMuc.current[i] = e; }} data-i={i}>
-              {nhieuNgay && (i === 0 || d.ngay !== cap[i - 1].d.ngay) && <p className="mb-2 font-serif text-[22px] text-route">{t('ngay')} {d.ngay}</p>}
+              {nhieuNgay && (i === 0 || d.ngay !== cap[i - 1].d.ngay) && <p className={`mb-3 flex items-center gap-3 ${i ? 'pt-3' : ''}`}>
+                <span className="rounded-full bg-route px-3.5 py-1 font-serif text-[17px] text-white shadow-sh-1">{t('ngay')} {d.ngay}</span><span className="h-px flex-1 bg-line" aria-hidden="true" /></p>}
               <article className={`the overflow-hidden transition-shadow duration-500 ${dang === i ? 'shadow-sh-3 ring-2 ring-route/50' : ''}`}>
                 <div className="relative h-40 overflow-hidden bg-sunken"><KhungAnh p={p} sizes="(min-width: 1024px) 40vw, 100vw" />
                   <span className={`absolute bottom-3 left-3 z-[2] grid h-9 w-9 place-items-center bg-route text-sm font-bold text-white shadow-sh-2 ${i === cap.length - 1 ? 'rounded-lg' : 'rounded-full'}`}>{i + 1}</span></div>
                 <div className="p-5">
                   <h2 className="text-[19px] font-semibold leading-snug">{chon(p.ten, p.tenEn)}</h2>
                   <p className="mt-1 text-[13px] text-muted">{i === 0 ? t('batDau') : t('cachDiemTruoc', { km: Math.max(1, Math.round(khoangCachKm(diem[i - 1], p))) })}{p.xa ? `, ${p.xa}` : ''}</p>
-                  {d.ghiChu && <p className="mt-2 text-[15px] text-ink-2">{d.ghiChu}</p>}
+                  {d.ghiChu && <p className="mt-3 flex gap-2 rounded-xl bg-sunken/70 px-3.5 py-2.5 text-[15px] leading-relaxed text-ink-2"><StickyNote className="mt-1 h-4 w-4 shrink-0 text-muted" aria-hidden="true" />{d.ghiChu}</p>}
                   <button type="button" onClick={() => setXem(p.id)} className="mt-3 inline-flex min-h-[40px] items-center gap-1.5 text-sm font-semibold text-action">{t('xemChiTiet')}<ArrowUpRight className="h-4 w-4" /></button>
                 </div>
               </article>

@@ -41,12 +41,15 @@ export default function PhanAnhPage() {
                 <button key={k} type="button" className="chip" aria-pressed={f.loai === k} onClick={() => setF({ ...f, loai: k })}>{loaiPA(k)}</button>))}</div></fieldset>
             <label className={nhan}>{t('diaDiemLienQuan')}<select className="o-nhap mt-1 font-normal" value={f.diaDiemId} onChange={(e) => setF({ ...f, diaDiemId: e.target.value })}>
               <option value="">—</option>{ds.map((p) => <option key={p.id} value={p.id}>{chon(p.ten, p.tenEn)}</option>)}</select></label>
-            <label className={nhan}>{t('noiDungPhanAnh')}<textarea className="o-nhap mt-1 font-normal" rows={5} maxLength={2000} value={f.noiDung} onChange={(e) => setF({ ...f, noiDung: e.target.value })} /></label>
+            <label className={nhan}>{t('noiDungPhanAnh')}<textarea className="o-nhap mt-1 font-normal" rows={5} maxLength={2000} value={f.noiDung} aria-describedby="dem-chu-pa" onChange={(e) => setF({ ...f, noiDung: e.target.value })} /></label>
+            <p id="dem-chu-pa" className={`mt-1 text-right text-xs tabular-nums ${f.noiDung.length > 1800 ? 'font-semibold text-[#B42318] dark:text-[#F6C4BD]' : 'text-muted'}`}>{f.noiDung.length}/2000</p>
             <label className={nhan}>{t('lienHe')}<input className="o-nhap mt-1 font-normal" maxLength={100} value={f.lienHe} onChange={(e) => setF({ ...f, lienHe: e.target.value })} /></label>
             {loi && <div role="alert" className="mt-4 rounded-xl bg-[#FDECEA] px-4 py-3 text-sm text-[#B42318]">{loi}</div>}
-            <button type="button" onClick={nop} disabled={gui.isPending} className="nut nut-chinh mt-6">
-              {gui.isPending && <Loader2 className="h-4 w-4 animate-spin" />}{gui.isPending ? t('dangGui') : t('guiPhanAnh')}</button>
-            <p className="mt-4 flex items-start gap-1.5 text-[13px] text-muted"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />{t('baoMatPhanAnh')}</p>
+            <div className="mt-6 flex flex-col-reverse gap-4 border-t border-line/70 pt-5 sm:flex-row sm:items-center sm:justify-between">
+              <p className="flex max-w-md items-start gap-1.5 text-[13px] text-muted"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-action" />{t('baoMatPhanAnh')}</p>
+              <button type="button" onClick={nop} disabled={gui.isPending} className="nut nut-chinh shrink-0">
+                {gui.isPending && <Loader2 className="h-4 w-4 animate-spin" />}{gui.isPending ? t('dangGui') : t('guiPhanAnh')}</button>
+            </div>
           </>}
         </div>
       </section>

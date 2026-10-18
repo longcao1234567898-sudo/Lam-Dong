@@ -2,12 +2,13 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { PenLine, X } from 'lucide-react';
+import { PenLine, X, Search } from 'lucide-react';
 import { HienSao, TieuDeKhoi } from '../du-lich/GiaoDien';
 import CucQuang from '../hieu-ung/CucQuang';
 import { layDanhGiaMoiNhat } from '../../services/api';
 import { useNN } from '../../i18n/NgonNgu';
 import { TIEU_CHI, DI_CUNG } from '../../utils/hangSo';
+import { timDiem } from '../../utils/timDiem';
 import { cheDoMinhHoa, napMinhHoa } from '../../minh-hoa/cheDo';
 import type { DanhGiaMoi, DiaDiem, ThongKe, TieuChi } from '../../utils/kieu';
 
@@ -17,7 +18,8 @@ function TheNhanXet({ x }: { x: DanhGiaMoi }) {
   const { t, nn, chon } = useNN();
   const [mo, setMo] = useState(false);
   const dai = x.nhanXet.length > 180;
-  const meta = [x.ten || t('anDanh'), x.diCung && DI_CUNG[x.diCung] ? DI_CUNG[x.diCung][nn === 'en' ? 1 : 0] : null,
+  const ten = x.ten || t('anDanh');
+  const meta = [x.diCung && DI_CUNG[x.diCung] ? DI_CUNG[x.diCung][nn === 'en' ? 1 : 0] : null,
     x.thoiDiem && /^\d{4}-\d{2}$/.test(x.thoiDiem) ? `${Number(x.thoiDiem.slice(5))}/${x.thoiDiem.slice(0, 4)}` : null].filter(Boolean).join(', ');
   return (
     <article className="the relative flex h-full flex-col p-5">
@@ -26,13 +28,18 @@ function TheNhanXet({ x }: { x: DanhGiaMoi }) {
       <Link to={`/dia-diem/${x.diaDiemId}`} className="mt-2 w-fit text-[13px] font-semibold text-action underline-offset-2 hover:underline">{chon(x.tenDiem, x.tenDiemEn)}</Link>
       <p className={`mt-2 flex-1 whitespace-pre-line text-[15.5px] leading-relaxed ${dai && !mo ? 'line-clamp-4' : ''}`}>{x.nhanXet}</p>
       {dai && <button type="button" onClick={() => setMo((m) => !m)} className="mt-1 w-fit text-sm font-semibold text-action">{mo ? t('anBot') : t('xemThem')}</button>}
-      <p className="mt-4 border-t border-line/70 pt-3 text-[13px] text-muted">{meta}</p>
+      <div className="mt-4 flex items-center gap-3 border-t border-line/70 pt-3">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-sunken font-serif text-[16px] text-forest dark:text-ink" aria-hidden="true">{ten.trim().charAt(0).toUpperCase()}</span>
+        <span className="min-w-0"><b className="block truncate text-[14px] font-semibold">{ten}</b>{meta && <span className="block text-[13px] text-muted">{meta}</span>}</span>
+      </div>
     </article>);
 }
 
 function ChonDiem({ ds, onChon, onDong }: { ds: DiaDiem[]; onChon: (id: string) => void; onDong: () => void }) {
   const { t, chon } = useNN();
   const dong = useRef<HTMLButtonElement>(null);
+  const [q, setQ] = useState('');
+  const dsHien = q.trim() ? timDiem(ds, q) : ds;
   useEffect(() => { dong.current?.focus(); const k = (e: KeyboardEvent) => e.key === 'Escape' && onDong(); window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [onDong]);
   return (
     <div className="fixed inset-0 z-[1100] flex items-end justify-center bg-[#0C2925]/60 md:items-center md:p-6" role="dialog" aria-modal="true" aria-labelledby="chon-diem-dg"
@@ -40,7 +47,11 @@ function ChonDiem({ ds, onChon, onDong }: { ds: DiaDiem[]; onChon: (id: string) 
       <div className="animate-page the max-h-[80vh] w-full max-w-lg overflow-auto overscroll-contain rounded-b-none p-6 md:rounded-b-[16px]">
         <div className="mb-3 flex items-center justify-between gap-3"><h2 id="chon-diem-dg" className="tieu-de-vua">{t('chonDiemDanhGia')}</h2>
           <button ref={dong} type="button" onClick={onDong} aria-label={t('dong')} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl hover:bg-sunken"><X className="h-5 w-5" /></button></div>
-        <ul className="-mx-2">{ds.map((p) => (
+        {ds.length > 6 && <label className="relative mb-2 block"><span className="sr-only">{t('locDiemBanDo')}</span>
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden="true" />
+          <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('locDiemBanDo')} autoComplete="off" spellCheck={false} className="o-nhap py-2 pl-9 text-[15px]" /></label>}
+        {!dsHien.length && <p className="py-3 text-sm text-muted" role="status">{t('khongThayDiem', { q: q.trim() })}</p>}
+        <ul className="-mx-2">{dsHien.map((p) => (
           <li key={p.id}><button type="button" onClick={() => onChon(p.id)} className="flex w-full items-baseline justify-between gap-3 rounded-xl px-2 py-3 text-left hover:bg-sunken">
             <span className="font-medium">{chon(p.ten, p.tenEn)}</span><span className="shrink-0 text-[13px] text-muted">{p.xa || ''}</span></button></li>))}</ul>
       </div>
