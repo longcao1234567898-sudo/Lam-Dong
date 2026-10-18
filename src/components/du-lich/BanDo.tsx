@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Tooltip, Polyline, ZoomControl, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Tooltip, Polyline, ZoomControl, AttributionControl, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Hand, Maximize2 } from 'lucide-react';
@@ -87,8 +87,10 @@ export default function BanDo({ ds, tuyen = [], tam = null, lia = null, chon = n
   const tre = tuyen.map((p, i) => { if (i) daDi += khoangCachKm(tuyen[i - 1], p); return giamChuyenDong() ? 0 : BAY * 1000 + (daDi / tong) * thoiGianVe; });
   return (
     <div className={`relative isolate overflow-hidden rounded-[20px] shadow-sh-3 ${cao || (thap ? 'h-[380px] sm:h-[460px]' : 'h-[460px] sm:h-[600px]')}`}>
-      <MapContainer bounds={KHUNG} scrollWheelZoom={false} zoomControl={false} dragging={!camUng} className="ban-do-khung h-full w-full" aria-label={t('banDo')}>
+      <MapContainer bounds={KHUNG} scrollWheelZoom={false} zoomControl={false} dragging={!camUng} className="ban-do-khung h-full w-full" attributionControl={false} aria-label={t('banDo')}>
         <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        {/* Bỏ chữ "Leaflet" (tuỳ chọn); "© OpenStreetMap" bắt buộc theo chính sách dùng bản đồ OSM nên giữ, thu nhỏ. */}
+        <AttributionControl prefix={false} />
         <ZoomControl position="bottomright" />
         {ds.map((p) => (
           <Marker key={p.id} position={[p.lat, p.lng]}
