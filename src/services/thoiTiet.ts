@@ -1,6 +1,6 @@
 /**
  * Dự báo thời tiết, hai nguồn miễn phí không cần khoá (cả hai giấy phép CC BY 4.0 — nơi hiện
- * số liệu PHẢI ghi nguồn, xem NguonThoiTiet):
+ * số liệu PHẢI ghi nguồn — ghi ở chân trang, Footer.tsx):
  *  1. Open-Meteo (open-meteo.com): một lần gọi lấy được nhiều nơi, có sẵn số theo ngày.
  *  2. MET Norway (api.met.no, Viện Khí tượng Na Uy): dự phòng khi Open-Meteo lỗi hoặc báo
  *     quá giới hạn (429). Trả số theo giờ, ở đây gộp thành theo ngày.
