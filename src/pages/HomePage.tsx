@@ -14,6 +14,7 @@ import LoTrinhNoiBat from '../components/trang-chu/LoTrinhNoiBat';
 import DanhGiaKhach from '../components/trang-chu/DanhGiaKhach';
 import VungSac from '../components/trang-chu/VungSac';
 import LoiMoi from '../components/trang-chu/LoiMoi';
+import ThoiTietVung from '../components/trang-chu/ThoiTietVung';
 import NutLenDau from '../components/common/NutLenDau';
 import ChiTiet from '../components/du-lich/ChiTiet';
 import { layDiaDiem, layThongKe, layLoTrinh, layTinTuc } from '../services/api';
@@ -68,6 +69,9 @@ export default function HomePage() {
       <BanDoTuongTac ref={khuBanDo} ds={ds} loTrinh={loTrinh} tab={tab} onTab={setTab} chon={chon} onChon={setChon} tuyen={tuyen} onTuyen={setTuyen} />
 
       <LoTrinhNoiBat ds={ds} loTrinh={loTrinh} onXemBanDo={(id) => { setTab('tuyen'); setChon(null); setTuyen(id); toiBanDo(); }} />
+
+      {/* Thời tiết ba vùng: xem trước khi lên đường (dự báo thật, có nguồn dự phòng). */}
+      <ThoiTietVung />
 
       {/* ═══ Đánh giá + Tin mới: gộp song song trên màn rộng ═══ */}
       <DanhGiaKhach ds={ds} tk={tk} onViet={setVietCho} />

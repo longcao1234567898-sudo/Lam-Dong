@@ -7,6 +7,7 @@ import { HienSao, KhungAnh } from './GiaoDien';
 import { layDanhGia, layDanhGiaCuaToi, guiDanhGia, baoDanhGia, anhUrl } from '../../services/api';
 import { LOAI, VUNG, TIEU_CHI, DI_CUNG, webAnToan, lopVung } from '../../utils/hangSo';
 import { useNN } from '../../i18n/NgonNgu';
+import { ThoiTietDiem } from './ThoiTiet';
 import type { DiaDiem, TieuChi } from '../../utils/kieu';
 
 const SAO = 'M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95z';
@@ -142,6 +143,7 @@ export function ThongTinDiaDiem({ p, trangRieng = false, vietNgay = false, giua 
       <Link to={`/phan-anh?diem=${encodeURIComponent(p.id)}`} className="nut nut-vien"><MessageSquareWarning className="h-4 w-4" />{t('guiPhanAnhDiemNay')}</Link>
     </div>
     {viet && <FormDanhGia p={p} onXong={() => setViet(false)} />}
+    <ThoiTietDiem p={p} />
     {/* Trang riêng: bộ ảnh và bài chi tiết nằm giữa thông tin chung và phần đánh giá. */}
     {giua}
     {p.soDanhGia > 0 && p.saoTb !== null ? (<>
