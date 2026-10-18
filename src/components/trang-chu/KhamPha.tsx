@@ -94,8 +94,9 @@ export default function KhamPha({ ds, dangTai, tuKhoa, onBoTuKhoa, onXemBanDo, v
                   {ten(LOAI[l])}<span className="chip-so">{n}</span></button>); })}
             </div>
           </div>
-          {tuKhoa.trim() && <p className="flex items-center gap-2 text-sm"><span>{t('ketQuaCho', { q: tuKhoa.trim() })}</span>
-            <button type="button" onClick={onBoTuKhoa} className="inline-flex min-h-[32px] items-center gap-1 rounded-full px-2 text-action hover:bg-sunken"><X className="h-4 w-4" />{t('boLoc')}</button></p>}
+          {/* Đang lọc (vùng, loại hình hay từ khoá): một nút bỏ hết, khỏi bấm lại từng chip. */}
+          {(q || vung || loai) && <p className="flex items-center gap-2 text-sm">{q && <span>{t('ketQuaCho', { q })}</span>}
+            <button type="button" onClick={() => doi(() => { setVung(null); setLoai(null); if (q) onBoTuKhoa(); })} className="inline-flex min-h-[32px] items-center gap-1 rounded-full px-2 text-action hover:bg-sunken"><X className="h-4 w-4" />{t('boLoc')}</button></p>}
         </div>
 
         {dangTai ? <div className="grid gap-4 sm:grid-cols-6 lg:auto-rows-[244px] lg:grid-cols-12">

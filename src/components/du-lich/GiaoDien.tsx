@@ -92,8 +92,18 @@ export function TrongRong({ Ic, mau = 'vung-bien', tieuDe, moTa, children }: {
 
 /** Điểm có ảnh để hiện (ảnh cán bộ tải lên hoặc ảnh mặc định). */
 export const coAnh = (p: DiaDiem) => !!p.anh?.length || !!anhMacDinh(p.id);
-/** Ảnh của một lộ trình: ảnh điểm dừng đầu tiên có ảnh. */
-export function AnhTuyen({ diem, sizes }: { diem: DiaDiem[]; sizes?: string }) {
-  const p = diem.find(coAnh) || diem[0];
+/**
+ * Ảnh của một lộ trình: ảnh điểm dừng đầu tiên có ảnh. `ghep` (khung đủ rộng): ghép ảnh của
+ * hai, ba điểm dừng — điểm đầu ảnh lớn bên trái. Chỉ lấy điểm có ảnh thật, không ghép ô
+ * trống; ít hơn hai điểm có ảnh thì về một ảnh như thường. Tên các điểm đã có trong chữ của
+ * thẻ nên phần ghép ẩn khỏi trình đọc màn hình.
+ */
+export function AnhTuyen({ diem, sizes, ghep = false }: { diem: DiaDiem[]; sizes?: string; ghep?: boolean }) {
+  const coA = diem.filter((p, i) => coAnh(p) && diem.findIndex((x) => x.id === p.id) === i).slice(0, 3);
+  if (ghep && coA.length > 1) return (
+    <span className="absolute inset-0 grid grid-cols-[3fr_2fr] grid-rows-2 gap-[3px]" aria-hidden="true">
+      {coA.map((p, i) => <span key={p.id} className={`relative overflow-hidden ${i === 0 || coA.length === 2 ? 'row-span-2' : ''}`}><KhungAnh p={p} sizes={sizes} /></span>)}
+    </span>);
+  const p = coA[0] || diem[0];
   return p ? <KhungAnh p={p} sizes={sizes} /> : <span className="anh-cho" aria-hidden="true" />;
 }

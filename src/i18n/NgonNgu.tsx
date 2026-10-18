@@ -202,6 +202,8 @@ const TU: Record<string, [string, string]> = {
   khongKhopLuuTru: ['Không có cơ sở nào khớp. Thử gõ ngắn hơn hoặc bỏ bớt bộ lọc.', 'Nothing matches. Try a shorter word or remove a filter.'],
   timTrenGoogleMaps: ['Tìm trên Google Maps', 'Find on Google Maps'],
   locLoaiTin: ['Lọc theo loại tin', 'Filter by type'],
+  nhomLenKeHoach: ['Lên kế hoạch', 'Plan your trip'], nhomCanBiet: ['Thông tin cần biết', 'Good to know'],
+  khanCapNgan: ['Khẩn cấp', 'Emergency'],
   loTrinhMoTa2: ['Cán bộ địa phương soạn sẵn. Chọn một lộ trình để xem đường đi.', 'Prepared by local officials. Pick one to see the way.'],
   danhGiaTieuDe: ['Đánh giá của du khách', 'What visitors say'],
   danhGiaMoTa: ['Chỉ hiện đánh giá thật của du khách. Mỗi máy được đánh giá mỗi điểm một lần.', 'Genuine visitor reviews only. One review per device per place.'],

@@ -27,7 +27,7 @@ export function LoTrinhDanhSach() {
         <div className="grid gap-5 md:grid-cols-2">{lt.map((l, i) => { const diem = diemCua(l, ds); return (
           <div key={l.id} className="hien-dan" style={{ '--i': i % 2 } as CSSProperties}>
             <Link to={`/lo-trinh/${l.id}`} className="fx-the the group relative block h-full" data-nghieng="5">
-              <span className="relative block h-48 overflow-hidden rounded-t-[15px] bg-sunken"><AnhTuyen diem={diem} sizes="(min-width: 768px) 50vw, 100vw" />
+              <span className="relative block h-52 overflow-hidden rounded-t-[15px] bg-sunken sm:h-56"><AnhTuyen diem={diem} ghep sizes="(min-width: 768px) 30vw, 60vw" />
                 {/* Thông số chính nằm ngay trên ảnh bìa, trên viên kính mờ cho đọc được trên mọi ảnh. */}
                 <span className="absolute inset-x-3 bottom-3 z-[2] flex flex-wrap gap-1.5">
                   {l.thoiGian && <span className="kinh inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[13px] font-semibold shadow-sh-1"><Clock className="h-3.5 w-3.5" aria-hidden="true" />{l.thoiGian}</span>}

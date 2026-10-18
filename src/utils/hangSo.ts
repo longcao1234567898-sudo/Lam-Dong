@@ -21,6 +21,8 @@ export const lopVung = (v: Vung | null | undefined) => (v ? `vung-${VUNG[v].toke
 export const mauVung = (v: Vung | null | undefined, dam = false, alpha = 1) =>
   v ? `rgb(var(--c-${VUNG[v].token}${dam ? '-dam' : ''}) / ${alpha})` : `rgb(var(--c-emerald) / ${alpha})`;
 export const TIEU_CHI: [keyof TieuChi, string, string][] = [['canhQuan', 'Cảnh quan', 'Scenery'], ['dichVu', 'Dịch vụ', 'Service'], ['veSinh', 'Vệ sinh', 'Cleanliness'], ['giaCa', 'Giá cả', 'Price']];
+/** Số khẩn cấp toàn quốc, gọi miễn phí từ mọi máy: [số, tiếng Việt, tiếng Anh]. */
+export const SO_KHAN: [string, string, string][] = [['113', 'Công an', 'Police'], ['114', 'Cứu hoả, cứu nạn', 'Fire & rescue'], ['115', 'Cấp cứu', 'Ambulance']];
 export const DI_CUNG: Record<string, [string, string]> = { 'gia-dinh': ['Gia đình', 'Family'], 'ban-be': ['Bạn bè', 'Friends'], 'cap-doi': ['Cặp đôi', 'Couple'], 'mot-minh': ['Một mình', 'Solo'] };
 
 /* Lộ trình gợi ý nay nằm trong cơ sở dữ liệu (bảng lich_trinh), cán bộ sửa ở mục Lộ trình. */
