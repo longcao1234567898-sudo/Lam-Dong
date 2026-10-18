@@ -7,7 +7,7 @@
 import type { CSSProperties } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Sun, Moon, CloudSun, CloudMoon, Cloud, CloudFog, CloudDrizzle, CloudRain, CloudLightning, CloudSnow, CloudHail, Droplets, RefreshCw } from 'lucide-react';
-import { layThoiTiet, type DuBao, type NguonTT } from '../../services/thoiTiet';
+import { layThoiTiet, type DuBao } from '../../services/thoiTiet';
 import { useNN } from '../../i18n/NgonNgu';
 import type { DiaDiem } from '../../utils/kieu';
 
@@ -75,17 +75,6 @@ export function BayNgay({ db }: { db: DuBao }) {
       </li>); })}</ul>);
 }
 
-/** Ghi nguồn (bắt buộc) và lời nhắc: dự báo để tham khảo, có bão lũ thì theo bản tin chính thức. */
-export function NguonThoiTiet({ nguon = 'open-meteo', className = '' }: { nguon?: NguonTT; className?: string }) {
-  const { t } = useNN();
-  const [url, ten] = nguon === 'met-no' ? ['https://api.met.no/', t('nguonMetNo')] : ['https://open-meteo.com/', 'Open-Meteo.com'];
-  return (
-    <p className={`text-[12.5px] leading-relaxed text-muted ${className}`}>
-      {t('nguonDuBao')}: <a href={url} target="_blank" rel="noopener noreferrer" className="font-semibold text-action underline-offset-2 hover:underline">{ten}</a> (CC BY 4.0).{' '}
-      {t('thamKhaoDuBao')} <a href="https://nchmf.gov.vn/" target="_blank" rel="noopener noreferrer" className="font-semibold text-action underline-offset-2 hover:underline">{t('nchmf')}</a>.
-    </p>);
-}
-
 /** Chưa tải được: nói thẳng, cho thử lại. */
 export function LoiThoiTiet({ onThuLai }: { onThuLai: () => void }) {
   const { t } = useNN();
@@ -117,6 +106,5 @@ export function ThoiTietDiem({ p }: { p: DiaDiem }) {
           <span className="text-[13px] tabular-nums"><b className="font-semibold">{do_(x.cao)}</b> <span className="text-muted">{do_(x.thap)}</span></span>
           {x.mua !== null && <span className={`text-[11.5px] tabular-nums ${x.mua >= 50 ? 'font-semibold text-bien-dam' : 'text-muted'}`}>{x.mua}%<span className="sr-only"> {t('khaNangMua')}</span></span>}
         </li>); })}</ol>}
-      <NguonThoiTiet nguon={db?.nguon} className="mt-3" />
     </section>);
 }

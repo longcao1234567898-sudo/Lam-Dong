@@ -43,7 +43,8 @@ export default function Footer() {
       </div>
       <div className="border-t border-white/10">
         <div className="container-page flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-5 text-[13px] text-[#B9C7C1]">
-          <span>{t('nguonBanDo')}</span>
+          {/* Ghi nguồn bắt buộc (OpenStreetMap: ODbL; Open-Meteo, MET Norway: CC BY 4.0). */}
+          <span>{t('nguonBanDo')} {t('nguonThoiTiet')}: <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" className="underline-offset-2 hover:underline">Open-Meteo</a>, <a href="https://api.met.no/" target="_blank" rel="noopener noreferrer" className="underline-offset-2 hover:underline">MET Norway</a>.</span>
           {/* Mạng xã hội — cán bộ thêm đường dẫn thật sau */}
           <div className="flex items-center gap-2">
             {([['Facebook', 'M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z'],
