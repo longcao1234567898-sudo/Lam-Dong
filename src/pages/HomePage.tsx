@@ -79,7 +79,9 @@ export default function HomePage() {
       {suKien.length > 0 && <section className="py-12 sm:py-16 lg:py-20">
         <div className="container-page">
           <div className="hien-dan mb-6 flex flex-wrap items-end justify-between gap-3"><h2 className="tieu-de-vua">{t('tinMoi')}</h2>
-            <Link to="/tin-tuc" className="text-[15px] font-semibold text-action underline-offset-2 hover:underline">{t('tinTuc')}</Link></div>
+            <nav className="flex flex-wrap gap-x-5 gap-y-1 text-[15px] font-semibold" aria-label={t('tinMoi')}>
+              {([['/lich-su-kien', t('lichSuKien')], ['/uu-dai', t('uuDai')], ['/tin-tuc', t('tinTuc')]] as const).map(([to, ten]) => (
+                <Link key={to} to={to} className="inline-flex min-h-[40px] items-center text-action underline-offset-2 hover:underline">{ten}</Link>))}</nav></div>
           {/* Tin đầu (nổi bật) lớn bên trái, các tin sau xếp dọc bên phải — không dàn ba thẻ đều nhau. */}
           <div className={`grid gap-4 ${suKien.length > 1 ? 'md:grid-cols-12' : ''}`}>{suKien.map((x, i) => (
             <Link key={x.id} to={`/tin-tuc/${x.id}`} style={{ '--i': i } as React.CSSProperties}

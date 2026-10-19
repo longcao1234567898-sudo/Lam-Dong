@@ -21,7 +21,7 @@ export default function TinChiTietPage() {
   const p = ds.find((d) => d.id === x.diaDiemId);
   const anh: Tam[] = (x.anh || []).map((a) => ({ lon: anhTinUrl(a.id), nho: anhTinUrl(a.id), chuThich: a.chuThich || chon(x.tieuDe, x.tieuDeEn), rong: a.rong, cao: a.cao, vt: '50% 50%' }));
   const hetHan = !!x.denNgay && x.denNgay < new Date().toISOString().slice(0, 10);
-  const NHAN: Record<string, string> = { 'canh-bao': t('canhBao'), 'su-kien': t('suKien'), 'thong-bao': t('thongBao') };
+  const NHAN: Record<string, string> = { 'canh-bao': t('canhBao'), 'su-kien': t('suKien'), 'thong-bao': t('thongBao'), 'uu-dai': t('uuDai') };
   const chep = () => navigator.clipboard?.writeText(window.location.href).then(() => toast.success(t('daChepLink')), () => undefined);
   return (
     <article className="animate-page nen-dong-muc pb-20">

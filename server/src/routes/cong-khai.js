@@ -230,7 +230,7 @@ router.get('/lo-trinh', async (_req, res, next) => {
 /* Tin tức: kèm danh sách ảnh (chỉ mã, cỡ), tin nổi bật, đường dẫn nguồn. Cột/bảng mới
    chưa có (chưa chạy lại tệp SQL) thì vẫn trả tin như cũ. */
 const docTinCK = (r, anh) => ({ id: r.id, loai: r.loai, tieuDe: r.tieu_de, tieuDeEn: r.tieu_de_en, noiDung: r.noi_dung, noiDungEn: r.noi_dung_en,
-  tuNgay: r.tu_ngay, denNgay: r.den_ngay, diaDiemId: r.dia_diem_id, noiBat: !!r.noi_bat, lienKet: r.lien_ket ?? null,
+  tuNgay: r.tu_ngay, denNgay: r.den_ngay, diaDiemId: r.dia_diem_id, noiBat: !!r.noi_bat, lienKet: r.lien_ket ?? null, vung: r.vung ?? null,
   anh: anh.filter((a) => a.tin_id === r.id).map((a) => ({ id: a.id, rong: a.rong, cao: a.cao, chuThich: a.chu_thich })) });
 const layAnhTin = (ids) => (ids.length
   ? pool.query('SELECT id, tin_id, rong, cao, chu_thich FROM anh_tin WHERE tin_id IN (?) ORDER BY tin_id, thu_tu, id', [ids])
@@ -241,7 +241,7 @@ router.get('/tin-tuc', async (_req, res, next) => {
     const [rows] = await pool.query(
       `SELECT * FROM tin_tuc
         WHERE hien = 1 AND (tu_ngay IS NULL OR tu_ngay <= CURDATE() OR loai = 'su-kien') AND (den_ngay IS NULL OR den_ngay >= CURDATE())
-        ORDER BY FIELD(loai, 'canh-bao', 'su-kien', 'thong-bao', 'lien-he'), thu_tu, tu_ngay, id DESC LIMIT 100`);
+        ORDER BY FIELD(loai, 'canh-bao', 'su-kien', 'thong-bao', 'uu-dai', 'lien-he'), thu_tu, tu_ngay, id DESC LIMIT 100`);
     const anh = await layAnhTin(rows.map((r) => r.id));
     res.json(rows.map((r) => docTinCK(r, anh)));
   } catch (e) { next(e); }

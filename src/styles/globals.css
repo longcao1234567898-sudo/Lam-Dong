@@ -98,8 +98,8 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.45; }
     transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
   }
   .chip:hover:not(:disabled) { border-color: rgb(var(--c-ink-2)); }
-  .chip[aria-pressed='true'] { background: rgb(var(--c-forest)); border-color: rgb(var(--c-forest)); color: #F7F5EF; }
-  .dark .chip[aria-pressed='true'] { background: rgb(var(--c-action)); border-color: rgb(var(--c-action)); color: #192522; }
+  .chip[aria-pressed='true'], .chip[aria-current='page'] { background: rgb(var(--c-forest)); border-color: rgb(var(--c-forest)); color: #F7F5EF; }
+  .dark .chip[aria-current='page'], .dark .chip[aria-pressed='true'] { background: rgb(var(--c-action)); border-color: rgb(var(--c-action)); color: #192522; }
   .chip:disabled { opacity: .45; cursor: default; }
   .chip .chip-so { font-size: 12px; font-variant-numeric: tabular-nums; opacity: .7; }
 
@@ -376,6 +376,8 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.45; }
 .vung-hoa { --vm: rgb(184 40 93); --vm2: 184 40 93; }
 .vung-bien { --vm: rgb(19 106 158); --vm2: 19 106 158; }
 .vung-quy { --vm: rgb(143 94 0); --vm2: 143 94 0; }
+/* Màu riêng cho tin ưu đãi (xanh lá rừng), không trùng màu ba vùng. */
+.mau-uu-dai { --vm: rgb(21 122 99); --vm2: 21 122 99; }
 .vung-anh { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; transform: scale(1.06);
   filter: saturate(1.15); transition: transform 1.2s var(--ease-expo); }
 /* Màn màu vùng: đặc ở đáy (chữ trắng ≥ 5:1), loãng dần lên trên để thấy ảnh. */
@@ -467,7 +469,7 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.45; }
 
 /* Chip vùng: chấm màu vùng; chọn rồi thì nền màu vùng. */
 .chip .cham-vung { width: 9px; height: 9px; border-radius: 9999px; background: var(--vm); }
-.chip.vung-hoa[aria-pressed='true'], .chip.vung-bien[aria-pressed='true'], .chip.vung-quy[aria-pressed='true'] { background: var(--vm); border-color: var(--vm); color: #fff; }
+.chip.vung-hoa[aria-pressed='true'], .chip.vung-bien[aria-pressed='true'], .chip.vung-quy[aria-pressed='true'], .chip.mau-uu-dai[aria-pressed='true'] { background: var(--vm); border-color: var(--vm); color: #fff; }
 .chip[aria-pressed='true'] .cham-vung { background: #fff; }
 
 /* Gạch dưới mục đang mở ở đầu trang: ba khúc màu ba vùng. */

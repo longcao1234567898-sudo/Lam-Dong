@@ -41,6 +41,7 @@ export default function Header() {
   const MUC = [
     { to: '/', ten: t('khamPha'), end: true },
     { to: '/lo-trinh', ten: t('loTrinh') },
+    { to: '/an-gi', ten: t('anGi') },
     { to: '/luu-tru', ten: t('luuTru') },
     { to: '/tin-tuc', ten: t('tinTuc') },
     { to: '/phan-anh', ten: t('phanAnh') },
