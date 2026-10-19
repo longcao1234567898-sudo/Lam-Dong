@@ -24,6 +24,9 @@ const napPhanAnh = () => import('./pages/cong-khai/PhanAnhPage');
 const napTinTuc = () => import('./pages/cong-khai/TinTucPage');
 const napTinChiTiet = () => import('./pages/cong-khai/TinChiTietPage');
 const napKhachQuocTe = () => import('./pages/cong-khai/KhachQuocTePage');
+const napUuDai = () => import('./pages/cong-khai/UuDaiPage');
+const napLichSuKien = () => import('./pages/cong-khai/LichSuKienPage');
+const napAnGi = () => import('./pages/cong-khai/AnGiPage');
 const ThongKePage = lazy(napThongKe);
 const DiaDiemPage = lazy(napDiaDiem);
 const LoTrinhDanhSach = lazy(() => napLoTrinh().then((m) => ({ default: m.LoTrinhDanhSach })));
@@ -34,6 +37,9 @@ const PhanAnhPage = lazy(napPhanAnh);
 const TinTucPage = lazy(napTinTuc);
 const TinChiTietPage = lazy(napTinChiTiet);
 const KhachQuocTePage = lazy(napKhachQuocTe);
+const UuDaiPage = lazy(napUuDai);
+const LichSuKienPage = lazy(napLichSuKien);
+const AnGiPage = lazy(napAnGi);
 const AdminNguonAnh = lazy(() => import('./pages/admin/AdminNguonAnh'));
 const AdminLoTrinh = lazy(() => import('./pages/admin/AdminLoTrinh'));
 const AdminTinTuc = lazy(() => import('./pages/admin/AdminTinTuc'));
@@ -60,7 +66,7 @@ function KhungChung() {
   useEffect(() => { const a = batHienDan(), b = batNghieng(); return () => { a(); b(); }; }, []);
   /* Chuyển trang mượt + về đầu trang; tải sẵn các trang con phía người dân khi máy rảnh. */
   useChuyenTrang();
-  useEffect(() => { taiSanTrang([napDiaDiem, napLoTrinh, napTinTuc, napLuuTru, napPhanAnh, napKhachQuocTe, napTinChiTiet, napThongKe]); }, []);
+  useEffect(() => { taiSanTrang([napDiaDiem, napLoTrinh, napTinTuc, napLuuTru, napPhanAnh, napKhachQuocTe, napTinChiTiet, napThongKe, napUuDai, napLichSuKien, napAnGi]); }, []);
   return (<div className="flex min-h-screen flex-col text-ink">
     <a href="#noi-dung" className="sr-only z-[2000] rounded-xl bg-paper px-4 py-3 font-semibold text-ink shadow-sh-3 focus:not-sr-only focus:fixed focus:left-4 focus:top-4">{t('boQuaNoiDung')}</a>
     {cheDoMinhHoa && <div role="status" className="bg-[#FCEFC7] px-4 py-2 text-center text-sm font-semibold text-[#192522]">{t('dangXemMinhHoa')}</div>}
@@ -93,6 +99,9 @@ export default function App() {
               <Route path="/tin-tuc" element={<TinTucPage />} />
               <Route path="/tin-tuc/:id" element={<TinChiTietPage />} />
               <Route path="/khach-quoc-te" element={<KhachQuocTePage />} />
+              <Route path="/uu-dai" element={<UuDaiPage />} />
+              <Route path="/lich-su-kien" element={<LichSuKienPage />} />
+              <Route path="/an-gi" element={<AnGiPage />} />
               <Route path="/dang-nhap" element={<AdminLoginPage />} />
               <Route path="/quan-tri" element={<CanDangNhap />}>
                 <Route index element={<AdminTongQuan />} />

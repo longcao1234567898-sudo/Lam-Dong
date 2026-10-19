@@ -31,7 +31,7 @@ export default function BangTinNoiBat({ ds }: { ds: TinTuc[] }) {
   }, [dung, tamNghi, n]);
   if (!n) return null;
   const x = ds[i % n];
-  const NHAN: Record<string, string> = { 'canh-bao': t('canhBao'), 'su-kien': t('suKien'), 'thong-bao': t('thongBao') };
+  const NHAN: Record<string, string> = { 'canh-bao': t('canhBao'), 'su-kien': t('suKien'), 'thong-bao': t('thongBao'), 'uu-dai': t('uuDai') };
 
   return (
     <section aria-roledescription="carousel" aria-label={t('tinNoiBat')} className="nen-toi relative overflow-hidden rounded-[24px] shadow-sh-3"

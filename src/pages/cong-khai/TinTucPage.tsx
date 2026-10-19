@@ -2,9 +2,10 @@
 import { useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { AlertTriangle, CalendarDays, Megaphone, Phone, ArrowUpRight } from 'lucide-react';
+import { AlertTriangle, CalendarDays, Megaphone, Phone, ArrowUpRight, BadgePercent } from 'lucide-react';
 import { DauTrang, TrongRong } from '../../components/du-lich/GiaoDien';
 import BangTinNoiBat from '../../components/du-lich/BangTinNoiBat';
+import ThanhTin from '../../components/du-lich/ThanhTin';
 import { layTinTuc, layDiaDiem, anhTinUrl } from '../../services/api';
 import { useNN } from '../../i18n/NgonNgu';
 import type { TinTuc } from '../../utils/kieu';
@@ -16,16 +17,16 @@ export default function TinTucPage() {
   const [loc, setLoc] = useState<TinTuc['loai'] | null>(null);
   const ds2 = tin.filter((x) => x.loai !== 'lien-he'), lienHe = tin.filter((x) => x.loai === 'lien-he');
   /* Chỉ hiện nút lọc cho loại tin đang có; một loại thì không cần lọc. */
-  const cacLoai = (['canh-bao', 'su-kien', 'thong-bao'] as const).filter((k) => ds2.some((x) => x.loai === k));
+  const cacLoai = (['canh-bao', 'su-kien', 'thong-bao', 'uu-dai'] as const).filter((k) => ds2.some((x) => x.loai === k));
   const dsHien = loc ? ds2.filter((x) => x.loai === loc) : ds2;
   const noiBat = ds2.filter((x) => x.noiBat);
-  const IC = { 'canh-bao': AlertTriangle, 'su-kien': CalendarDays, 'thong-bao': Megaphone, 'lien-he': Phone };
+  const IC = { 'canh-bao': AlertTriangle, 'su-kien': CalendarDays, 'thong-bao': Megaphone, 'uu-dai': BadgePercent, 'lien-he': Phone };
   /* Màu theo loại tin: cảnh báo vàng dã quỳ, sự kiện hồng, thông báo xanh biển. Luôn kèm chữ. */
-  const MAU = { 'canh-bao': 'vung-quy', 'su-kien': 'vung-hoa', 'thong-bao': 'vung-bien', 'lien-he': 'vung-bien' };
-  const NHAN = { 'canh-bao': t('canhBao'), 'su-kien': t('suKien'), 'thong-bao': t('thongBao'), 'lien-he': '' };
+  const MAU = { 'canh-bao': 'vung-quy', 'su-kien': 'vung-hoa', 'thong-bao': 'vung-bien', 'uu-dai': 'mau-uu-dai', 'lien-he': 'vung-bien' };
+  const NHAN = { 'canh-bao': t('canhBao'), 'su-kien': t('suKien'), 'thong-bao': t('thongBao'), 'uu-dai': t('uuDai'), 'lien-he': '' };
   return (
     <div className="animate-page">
-      <DauTrang tieuDe={t('tinTuc')} moTa={t('tinTucMoTa')} />
+      <DauTrang tieuDe={t('tinTuc')} moTa={t('tinTucMoTa')}><ThanhTin /></DauTrang>
       {noiBat.length > 0 && <div className="container-page pt-10"><BangTinNoiBat ds={noiBat} /></div>}
       <section className="container-page grid items-start gap-8 py-12 lg:grid-cols-12">
         <div className="space-y-4 lg:col-span-8">

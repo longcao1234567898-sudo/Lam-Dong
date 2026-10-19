@@ -13,8 +13,8 @@ export default function Footer() {
   const { data: tin = [] } = useQuery({ queryKey: ['tin-tuc'], queryFn: layTinTuc });
   const lienHe = tin.filter((x) => x.loai === 'lien-he');
   const NHOM: [string, string[][]][] = [
-    [t('nhomLenKeHoach'), [['/', t('khamPha')], ['/lo-trinh', t('goiYLoTrinh')], ['/tu-tao-lo-trinh', t('tuTaoLoTrinh')], ['/luu-tru', t('luuTru')]]],
-    [t('nhomCanBiet'), [['/tin-tuc', t('tinTuc')], ['/khach-quoc-te', t('khachQuocTe')], ['/thong-ke', t('thongKe')], ['/phan-anh', t('phanAnh')]]]];
+    [t('nhomLenKeHoach'), [['/', t('khamPha')], ['/lo-trinh', t('goiYLoTrinh')], ['/tu-tao-lo-trinh', t('tuTaoLoTrinh')], ['/an-gi', t('anGi')], ['/luu-tru', t('luuTru')], ['/uu-dai', t('uuDai')]]],
+    [t('nhomCanBiet'), [['/tin-tuc', t('tinTuc')], ['/lich-su-kien', t('lichSuKien')], ['/khach-quoc-te', t('khachQuocTe')], ['/thong-ke', t('thongKe')], ['/phan-anh', t('phanAnh')]]]];
   return (
     <footer className="nen-toi nen-dong-muc relative overflow-hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <CucQuang toi />

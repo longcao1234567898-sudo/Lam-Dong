@@ -281,14 +281,15 @@ router.delete('/quan-sat/:id', async (req, res, next) => {
 });
 
 /* ================================================================ TIN TỨC */
-const LOAI_TIN = ['canh-bao', 'su-kien', 'thong-bao', 'lien-he'];
+const LOAI_TIN = ['canh-bao', 'su-kien', 'thong-bao', 'uu-dai', 'lien-he'];
+const VUNG_TIN = ['cao-nguyen', 'bien-dao', 'dai-ngan'];
 router.get('/tin-tuc', async (_req, res, next) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM tin_tuc ORDER BY FIELD(loai, \'canh-bao\', \'su-kien\', \'thong-bao\', \'lien-he\'), thu_tu, id DESC');
+    const [rows] = await pool.query('SELECT * FROM tin_tuc ORDER BY FIELD(loai, \'canh-bao\', \'su-kien\', \'thong-bao\', \'uu-dai\', \'lien-he\'), thu_tu, id DESC');
     const [so] = await pool.query('SELECT tin_id, COUNT(*) AS so FROM anh_tin GROUP BY tin_id').catch(() => [[]]);
     res.json(rows.map((r) => ({ id: r.id, loai: r.loai, tieuDe: r.tieu_de, tieuDeEn: r.tieu_de_en, noiDung: r.noi_dung, noiDungEn: r.noi_dung_en,
       tuNgay: r.tu_ngay, denNgay: r.den_ngay, diaDiemId: r.dia_diem_id, hien: !!r.hien, thuTu: r.thu_tu,
-      noiBat: !!r.noi_bat, lienKet: r.lien_ket ?? null, soAnh: Number(so.find((x) => x.tin_id === r.id)?.so || 0) })));
+      noiBat: !!r.noi_bat, lienKet: r.lien_ket ?? null, vung: r.vung ?? null, soAnh: Number(so.find((x) => x.tin_id === r.id)?.so || 0) })));
   } catch (e) { next(e); }
 });
 function docTin(b) {
@@ -304,12 +305,20 @@ function docTin(b) {
     noi_dung: sanitizeText(String(b.noiDung || '').replace(/\r\n?/g, '\n'), 10000) || null, noi_dung_en: sanitizeText(String(b.noiDungEn || '').replace(/\r\n?/g, '\n'), 10000) || null,
     noi_bat: !!b.noiBat && b.loai !== 'lien-he', lien_ket: lienKet.slice(0, 300) || null,
     tu_ngay: tu, den_ngay: den, dia_diem_id: b.diaDiemId ? String(b.diaDiemId) : null, hien: b.hien !== false,
-    thu_tu: Number.isInteger(Number(b.thuTu)) ? Number(b.thuTu) : 0 } };
+    thu_tu: Number.isInteger(Number(b.thuTu)) ? Number(b.thuTu) : 0,
+    /* Cột vung có sau (tệp nang-cap-uu-dai-lich.sql): chỉ ghi khi cán bộ chọn vùng, để máy chủ
+       vẫn lưu được tin khi cơ sở dữ liệu chưa chạy tệp nâng cấp. */
+    ...(VUNG_TIN.includes(b.vung) ? { vung: b.vung } : b.vung === '' ? { vung: null } : {}) } };
 }
+/* Cơ sở dữ liệu chưa có cột vung (chưa chạy tệp nâng cấp): lưu lại không kèm vùng. */
+const boVungKhiThieuCot = (chay, du) => chay(du).catch((e) => {
+  if (e.code !== 'ER_BAD_FIELD_ERROR' || !('vung' in du)) throw e;
+  const { vung: _bo, ...conLai } = du; return chay(conLai);
+});
 router.post('/tin-tuc', async (req, res, next) => {
   try {
     const { loi, du } = docTin(req.body || {}); if (loi) return res.status(400).json({ error: loi });
-    const [kq] = await pool.query('INSERT INTO tin_tuc SET ?', [{ ...du, nguoi_tao: req.staff.id }]);
+    const [kq] = await boVungKhiThieuCot((d) => pool.query('INSERT INTO tin_tuc SET ?', [{ ...d, nguoi_tao: req.staff.id }]), du);
     await ghiNhatKy(pool, req, { hanhDong: 'them_tin', loaiDoiTuong: 'tin_tuc', doiTuongId: kq.insertId, chiTiet: { tieuDe: du.tieu_de } });
     res.status(201).json({ id: kq.insertId });
   } catch (e) { if (e.code === 'ER_NO_REFERENCED_ROW_2') return res.status(400).json({ error: 'Địa điểm không hợp lệ.' }); next(e); }
@@ -317,7 +326,7 @@ router.post('/tin-tuc', async (req, res, next) => {
 router.put('/tin-tuc/:id', async (req, res, next) => {
   try {
     const { loi, du } = docTin(req.body || {}); if (loi) return res.status(400).json({ error: loi });
-    const [kq] = await pool.query('UPDATE tin_tuc SET ? WHERE id = ?', [du, Number(req.params.id) || 0]);
+    const [kq] = await boVungKhiThieuCot((d) => pool.query('UPDATE tin_tuc SET ? WHERE id = ?', [d, Number(req.params.id) || 0]), du);
     if (!kq.affectedRows) return res.status(404).json({ error: 'Không tìm thấy tin.' });
     await ghiNhatKy(pool, req, { hanhDong: 'sua_tin', loaiDoiTuong: 'tin_tuc', doiTuongId: req.params.id, chiTiet: { tieuDe: du.tieu_de } });
     res.json({ ok: true });

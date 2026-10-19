@@ -21,7 +21,7 @@ export default function AdminLayout() {
     { nhom: 'Người dân', ds: [
       { to: '/quan-tri/phan-anh', ten: 'Phản ánh', ic: MessageSquareWarning },
       { to: '/quan-tri/lo-trinh', ten: 'Lộ trình', ic: Route },
-      { to: '/quan-tri/tin-tuc', ten: 'Tin tức, cảnh báo', ic: Newspaper },
+      { to: '/quan-tri/tin-tuc', ten: 'Tin tức, sự kiện, ưu đãi', ic: Newspaper },
       { to: '/quan-tri/nguon-anh', ten: 'Nguồn ảnh', ic: ImageIcon } ] },
     { nhom: 'Phụ lục thống kê', ds: [
       { to: '/quan-tri/bao-cao', ten: 'Báo cáo kỳ', ic: ClipboardCheck },

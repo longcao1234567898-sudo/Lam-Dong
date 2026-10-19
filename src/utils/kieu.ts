@@ -26,7 +26,8 @@ export interface ThongKe {
 export interface LoTrinh { id: number; ten: string; tenEn: string | null; thoiGian: string | null; phuongTien: string | null; phuongTienEn: string | null;
   moTa: string | null; moTaEn: string | null;
   diem: { id: string; ngay: number; ghiChu: string | null }[] }
-export interface TinTuc { id: number; loai: 'canh-bao' | 'su-kien' | 'thong-bao' | 'lien-he'; tieuDe: string; tieuDeEn: string | null; noiDung: string | null;
+export interface TinTuc { id: number; loai: 'canh-bao' | 'su-kien' | 'thong-bao' | 'uu-dai' | 'lien-he';
+  /** Vùng cán bộ gắn cho ưu đãi, sự kiện (không bắt buộc); không có thì lấy vùng của địa điểm. */ vung?: Vung | null; tieuDe: string; tieuDeEn: string | null; noiDung: string | null;
   noiDungEn: string | null; tuNgay: string | null; denNgay: string | null; diaDiemId: string | null;
   /** Tin nổi bật: tự lướt ở đầu trang Tin tức. */ noiBat?: boolean; /** Đường dẫn tới nguồn tin. */ lienKet?: string | null;
   /** Ảnh của tin, ảnh đầu là ảnh bìa. */ anh?: { id: number; rong: number | null; cao: number | null; chuThich: string | null }[] }

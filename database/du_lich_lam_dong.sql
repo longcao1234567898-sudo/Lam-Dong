@@ -613,7 +613,7 @@ CREATE TABLE IF NOT EXISTS phan_anh (
 -- ------------------------------------------- TIN TỨC, CẢNH BÁO, SỐ ĐIỆN THOẠI CẦN BIẾT
 CREATE TABLE IF NOT EXISTS tin_tuc (
   id           INT PRIMARY KEY AUTO_INCREMENT,
-  loai         VARCHAR(20) NOT NULL COMMENT 'canh-bao | su-kien | thong-bao | lien-he',
+  loai         VARCHAR(20) NOT NULL COMMENT 'canh-bao | su-kien | thong-bao | uu-dai | lien-he',
   tieu_de      VARCHAR(200) NOT NULL,
   tieu_de_en   VARCHAR(200) NULL,
   noi_dung     VARCHAR(3000) NULL,
@@ -1362,3 +1362,10 @@ SELECT t.column_0, t.column_1, t.column_2, 'google', t.column_3, 0
    AND (SELECT COUNT(*) FROM diem_quan_sat c WHERE c.dia_diem_id = t.column_0) < 10;
 
 SELECT COUNT(*) AS so_dia_diem, (SELECT COUNT(*) FROM xa_phuong) AS so_xa_phuong FROM dia_diem;
+
+-- ============================================================================
+-- Ưu đãi và lịch sự kiện: tin tức có thể gắn một vùng (lọc theo vùng); loại tin
+-- 'uu-dai' dùng cột loai sẵn có. Tệp riêng database/nang-cap-uu-dai-lich.sql làm cùng việc.
+SET @co := (SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tin_tuc' AND COLUMN_NAME = 'vung');
+SET @lenh := IF(@co = 0, 'ALTER TABLE tin_tuc ADD COLUMN vung ENUM(''cao-nguyen'',''bien-dao'',''dai-ngan'') NULL COMMENT ''Vùng của ưu đãi, sự kiện (không bắt buộc)'' AFTER dia_diem_id', 'DO 0');
+PREPARE lenh FROM @lenh; EXECUTE lenh; DEALLOCATE PREPARE lenh;
