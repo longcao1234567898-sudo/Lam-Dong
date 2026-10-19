@@ -1,4 +1,4 @@
--- Nạp 10 địa điểm mới kèm bài giới thiệu chi tiết (soạn ngày 19/10/2026), chạy SAU du_lich_lam_dong.sql.
+-- Nạp 11 địa điểm mới kèm bài giới thiệu chi tiết (soạn ngày 19/10/2026), chạy SAU du_lich_lam_dong.sql.
 --
 -- Danh sách lấy từ hai bài cẩm nang mia.vn và Traveloka, chỉ lấy TÊN điểm. Không lấy ảnh
 -- (ảnh của họ có bản quyền), không lấy giá vé, giờ mở cửa (dễ cũ, cán bộ bổ sung từ nguồn
@@ -7,7 +7,7 @@
 --
 -- Tất cả ở trạng thái chờ cán bộ kiểm tra (da_kiem_tra = 0). Chưa có ảnh: giao diện hiện
 -- bìa màu vùng cho tới khi cán bộ tải ảnh lên ở mục Địa điểm.
--- Vùng: 6 điểm quanh Đà Lạt gán Cao nguyên. 4 điểm ở Bảo Lộc, Bảo Lâm, Di Linh, Đạ Huoai
+-- Vùng: 6 điểm quanh Đà Lạt gán Cao nguyên. 5 điểm ở Bảo Lộc, Bảo Lâm, Di Linh, Đạ Huoai, Cát Tiên
 -- để trống (NULL) vì không thuộc "Cao nguyên Lâm Viên – Đà Lạt": cán bộ quyết định sau.
 -- Chạy lại nhiều lần không bị trùng (INSERT IGNORE theo mã điểm).
 
@@ -37,8 +37,8 @@ INSERT IGNORE INTO dia_diem (id, ten, ten_en, loai, mo_ta, mo_ta_en, dia_chi, la
    'Forest waterfall in Ta Hine commune, cascading over several rock tiers.',
    'Xã Tà Hine, tỉnh Lâm Đồng', 11.6059710, 108.3503450, 'cao-nguyen', FALSE, TRUE, FALSE, 'Toạ độ: OpenStreetMap (Thác Bảo Đại, xã Tà Hine). Tên điểm: mia.vn.'),
   ('thac-dambri', 'Thác Dambri', 'Dambri Waterfall', 'thien-nhien',
-   'Một trong những thác cao nhất Lâm Đồng, nước đổ từ độ cao khoảng 60 m giữa rừng, gần Bảo Lộc.',
-   'One of the tallest waterfalls in Lam Dong, dropping about 60 m through the forest near Bao Loc.',
+   'Một trong những thác cao và hùng vĩ nhất Lâm Đồng, nước đổ từ độ cao hàng chục mét giữa rừng, gần Bảo Lộc.',
+   'One of the tallest and most impressive waterfalls in Lam Dong, dropping tens of metres through the forest near Bao Loc.',
    'Bảo Lộc, tỉnh Lâm Đồng', 11.6419662, 107.7429168, NULL, FALSE, TRUE, FALSE, 'Toạ độ: OpenStreetMap node 3093994368. Tên điểm: mia.vn.'),
   ('chua-linh-quy-phap-an', 'Chùa Linh Quy Pháp Ấn', 'Linh Quy Phap An Pagoda', 'di-tich',
    'Ngôi chùa trên đồi ở Bảo Lâm, nổi tiếng với khoảnh sân nhìn ra biển mây lúc sáng sớm.',
@@ -57,7 +57,7 @@ INSERT IGNORE INTO dia_diem (id, ten, ten_en, loai, mo_ta, mo_ta_en, dia_chi, la
 -- Có gì để xem, Kinh nghiệm. Bản tổng hợp chờ cán bộ đối chiếu. Mốc năm chưa chắc ghi
 -- "cán bộ bổ sung". Chỉ điền khi còn trống, chạy lại không đè bài cán bộ đã sửa.
 UPDATE dia_diem SET chi_tiet = '## Giới thiệu
-Vườn quốc gia Bidoup – Núi Bà nằm trên cao nguyên Lâm Viên, phía bắc Đà Lạt, là vùng lõi của Khu dự trữ sinh quyển thế giới Langbiang. Đây là nơi có đỉnh Bidoup cao khoảng 2.287 m, một trong những đỉnh núi cao nhất Tây Nguyên.
+Vườn quốc gia Bidoup – Núi Bà nằm trên cao nguyên Lâm Viên, phía bắc Đà Lạt, là vùng lõi của Khu dự trữ sinh quyển thế giới Langbiang. Đây là nơi có đỉnh Bidoup, mốc đỉnh ghi độ cao 2.280 m, một trong những đỉnh núi cao nhất Tây Nguyên.
 
 Rừng ở đây gồm rừng thông, rừng lá rộng thường xanh và rừng hỗn giao, với nhiều loài thực vật quý như pơ mu, thông hai lá dẹt cùng nhiều loài chim, thú đặc hữu. Vùng núi này cũng là nơi sinh sống lâu đời của đồng bào K''Ho.
 
@@ -75,7 +75,7 @@ Rừng ở đây gồm rừng thông, rừng lá rộng thường xanh và rừn
 - Các tuyến xuyên rừng và leo đỉnh cần đăng ký với vườn quốc gia và đi cùng người dẫn đường.
 - Trên núi lạnh và hay mưa bất chợt: mang áo ấm, áo mưa, giày leo núi.
 - Không bẻ cây, không mang động vật, thực vật ra khỏi rừng.', chi_tiet_en = '## About
-Bidoup – Nui Ba National Park lies on the Lam Vien Plateau north of Da Lat and forms the core of the Langbiang World Biosphere Reserve. It is home to Bidoup peak, about 2,287 m high and one of the tallest summits in the Central Highlands.
+Bidoup – Nui Ba National Park lies on the Lam Vien Plateau north of Da Lat and forms the core of the Langbiang World Biosphere Reserve. It is home to Bidoup peak, marked at 2,280 m on the summit marker and one of the tallest summits in the Central Highlands.
 
 Its pine, evergreen broadleaf and mixed forests shelter rare plants such as Fujian cypress and the flat-needle Krempf pine, along with many endemic birds and mammals. The mountains have long been home to the K''Ho people.
 
@@ -249,7 +249,7 @@ Bao Dai Waterfall lies in the forest of Ta Hine commune, cascading over several 
 - The path down is steep and slippery: wear shoes with good grip.
 - In the rainy season the current is strong: do not swim or climb on the rocks.' WHERE id = 'thac-bao-dai' AND chi_tiet IS NULL;
 UPDATE dia_diem SET chi_tiet = '## Giới thiệu
-Thác Dambri nằm cách trung tâm Bảo Lộc khoảng 18 km, là một trong những thác cao nhất Lâm Đồng, nước đổ từ độ cao khoảng 60 m xuống giữa rừng. Mùa mưa, thác tung bọt trắng xoá, hơi nước bay xa cả một vùng.
+Thác Dambri nằm cách trung tâm Bảo Lộc khoảng 18 km, là một trong những thác cao và hùng vĩ nhất Lâm Đồng, nước đổ từ độ cao hàng chục mét xuống giữa rừng (các nguồn ghi từ khoảng 60 m đến 90 m, cán bộ đối chiếu số chính thức). Mùa mưa, thác tung bọt trắng xoá, hơi nước bay xa cả một vùng.
 
 ## Lịch sử hình thành
 - Ngày nay: Khu du lịch có lối đi bộ và các điểm ngắm thác. (Năm mở cửa và đơn vị quản lý: cán bộ bổ sung.)
@@ -262,7 +262,7 @@ Thác Dambri nằm cách trung tâm Bảo Lộc khoảng 18 km, là một trong 
 - Lối xuống chân thác có nhiều bậc, ướt và trơn: mang giày đế bám.
 - Không tắm ở vùng nước dưới chân thác.
 - Từ Bảo Lộc có thể ghép với đồi chè và các cơ sở chè, tơ lụa trong một ngày.', chi_tiet_en = '## About
-Dambri Waterfall lies about 18 km from central Bao Loc and is one of the tallest waterfalls in Lam Dong, dropping about 60 m into the forest. In the rainy season it churns white and spray drifts far around.
+Dambri Waterfall lies about 18 km from central Bao Loc and is one of the tallest waterfalls in Lam Dong, dropping tens of metres into the forest (sources give 60 to 90 m, to be confirmed by staff). In the rainy season it churns white and spray drifts far around.
 
 ## Timeline
 - Today: A tourist area with walking paths and viewpoints. (Opening year and operator: to be added by staff.)
@@ -350,3 +350,50 @@ Madagui Tourist Area is in Da Huoai, right beside National Road 20 on the way fr
 ## Tips
 - A handy break on the Ho Chi Minh City – Da Lat road.
 - It is low and much hotter than Da Lat: bring water and a hat.' WHERE id = 'madagui' AND chi_tiet IS NULL;
+
+-- Vườn quốc gia Cát Tiên: nằm trên ba tỉnh cũ (Đồng Nai, Lâm Đồng, Bình Phước), cổng chính
+-- và trung tâm du khách ở phía Đồng Nai, toạ độ là tâm vườn theo OpenStreetMap.
+INSERT IGNORE INTO dia_diem (id, ten, ten_en, loai, mo_ta, mo_ta_en, dia_chi, lat, lng, vung, noi_bat, hien, da_kiem_tra, nguon) VALUES
+  ('vqg-cat-tien', 'Vườn quốc gia Cát Tiên', 'Cat Tien National Park', 'thien-nhien',
+   'Vườn quốc gia ở vùng giáp ranh Lâm Đồng và Đồng Nai, một trong những khu rừng nhiệt đới đất thấp lớn nhất còn lại ở phía Nam. Hợp đi bộ xuyên rừng, đạp xe, ngắm chim và thú hoang dã. Cổng chính ở phía Đồng Nai.',
+   'National park on the border of Lam Dong and Dong Nai, one of the largest remaining lowland tropical forests in the south. Good for forest hikes, cycling and watching birds and wildlife. The main gate is on the Dong Nai side.',
+   'Vùng giáp ranh Lâm Đồng – Đồng Nai (cổng chính: xã Đak Lua, Đồng Nai)', 11.4547262, 107.3197806, NULL, FALSE, TRUE, FALSE, 'Toạ độ: OpenStreetMap relation 7090891 (tâm vườn). Tên điểm: mia.vn, Traveloka.');
+UPDATE dia_diem SET chi_tiet = '## Giới thiệu
+Vườn quốc gia Cát Tiên trải trên vùng giáp ranh Đồng Nai, Lâm Đồng và Bình Phước cũ, là một trong những khu rừng nhiệt đới đất thấp lớn nhất còn lại ở phía Nam. Rừng có nhiều loài thú lớn, chim và cây gỗ quý, cùng hệ thống bàu nước ngập theo mùa.
+
+Phần thuộc Lâm Đồng là khu Cát Lộc. Cổng chính, trung tâm du khách và nơi lưu trú của vườn nằm ở phía Đồng Nai, đi phà qua sông Đồng Nai.
+
+## Lịch sử hình thành
+- 1992: Thành lập Vườn quốc gia Cát Tiên trên cơ sở hợp nhất các khu Nam Cát Tiên, Tây Cát Tiên và Cát Lộc.
+- 2001: UNESCO công nhận Khu dự trữ sinh quyển thế giới Đồng Nai, trong đó có Cát Tiên (lúc đầu mang tên Cát Tiên).
+- 2005: Vùng đất ngập nước Bàu Sấu được công nhận là khu Ramsar.
+- Ngày nay: Điểm du lịch sinh thái, nghiên cứu và bảo tồn động vật hoang dã.
+
+## Có gì để xem
+- Đi bộ xuyên rừng, ngắm những cây cổ thụ lớn.
+- Bàu Sấu, vùng đất ngập nước nổi tiếng với cá sấu và chim nước.
+- Đạp xe trong rừng, xem thú hoang dã vào ban đêm theo tour của vườn.
+
+## Kinh nghiệm
+- Đăng ký tour và người dẫn đường với vườn quốc gia, nhất là tuyến Bàu Sấu.
+- Mang quần áo dài, thuốc chống côn trùng và đề phòng vắt vào mùa mưa.
+- Không cho thú ăn, không mang động vật, thực vật ra khỏi rừng.', chi_tiet_en = '## About
+Cat Tien National Park spans the border of the former Dong Nai, Lam Dong and Binh Phuoc provinces and is one of the largest remaining lowland tropical forests in the south. It shelters large mammals, birds and valuable trees, along with seasonally flooded wetlands.
+
+The Lam Dong part is the Cat Loc sector. The main gate, visitor centre and lodging are on the Dong Nai side, reached by ferry across the Dong Nai river.
+
+## Timeline
+- 1992: Cat Tien National Park is formed by merging the Nam Cat Tien, Tay Cat Tien and Cat Loc areas.
+- 2001: UNESCO recognises the Dong Nai World Biosphere Reserve, which includes Cat Tien (first named after it).
+- 2005: The Bau Sau wetland is designated a Ramsar site.
+- Today: A centre for eco-tourism, research and wildlife conservation.
+
+## What to see
+- Forest hikes among giant old trees.
+- Bau Sau (Crocodile Lake), a wetland known for crocodiles and waterbirds.
+- Cycling in the forest and night wildlife tours run by the park.
+
+## Tips
+- Book tours and a guide with the park, especially for Bau Sau.
+- Wear long clothes, bring insect repellent and watch for leeches in the rainy season.
+- Do not feed animals or take plants or animals out of the forest.' WHERE id = 'vqg-cat-tien' AND chi_tiet IS NULL;
