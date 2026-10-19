@@ -5,7 +5,8 @@ import { adminFetch } from '../../services/adminService';
 import { TieuDeQt, The, The_nho, o, nhan, nutChinh, nutVien } from '../../components/common/KhoiQt';
 import { LOAI, VUNG } from '../../utils/hangSo';
 import { useCauHinh } from '../../utils/phuLuc';
-import QuanLyAnh from '../../components/common/QuanLyAnh';
+import QuanLyAnh, { guiMoi, chuThichTuTen } from '../../components/common/QuanLyAnh';
+import AnhChoTai, { taiLanLuot } from '../../components/common/AnhChoTai';
 import QuanLyQuanSat from '../../components/common/QuanLyQuanSat';
 import type { Loai } from '../../utils/kieu';
 
@@ -19,15 +20,27 @@ export default function AdminDiaDiem() {
   const { data: ds = [] } = useQuery({ queryKey: ['qt-dia-diem'], queryFn: () => adminFetch<DD[]>('/dia-diem') });
   const { data: ch } = useCauHinh();
   const [f, setF] = useState<typeof TRONG>(TRONG); const [suaId, setSuaId] = useState<string | null>(null); const [loi, setLoi] = useState('');
+  const [choTai, setChoTai] = useState<File[]>([]); const [tienDo, setTienDo] = useState(''); const [vuaThem, setVuaThem] = useState(false);
   const lamMoi = () => { qc.invalidateQueries({ queryKey: ['qt-dia-diem'] }); qc.invalidateQueries({ queryKey: ['dia-diem'] }); };
+  /* Thêm mới: tạo địa điểm, tải luôn ảnh đã chọn, rồi chuyển sang chế độ sửa để chỉnh ảnh, thêm điểm quan sát 360°. */
   const luu = useMutation({
-    mutationFn: () => adminFetch(suaId ? `/dia-diem/${suaId}` : '/dia-diem', { method: suaId ? 'PUT' : 'POST', body: JSON.stringify({ ...f, lat: Number(String(f.lat).replace(',', '.')), lng: Number(String(f.lng).replace(',', '.')) }) }),
-    onSuccess: () => { toast.success(suaId ? 'Đã lưu thay đổi.' : 'Đã thêm địa điểm.'); setF(TRONG); setSuaId(null); setLoi(''); lamMoi(); },
-    onError: (e: Error) => setLoi(e.message),
+    mutationFn: async () => {
+      const kq = await adminFetch<{ id?: string }>(suaId ? `/dia-diem/${suaId}` : '/dia-diem', { method: suaId ? 'PUT' : 'POST', body: JSON.stringify({ ...f, lat: Number(String(f.lat).replace(',', '.')), lng: Number(String(f.lng).replace(',', '.')) }) });
+      const id = suaId ? undefined : kq?.id;
+      const soAnh = id && choTai.length ? await taiLanLuot(choTai, (x, tep) => guiMoi(id, x, chuThichTuTen(tep.name)), (i) => setTienDo(`Đang tải ảnh ${i}/${choTai.length}…`)) : 0;
+      return { id, soAnh };
+    },
+    onSuccess: ({ id, soAnh }) => {
+      setLoi(''); setTienDo(''); setChoTai([]); lamMoi();
+      if (id) { setSuaId(id); setVuaThem(true); qc.invalidateQueries({ queryKey: ['qt-anh', id] });
+        toast.success(`Đã thêm địa điểm${soAnh ? ` kèm ${soAnh} ảnh` : ''}. Chỉnh ảnh, thêm điểm quan sát 360° ở bên dưới.`); return; }
+      toast.success('Đã lưu thay đổi.'); setF(TRONG); setSuaId(null); setVuaThem(false);
+    },
+    onError: (e: Error) => { setTienDo(''); setLoi(e.message); },
   });
   const anHien = useMutation({ mutationFn: (p: DD) => adminFetch(`/dia-diem/${p.id}/hien`, { method: 'PATCH', body: JSON.stringify({ hien: !p.hien }) }), onSuccess: lamMoi,
     onError: (e: Error) => toast.error(e.message) });
-  const sua = (p: DD) => { setSuaId(p.id); setLoi(''); setF({ ...TRONG, ...p, moTa: p.moTa || '', diaChi: p.diaChi || '', sdt: p.sdt || '', web: p.web || '', gioMo: p.gioMo || '', lat: String(p.lat), lng: String(p.lng), xaPhuongId: p.xaPhuongId ? String(p.xaPhuongId) : '', vung: p.vung || '', tenEn: p.tenEn || '', moTaEn: p.moTaEn || '', chiTiet: p.chiTiet || '', chiTietEn: p.chiTietEn || '' });
+  const sua = (p: DD) => { setSuaId(p.id); setVuaThem(false); setLoi(''); setF({ ...TRONG, ...p, moTa: p.moTa || '', diaChi: p.diaChi || '', sdt: p.sdt || '', web: p.web || '', gioMo: p.gioMo || '', lat: String(p.lat), lng: String(p.lng), xaPhuongId: p.xaPhuongId ? String(p.xaPhuongId) : '', vung: p.vung || '', tenEn: p.tenEn || '', moTaEn: p.moTaEn || '', chiTiet: p.chiTiet || '', chiTietEn: p.chiTietEn || '' });
     window.scrollTo({ top: 0, behavior: 'smooth' }); };
   const dat = (k: keyof typeof TRONG) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setF((x) => ({ ...x, [k]: e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value }));
@@ -62,10 +75,10 @@ export default function AdminDiaDiem() {
           <label className={nhan}>Trang web<input className={o} type="url" value={f.web} onChange={dat('web')} placeholder="https://" /></label></div>
         {([['noiBat', 'Đưa lên nổi bật'], ['hien', 'Hiện cho du khách xem'], ['daKiemTra', 'Cán bộ đã kiểm tra thông tin']] as const).map(([k, t]) => (
           <label key={k} className="mt-2.5 flex items-center gap-2 text-sm"><input type="checkbox" className="h-[18px] w-[18px] accent-primary-600" checked={f[k]} onChange={dat(k)} />{t}</label>))}
-        {suaId ? <><QuanLyAnh diaDiemId={suaId} dangHien={f.hien} tenGoiY={f.ten} /><QuanLyQuanSat diaDiemId={suaId} /></> : <p className="mt-3 text-xs text-slate-500">Lưu địa điểm xong, bấm Sửa để thêm ảnh và điểm quan sát 360°.</p>}
+        {suaId ? <><QuanLyAnh diaDiemId={suaId} dangHien={f.hien} tenGoiY={f.ten} /><QuanLyQuanSat diaDiemId={suaId} /></> : <><AnhChoTai tep={choTai} onDoi={setChoTai} toiDa={20} nhanDau="Ảnh đại diện" /><p className="mt-2 text-xs text-slate-500">Điểm quan sát 360° thêm được ngay sau khi lưu.</p></>}
         {loi && <div className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300">{loi}</div>}
-        <div className="mt-4 flex gap-2"><button type="button" className={nutChinh} disabled={luu.isPending} onClick={() => luu.mutate()}>{luu.isPending ? 'Đang lưu…' : 'Lưu địa điểm'}</button>
-          {suaId && <button type="button" className={nutVien + ' min-h-[44px] px-4 text-sm'} onClick={() => { setSuaId(null); setF(TRONG); setLoi(''); }}>Huỷ sửa</button>}</div>
+        <div className="mt-4 flex gap-2"><button type="button" className={nutChinh} disabled={luu.isPending} onClick={() => luu.mutate()}>{tienDo || (luu.isPending ? 'Đang lưu…' : 'Lưu địa điểm')}</button>
+          {suaId && <button type="button" className={nutVien + ' min-h-[44px] px-4 text-sm'} onClick={() => { setSuaId(null); setVuaThem(false); setF(TRONG); setLoi(''); }}>{vuaThem ? 'Xong, thêm điểm khác' : 'Huỷ sửa'}</button>}</div>
       </The>
       <The><h2 className="mb-2 text-[17px] font-bold">Danh sách ({ds.length})</h2>
         <div className="overflow-x-auto"><table className="w-full text-[13.5px]"><thead><tr className="border-b border-slate-200 text-left text-xs text-slate-500 dark:border-slate-800"><th className="py-2">Tên</th><th>Trạng thái</th><th></th></tr></thead>

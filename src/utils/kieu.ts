@@ -32,3 +32,7 @@ export interface TinTuc { id: number; loai: 'canh-bao' | 'su-kien' | 'thong-bao'
   /** Tin nổi bật: tự lướt ở đầu trang Tin tức. */ noiBat?: boolean; /** Đường dẫn tới nguồn tin. */ lienKet?: string | null;
   /** Ảnh của tin, ảnh đầu là ảnh bìa. */ anh?: { id: number; rong: number | null; cao: number | null; chuThich: string | null }[] }
 export interface LuuTru { id: number; ten: string; diaChi: string | null; hangSao: number; xaPhuong: string }
+/** Món ăn, quà mang về ở trang "Ăn gì" (cán bộ quản lý). loai: mon = món tiêu biểu, qua = mua làm quà. */
+export interface MonAn { id: number; vung: Vung; loai: 'mon' | 'qua'; ten: string; tenEn: string | null; moTa: string | null; moTaEn: string | null }
+/** Nơi tiêu biểu xem dự báo thời tiết của một vùng (cán bộ quản lý). */
+export interface DiemThoiTiet { id: number; vung: Vung; ten: string; tenEn: string | null; lat: number; lng: number }

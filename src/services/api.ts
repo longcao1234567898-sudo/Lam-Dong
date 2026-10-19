@@ -1,7 +1,7 @@
 /** Gọi máy chủ phía du khách. */
 import { API_URL } from './adminService';
 import { dauXacMinh, luuVe, VE_TAT, xuLyCanXacMinh } from './xacMinh';
-import type { DiaDiem, DanhGia, DanhGiaMoi, ThongKe, DanhGiaGui, LoTrinh, TinTuc, LuuTru } from '../utils/kieu';
+import type { DiaDiem, DanhGia, DanhGiaMoi, ThongKe, DanhGiaGui, LoTrinh, TinTuc, LuuTru, MonAn, DiemThoiTiet } from '../utils/kieu';
 
 /* Mã thiết bị ngẫu nhiên lưu trong trình duyệt: mỗi thiết bị một đánh giá cho
    mỗi điểm, gửi lại là sửa bài cũ. Máy chủ chỉ lưu bản băm của mã này. */
@@ -66,6 +66,9 @@ export const layTin = (id: number) => goi<TinTuc>(`/tin-tuc/${id}`);
 /** Ảnh của tin tức — nhớ đệm lâu như ảnh địa điểm. */
 export const anhTinUrl = (id: number) => `${API_URL}/api/cong-khai/anh-tin/${id}`;
 export const layLuuTru = () => goi<LuuTru[]>('/luu-tru');
+/** null: máy chủ chưa có bảng (chưa tự nâng cấp xong) — giao diện dùng danh sách dựng sẵn. */
+export const layMonAn = () => goi<MonAn[] | null>('/mon-an');
+export const layDiemThoiTiet = () => goi<DiemThoiTiet[] | null>('/diem-thoi-tiet');
 export const guiPhanAnh = (d: { loai: string; diaDiemId?: string; noiDung: string; lienHe?: string }) =>
   goi<{ ok: true }>('/phan-anh', { method: 'POST', body: JSON.stringify(d) });
 export const baoDanhGia = (id: number, lyDo = 'khac') => goi<{ ok: true }>(`/danh-gia/${id}/bao`, { method: 'POST', body: JSON.stringify({ lyDo }) });
