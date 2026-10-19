@@ -13,7 +13,7 @@
 
 INSERT IGNORE INTO dia_diem (id, ten, ten_en, loai, mo_ta, mo_ta_en, dia_chi, lat, lng, vung, noi_bat, hien, da_kiem_tra, nguon) VALUES
   ('vqg-bidoup-nui-ba', 'Vườn quốc gia Bidoup – Núi Bà', 'Bidoup – Nui Ba National Park', 'thien-nhien',
-   'Vườn quốc gia trên cao nguyên Lâm Viên, phía bắc Đà Lạt, nằm trong Khu dự trữ sinh quyển thế giới Langbiang. Có đỉnh Bidoup cao hơn 2.200 m, rừng thông và rừng lá rộng nguyên sinh với nhiều loài đặc hữu; có các cung đi bộ xuyên rừng.',
+   'Vườn quốc gia trên cao nguyên Lâm Viên, phía bắc Đà Lạt, nằm trong Khu dự trữ sinh quyển thế giới Langbiang. Có đỉnh Bidoup cao hơn 2.200 m, rừng thông và rừng lá rộng nguyên sinh với nhiều loài đặc hữu. Có các cung đi bộ xuyên rừng.',
    'National park on the Lam Vien Plateau north of Da Lat, within the Langbiang World Biosphere Reserve. Home to Bidoup peak (over 2,200 m), pine and old-growth broadleaf forest with many endemic species, and forest hiking trails.',
    'Xã Lạc Dương, tỉnh Lâm Đồng', 12.1515938, 108.4726558, 'cao-nguyen', FALSE, TRUE, FALSE, 'Toạ độ: OpenStreetMap relation 7143312 (tâm vườn). Tên điểm: mia.vn.'),
   ('lang-cu-lan', 'Làng Cù Lần', 'Cu Lan Village', 'vui-choi',
@@ -49,6 +49,6 @@ INSERT IGNORE INTO dia_diem (id, ten, ten_en, loai, mo_ta, mo_ta_en, dia_chi, la
    'Waterfall in Di Linh, falling about 30 m from a rock cliff.',
    'Xã Di Linh, tỉnh Lâm Đồng', 11.5741267, 108.0204695, NULL, FALSE, TRUE, FALSE, 'Toạ độ: OpenStreetMap node 5801773753. Tên điểm: mia.vn.'),
   ('madagui', 'Khu du lịch Madagui', 'Madagui Tourist Area', 'vui-choi',
-   'Khu du lịch sinh thái rừng ở Đạ Huoai, bên Quốc lộ 20 trên đường Sài Gòn – Đà Lạt; có rừng, hồ và các hoạt động dã ngoại, cắm trại.',
+   'Khu du lịch sinh thái rừng ở Đạ Huoai, bên Quốc lộ 20 trên đường Sài Gòn – Đà Lạt. Có rừng, hồ và các hoạt động dã ngoại, cắm trại.',
    'Forest eco-tourism area in Da Huoai beside National Road 20 on the Saigon – Da Lat route, with forest, a lake, picnics and camping.',
    'Xã Đạ Huoai, tỉnh Lâm Đồng', 11.3987096, 107.5496924, NULL, FALSE, TRUE, FALSE, 'Toạ độ: OpenStreetMap way 1424628178 (đập trong khu, gần đúng). Tên điểm: mia.vn.');

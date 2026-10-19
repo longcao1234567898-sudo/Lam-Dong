@@ -24,8 +24,8 @@ SELECT * FROM (
   UNION ALL SELECT 'su-kien',
     'Festival Hoa Đà Lạt lần thứ XI – "Đà Lạt – Bản giao hòa của sắc hoa và âm nhạc"',
     'The 11th Da Lat Flower Festival',
-    'Dự kiến khai mạc tối 19/12/2026 tại Quảng trường Lâm Viên, bế mạc tối 31/12/2026 kết hợp chương trình chào năm mới 2027. Gồm 11 chương trình chính và 25 chương trình hưởng ứng, không gian hoa quanh hồ Xuân Hương; năm nay có hoạt động ở cả ba khu vực của tỉnh, trong đó có Phan Thiết và Gia Nghĩa.',
-    'Planned opening on the evening of 19 December 2026 at Lam Vien Square; closing with the New Year 2027 celebration on 31 December. 11 main and 25 side programmes, with flower displays around Xuan Huong Lake and events across the province, including Phan Thiet and Gia Nghia.',
+    'Dự kiến khai mạc tối 19/12/2026 tại Quảng trường Lâm Viên, bế mạc tối 31/12/2026 kết hợp chương trình chào năm mới 2027. Gồm 11 chương trình chính và 25 chương trình hưởng ứng, không gian hoa quanh hồ Xuân Hương. Năm nay có hoạt động ở cả ba khu vực của tỉnh, trong đó có Phan Thiết và Gia Nghĩa.',
+    'Planned opening on the evening of 19 December 2026 at Lam Vien Square. Closing with the New Year 2027 celebration on 31 December. 11 main and 25 side programmes, with flower displays around Xuan Huong Lake and events across the province, including Phan Thiet and Gia Nghia.',
     '2026-12-19', '2026-12-31', 'ho-xuan-huong', TRUE, TRUE,
     'https://www.vietnamplus.vn/lam-dong-quang-ba-du-lich-thu-hut-du-khach-qua-festival-hoa-da-lat-2026-post1135871.vnp', 30
   UNION ALL SELECT 'thong-bao',
