@@ -40,22 +40,46 @@ const KhachQuocTePage = lazy(napKhachQuocTe);
 const UuDaiPage = lazy(napUuDai);
 const LichSuKienPage = lazy(napLichSuKien);
 const AnGiPage = lazy(napAnGi);
-const AdminNguonAnh = lazy(() => import('./pages/admin/AdminNguonAnh'));
-const AdminLoTrinh = lazy(() => import('./pages/admin/AdminLoTrinh'));
-const AdminTinTuc = lazy(() => import('./pages/admin/AdminTinTuc'));
-const AdminPhanAnh = lazy(() => import('./pages/admin/AdminPhanAnh'));
-const AdminLoginPage = lazy(() => import('./pages/admin/AdminLoginPage'));
-const AdminTongQuan = lazy(() => import('./pages/admin/AdminTongQuan'));
-const AdminDiaDiem = lazy(() => import('./pages/admin/AdminDiaDiem'));
-const AdminLuotKhach = lazy(() => import('./pages/admin/AdminLuotKhach'));
-const AdminDanhGia = lazy(() => import('./pages/admin/AdminDanhGia'));
-const AdminCanBo = lazy(() => import('./pages/admin/AdminCanBo'));
-const AdminNhatKy = lazy(() => import('./pages/admin/AdminNhatKy'));
-const AdminBaoCao = lazy(() => import('./pages/admin/AdminBaoCao'));
-const AdminBang = lazy(() => import('./pages/admin/AdminBang'));
-const AdminThongKe = lazy(() => import('./pages/admin/AdminThongKe'));
-const AdminXaPhuong = lazy(() => import('./pages/admin/AdminXaPhuong'));
-const AdminTaiKhoan = lazy(() => import('./pages/admin/AdminTaiKhoan'));
+/* Trang quản trị: mỗi trang một gói riêng; cán bộ đăng nhập xong thì tải sẵn tất cả (CanDangNhap)
+   để bấm chuyển mục không phải chờ tải mã. */
+const NAP_QT = {
+  AdminNguonAnh: () => import('./pages/admin/AdminNguonAnh'),
+  AdminLoTrinh: () => import('./pages/admin/AdminLoTrinh'),
+  AdminTinTuc: () => import('./pages/admin/AdminTinTuc'),
+  AdminPhanAnh: () => import('./pages/admin/AdminPhanAnh'),
+  AdminLoginPage: () => import('./pages/admin/AdminLoginPage'),
+  AdminTongQuan: () => import('./pages/admin/AdminTongQuan'),
+  AdminDiaDiem: () => import('./pages/admin/AdminDiaDiem'),
+  AdminLuotKhach: () => import('./pages/admin/AdminLuotKhach'),
+  AdminDanhGia: () => import('./pages/admin/AdminDanhGia'),
+  AdminCanBo: () => import('./pages/admin/AdminCanBo'),
+  AdminNhatKy: () => import('./pages/admin/AdminNhatKy'),
+  AdminBaoCao: () => import('./pages/admin/AdminBaoCao'),
+  AdminBang: () => import('./pages/admin/AdminBang'),
+  AdminThongKe: () => import('./pages/admin/AdminThongKe'),
+  AdminXaPhuong: () => import('./pages/admin/AdminXaPhuong'),
+  AdminTaiKhoan: () => import('./pages/admin/AdminTaiKhoan'),
+  AdminAnGi: () => import('./pages/admin/AdminAnGi'),
+  AdminDiemThoiTiet: () => import('./pages/admin/AdminDiemThoiTiet'),
+};
+const AdminNguonAnh = lazy(NAP_QT.AdminNguonAnh);
+const AdminLoTrinh = lazy(NAP_QT.AdminLoTrinh);
+const AdminTinTuc = lazy(NAP_QT.AdminTinTuc);
+const AdminPhanAnh = lazy(NAP_QT.AdminPhanAnh);
+const AdminLoginPage = lazy(NAP_QT.AdminLoginPage);
+const AdminTongQuan = lazy(NAP_QT.AdminTongQuan);
+const AdminDiaDiem = lazy(NAP_QT.AdminDiaDiem);
+const AdminLuotKhach = lazy(NAP_QT.AdminLuotKhach);
+const AdminDanhGia = lazy(NAP_QT.AdminDanhGia);
+const AdminCanBo = lazy(NAP_QT.AdminCanBo);
+const AdminNhatKy = lazy(NAP_QT.AdminNhatKy);
+const AdminBaoCao = lazy(NAP_QT.AdminBaoCao);
+const AdminBang = lazy(NAP_QT.AdminBang);
+const AdminThongKe = lazy(NAP_QT.AdminThongKe);
+const AdminXaPhuong = lazy(NAP_QT.AdminXaPhuong);
+const AdminTaiKhoan = lazy(NAP_QT.AdminTaiKhoan);
+const AdminAnGi = lazy(NAP_QT.AdminAnGi);
+const AdminDiemThoiTiet = lazy(NAP_QT.AdminDiemThoiTiet);
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 30_000, retry: 1, refetchOnWindowFocus: false } } });
 
@@ -75,6 +99,7 @@ function KhungChung() {
 /** Chỉ cho vào khu quản trị khi đã khôi phục được phiên đăng nhập. */
 function CanDangNhap() {
   const { staff, loading } = useAdminAuth();
+  useEffect(() => { if (staff) taiSanTrang(Object.values(NAP_QT)); }, [staff]);
   if (loading) return <div className="py-20 text-center text-slate-500">Đang kiểm tra phiên đăng nhập...</div>;
   return staff ? <AdminLayout /> : <Navigate to="/dang-nhap" replace />;
 }
@@ -119,6 +144,8 @@ export default function App() {
                 <Route path="tin-tuc" element={<AdminTinTuc />} />
                 <Route path="phan-anh" element={<AdminPhanAnh />} />
                 <Route path="nguon-anh" element={<AdminNguonAnh />} />
+                <Route path="an-gi" element={<AdminAnGi />} />
+                <Route path="diem-thoi-tiet" element={<AdminDiemThoiTiet />} />
               </Route>
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

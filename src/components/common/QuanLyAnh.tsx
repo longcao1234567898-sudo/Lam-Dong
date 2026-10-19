@@ -31,7 +31,12 @@ export async function thuNho(tep: Blob, goc: 0 | 90 | -90 = 0): Promise<{ blob: 
   if (!blob) throw new Error('Không xử lý được ảnh này.');
   return { blob, rong: c.width, cao: c.height };
 }
-const guiMoi = (diaDiemId: string, x: { blob: Blob; rong: number; cao: number }, chuThich = '') =>
+/** Chú thích gợi ý từ tên tệp. Tên máy ảnh tự đặt (IMG_0123, DSC01234, 20261019_…) thì để trống. */
+export const chuThichTuTen = (ten: string) => {
+  const c = ten.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim().slice(0, 200);
+  return /^(img|dsc[nf]?|pxl|mvimg|photo|image|screenshot|z?\d)[\s\d]*\d/i.test(c) ? '' : c;
+};
+export const guiMoi = (diaDiemId: string, x: { blob: Blob; rong: number; cao: number }, chuThich = '') =>
   adminFetch<{ id: number }>(`/dia-diem/${encodeURIComponent(diaDiemId)}/anh?${new URLSearchParams({ rong: String(x.rong), cao: String(x.cao), chuThich })}`,
     { method: 'POST', body: x.blob, headers: { 'Content-Type': 'image/jpeg' } });
 const thayTep = (id: number, x: { blob: Blob; rong: number; cao: number }) =>
@@ -180,8 +185,7 @@ export default function QuanLyAnh({ diaDiemId, dangHien, tenGoiY = '' }: { diaDi
     for (const f of Array.from(tep || [])) {
       setDangTai((n) => n + 1);
       try {
-        const chuThich = f.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').slice(0, 200);
-        await guiMoi(diaDiemId, await thuNho(f), chuThich);
+        await guiMoi(diaDiemId, await thuNho(f), chuThichTuTen(f.name));
       } catch (e) { toast.error(`${f.name}: ${(e as Error).message}`); }
       setDangTai((n) => n - 1);
     }

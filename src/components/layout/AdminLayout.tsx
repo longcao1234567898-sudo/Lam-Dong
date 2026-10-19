@@ -1,5 +1,6 @@
+import { Suspense } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { Image as ImageIcon, ShieldCheck, LayoutDashboard, MapPin, Activity, Star, Users, FileText, Home, LogOut, ClipboardCheck, Table2, BarChart3, Building2, EyeOff, UserCog, Route, Newspaper, MessageSquareWarning } from 'lucide-react';
+import { Image as ImageIcon, ShieldCheck, LayoutDashboard, MapPin, Activity, Star, Users, FileText, Home, LogOut, ClipboardCheck, Table2, BarChart3, Building2, EyeOff, UserCog, Route, Newspaper, MessageSquareWarning, UtensilsCrossed, CloudSun } from 'lucide-react';
 import { useAdminAuth } from '../../hooks/useAdminAuth';
 import { useCauHinh } from '../../utils/phuLuc';
 
@@ -22,6 +23,8 @@ export default function AdminLayout() {
       { to: '/quan-tri/phan-anh', ten: 'Phản ánh', ic: MessageSquareWarning },
       { to: '/quan-tri/lo-trinh', ten: 'Lộ trình', ic: Route },
       { to: '/quan-tri/tin-tuc', ten: 'Tin tức, sự kiện, ưu đãi', ic: Newspaper },
+      { to: '/quan-tri/an-gi', ten: 'Ăn gì', ic: UtensilsCrossed },
+      { to: '/quan-tri/diem-thoi-tiet', ten: 'Điểm thời tiết', ic: CloudSun },
       { to: '/quan-tri/nguon-anh', ten: 'Nguồn ảnh', ic: ImageIcon } ] },
     { nhom: 'Phụ lục thống kê', ds: [
       { to: '/quan-tri/bao-cao', ten: 'Báo cáo kỳ', ic: ClipboardCheck },
@@ -61,7 +64,10 @@ export default function AdminLayout() {
             <div className="space-y-0.5">{n.ds.map((m) => <NavLink key={m.to} to={m.to} end={m.end} className={lop}><m.ic className="h-4 w-4 shrink-0" /><span className="min-w-0 flex-1">{m.ten}</span>
               {m.mat && <span className="shrink-0 rounded-md bg-amber-100 px-1.5 py-0.5 text-[10.5px] font-bold text-amber-800 dark:bg-amber-900/50 dark:text-amber-200" title="Bảng có thông tin cá nhân: mỗi lần xem đều được ghi nhật ký">Mật</span>}</NavLink>)}</div></div>)}
           </nav></aside>
-        <div className="min-w-0 flex-1"><Outlet /></div>
+        {/* Khung chờ tải ĐẶT Ở ĐÂY (không để khung chung của cả trang lo): mục mới đang tải mã thì
+            chỉ vùng nội dung hiện khung chờ, thanh bên và dải tên cán bộ đứng yên. */}
+        <div className="min-w-0 flex-1"><Suspense fallback={<div className="space-y-3" aria-busy="true" aria-label="Đang tải">
+          <div className="skeleton h-9 w-56 rounded-xl" /><div className="skeleton h-40 rounded-2xl" /><div className="skeleton h-64 rounded-2xl" /></div>}><Outlet /></Suspense></div>
       </div>
     </section>
   );

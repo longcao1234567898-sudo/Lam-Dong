@@ -236,6 +236,23 @@ const layAnhTin = (ids) => (ids.length
   ? pool.query('SELECT id, tin_id, rong, cao, chu_thich FROM anh_tin WHERE tin_id IN (?) ORDER BY tin_id, thu_tu, id', [ids])
     .then(([r]) => r).catch((e) => { if (e.code === 'ER_NO_SUCH_TABLE') return []; throw e; })
   : Promise.resolve([]));
+/* Ăn gì ở Lâm Đồng, điểm dự báo thời tiết: cán bộ quản lý. Bảng chưa có (máy chủ chưa tự
+   nâng cấp xong) thì trả null để giao diện dùng danh sách dựng sẵn thay vì báo lỗi. */
+const chuaCoBang = (res) => (e) => { if (e.code === 'ER_NO_SUCH_TABLE') { res.json(null); return; } throw e; };
+router.get('/mon-an', async (_req, res, next) => {
+  try {
+    const kq = await pool.query('SELECT id, vung, loai, ten, ten_en, mo_ta, mo_ta_en FROM mon_an WHERE hien = 1 ORDER BY vung, loai, thu_tu, id').catch(chuaCoBang(res));
+    if (!kq) return;
+    res.json(kq[0].map((r) => ({ id: r.id, vung: r.vung, loai: r.loai, ten: r.ten, tenEn: r.ten_en, moTa: r.mo_ta, moTaEn: r.mo_ta_en })));
+  } catch (e) { next(e); }
+});
+router.get('/diem-thoi-tiet', async (_req, res, next) => {
+  try {
+    const kq = await pool.query('SELECT id, vung, ten, ten_en, lat, lng FROM diem_thoi_tiet WHERE hien = 1 ORDER BY vung, thu_tu, id').catch(chuaCoBang(res));
+    if (!kq) return;
+    res.json(kq[0].map((r) => ({ id: r.id, vung: r.vung, ten: r.ten, tenEn: r.ten_en, lat: Number(r.lat), lng: Number(r.lng) })));
+  } catch (e) { next(e); }
+});
 router.get('/tin-tuc', async (_req, res, next) => {
   try {
     const [rows] = await pool.query(

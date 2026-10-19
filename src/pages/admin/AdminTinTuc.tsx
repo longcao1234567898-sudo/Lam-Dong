@@ -6,6 +6,7 @@ import { adminFetch } from '../../services/adminService';
 import { TieuDeQt, The, The_nho, o, nhan, nutChinh, nutVien } from '../../components/common/KhoiQt';
 import { ngayVn } from '../../utils/phuLuc';
 import QuanLyAnhTin from '../../components/common/QuanLyAnhTin';
+import AnhChoTai, { taiLanLuot } from '../../components/common/AnhChoTai';
 
 interface Tin { id: number; loai: string; tieuDe: string; tieuDeEn: string | null; noiDung: string | null; noiDungEn: string | null;
   tuNgay: string | null; denNgay: string | null; diaDiemId: string | null; hien: boolean; thuTu: number; noiBat: boolean; lienKet: string | null; vung: string | null; soAnh: number }
@@ -23,14 +24,20 @@ export default function AdminTinTuc() {
   const { data: ds = [] } = useQuery({ queryKey: ['qt-tin-tuc'], queryFn: () => adminFetch<Tin[]>('/tin-tuc') });
   const { data: dd = [] } = useQuery({ queryKey: ['qt-dia-diem'], queryFn: () => adminFetch<{ id: string; ten: string }[]>('/dia-diem') });
   const [f, setF] = useState(TRONG); const [suaId, setSuaId] = useState<number | null>(null); const [loi, setLoi] = useState('');
+  const [choTai, setChoTai] = useState<File[]>([]); const [tienDo, setTienDo] = useState('');
   const lamMoi = () => { qc.invalidateQueries({ queryKey: ['qt-tin-tuc'] }); qc.invalidateQueries({ queryKey: ['tin-tuc'] }); };
-  /* Đăng tin mới xong thì ở lại chế độ sửa tin đó: mục Ảnh của tin hiện ngay để thêm ảnh. */
-  const luu = useMutation({ mutationFn: () => adminFetch<{ id?: number }>(suaId ? `/tin-tuc/${suaId}` : '/tin-tuc', { method: suaId ? 'PUT' : 'POST', body: JSON.stringify(f) }),
-    onSuccess: (kq) => {
-      setLoi(''); lamMoi();
-      if (!suaId && kq?.id && f.loai !== 'lien-he') { setSuaId(kq.id); toast.success('Đã đăng tin. Thêm ảnh ở mục "Ảnh của tin" bên dưới.'); return; }
+  /* Đăng tin mới: tạo tin, tải luôn ảnh đã chọn, rồi ở lại chế độ sửa tin đó để xếp ảnh, thêm chú thích. */
+  const luu = useMutation({ mutationFn: async () => {
+    const kq = await adminFetch<{ id?: number }>(suaId ? `/tin-tuc/${suaId}` : '/tin-tuc', { method: suaId ? 'PUT' : 'POST', body: JSON.stringify(f) });
+    const id = !suaId && f.loai !== 'lien-he' ? kq?.id : undefined, anh = id ? choTai : [];
+    const soAnh = id && anh.length ? await taiLanLuot(anh, (x) => adminFetch(`/tin-tuc/${id}/anh?${new URLSearchParams({ rong: String(x.rong), cao: String(x.cao) })}`,
+      { method: 'POST', body: x.blob, headers: { 'Content-Type': 'image/jpeg' } }), (i) => setTienDo(`Đang tải ảnh ${i}/${anh.length}…`)) : 0;
+    return { id, soAnh };
+  }, onSuccess: ({ id, soAnh }) => {
+      setLoi(''); setTienDo(''); setChoTai([]); lamMoi();
+      if (id) { setSuaId(id); qc.invalidateQueries({ queryKey: ['qt-anh-tin', id] }); toast.success(soAnh ? `Đã đăng tin kèm ${soAnh} ảnh.` : 'Đã đăng tin. Thêm ảnh ở mục "Ảnh của tin" bên dưới.'); return; }
       toast.success('Đã lưu.'); setF(TRONG); setSuaId(null);
-    }, onError: (e: Error) => setLoi(e.message) });
+    }, onError: (e: Error) => { setTienDo(''); setLoi(e.message); } });
   const xoa = useMutation({ mutationFn: (id: number) => adminFetch(`/tin-tuc/${id}`, { method: 'DELETE' }), onSuccess: () => { toast.success('Đã xoá.'); lamMoi(); } });
   const dat = (k: keyof typeof TRONG) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setF({ ...f, [k]: e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value });
@@ -57,9 +64,9 @@ export default function AdminTinTuc() {
         <label className="mt-3 flex items-center gap-2 text-sm"><input type="checkbox" className="h-[18px] w-[18px] accent-primary-600" checked={f.hien} onChange={dat('hien')} />Hiện cho người dân</label>
         {f.loai !== 'lien-he' && <label className="mt-2 flex items-center gap-2 text-sm"><input type="checkbox" className="h-[18px] w-[18px] accent-primary-600" checked={f.noiBat} onChange={dat('noiBat')} />
           Tin nổi bật <small className="text-slate-500">— tự lướt ở đầu trang Tin tức; nên có ảnh bìa</small></label>}
-        {suaId ? (f.loai !== 'lien-he' && <QuanLyAnhTin tinId={suaId} />) : f.loai !== 'lien-he' && <p className="mt-3 text-xs text-slate-500">Bấm Lưu để đăng tin, mục thêm ảnh hiện ra ngay sau đó.</p>}
+        {f.loai !== 'lien-he' && (suaId ? <QuanLyAnhTin tinId={suaId} /> : <AnhChoTai tep={choTai} onDoi={setChoTai} toiDa={10} nhanDau="Ảnh bìa" />)}
         {loi && <div className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300">{loi}</div>}
-        <div className="mt-4 flex gap-2"><button type="button" className={nutChinh} disabled={luu.isPending} onClick={() => luu.mutate()}>Lưu</button>
+        <div className="mt-4 flex gap-2"><button type="button" className={nutChinh} disabled={luu.isPending} onClick={() => luu.mutate()}>{tienDo || (luu.isPending ? 'Đang lưu…' : 'Lưu')}</button>
           {suaId && <button type="button" className={nutVien + ' min-h-[44px] px-4 text-sm'} onClick={() => { setSuaId(null); setF(TRONG); setLoi(''); }}>Xong, đăng tin khác</button>}</div>
       </The>
       <The><h2 className="mb-2 text-[17px] font-bold">Đã đăng ({ds.length})</h2>

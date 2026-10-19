@@ -280,6 +280,89 @@ router.delete('/quan-sat/:id', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+/* ================================================================ ĂN GÌ, ĐIỂM THỜI TIẾT */
+const VUNG_HOP_LE = ['cao-nguyen', 'bien-dao', 'dai-ngan'];
+const soThuTu = (v) => (Number.isInteger(Number(v)) ? Number(v) : 0);
+router.get('/mon-an', async (_req, res, next) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM mon_an ORDER BY vung, loai, thu_tu, id');
+    res.json(rows.map((r) => ({ id: r.id, vung: r.vung, loai: r.loai, ten: r.ten, tenEn: r.ten_en, moTa: r.mo_ta, moTaEn: r.mo_ta_en, thuTu: r.thu_tu, hien: !!r.hien })));
+  } catch (e) { next(e); }
+});
+function docMonAn(b) {
+  const ten = sanitizeText(String(b.ten || ''), 120);
+  if (!VUNG_HOP_LE.includes(b.vung)) return { loi: 'Chọn vùng.' };
+  if (!['mon', 'qua'].includes(b.loai)) return { loi: 'Chọn loại: món tiêu biểu hay quà mang về.' };
+  if (!ten) return { loi: 'Thiếu tên món.' };
+  return { du: { vung: b.vung, loai: b.loai, ten, ten_en: sanitizeText(String(b.tenEn || ''), 120) || null,
+    mo_ta: sanitizeText(String(b.moTa || ''), 1000) || null, mo_ta_en: sanitizeText(String(b.moTaEn || ''), 1000) || null,
+    thu_tu: soThuTu(b.thuTu), hien: b.hien !== false } };
+}
+router.post('/mon-an', async (req, res, next) => {
+  try {
+    const { loi, du } = docMonAn(req.body || {}); if (loi) return res.status(400).json({ error: loi });
+    const [kq] = await pool.query('INSERT INTO mon_an SET ?', [du]);
+    await ghiNhatKy(pool, req, { hanhDong: 'them_mon_an', loaiDoiTuong: 'mon_an', doiTuongId: kq.insertId, chiTiet: { ten: du.ten } });
+    res.status(201).json({ id: kq.insertId });
+  } catch (e) { next(e); }
+});
+router.put('/mon-an/:id', async (req, res, next) => {
+  try {
+    const { loi, du } = docMonAn(req.body || {}); if (loi) return res.status(400).json({ error: loi });
+    const [kq] = await pool.query('UPDATE mon_an SET ? WHERE id = ?', [du, Number(req.params.id) || 0]);
+    if (!kq.affectedRows) return res.status(404).json({ error: 'Không tìm thấy món.' });
+    await ghiNhatKy(pool, req, { hanhDong: 'sua_mon_an', loaiDoiTuong: 'mon_an', doiTuongId: req.params.id, chiTiet: { ten: du.ten } });
+    res.json({ ok: true });
+  } catch (e) { next(e); }
+});
+router.delete('/mon-an/:id', async (req, res, next) => {
+  try {
+    await pool.query('DELETE FROM mon_an WHERE id = ?', [Number(req.params.id) || 0]);
+    await ghiNhatKy(pool, req, { hanhDong: 'xoa_mon_an', loaiDoiTuong: 'mon_an', doiTuongId: req.params.id });
+    res.json({ ok: true });
+  } catch (e) { next(e); }
+});
+
+/* Điểm dự báo: toạ độ trong khung tỉnh Lâm Đồng (cả đảo Phú Quý), gõ nhầm sang tỉnh khác thì báo. */
+router.get('/diem-thoi-tiet', async (_req, res, next) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM diem_thoi_tiet ORDER BY vung, thu_tu, id');
+    res.json(rows.map((r) => ({ id: r.id, vung: r.vung, ten: r.ten, tenEn: r.ten_en, lat: Number(r.lat), lng: Number(r.lng), thuTu: r.thu_tu, hien: !!r.hien })));
+  } catch (e) { next(e); }
+});
+function docDiemTT(b) {
+  const ten = sanitizeText(String(b.ten || ''), 80);
+  const lat = Number(String(b.lat ?? '').replace(',', '.')), lng = Number(String(b.lng ?? '').replace(',', '.'));
+  if (!VUNG_HOP_LE.includes(b.vung)) return { loi: 'Chọn vùng.' };
+  if (!ten) return { loi: 'Thiếu tên nơi.' };
+  if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < 10 || lat > 13 || lng < 106.5 || lng > 109.5) return { loi: 'Toạ độ phải nằm trong tỉnh Lâm Đồng (vĩ độ 10–13, kinh độ 106,5–109,5).' };
+  return { du: { vung: b.vung, ten, ten_en: sanitizeText(String(b.tenEn || ''), 80) || null, lat, lng, thu_tu: soThuTu(b.thuTu), hien: b.hien !== false } };
+}
+router.post('/diem-thoi-tiet', async (req, res, next) => {
+  try {
+    const { loi, du } = docDiemTT(req.body || {}); if (loi) return res.status(400).json({ error: loi });
+    const [kq] = await pool.query('INSERT INTO diem_thoi_tiet SET ?', [du]);
+    await ghiNhatKy(pool, req, { hanhDong: 'them_diem_thoi_tiet', loaiDoiTuong: 'diem_thoi_tiet', doiTuongId: kq.insertId, chiTiet: { ten: du.ten } });
+    res.status(201).json({ id: kq.insertId });
+  } catch (e) { next(e); }
+});
+router.put('/diem-thoi-tiet/:id', async (req, res, next) => {
+  try {
+    const { loi, du } = docDiemTT(req.body || {}); if (loi) return res.status(400).json({ error: loi });
+    const [kq] = await pool.query('UPDATE diem_thoi_tiet SET ? WHERE id = ?', [du, Number(req.params.id) || 0]);
+    if (!kq.affectedRows) return res.status(404).json({ error: 'Không tìm thấy điểm.' });
+    await ghiNhatKy(pool, req, { hanhDong: 'sua_diem_thoi_tiet', loaiDoiTuong: 'diem_thoi_tiet', doiTuongId: req.params.id, chiTiet: { ten: du.ten } });
+    res.json({ ok: true });
+  } catch (e) { next(e); }
+});
+router.delete('/diem-thoi-tiet/:id', async (req, res, next) => {
+  try {
+    await pool.query('DELETE FROM diem_thoi_tiet WHERE id = ?', [Number(req.params.id) || 0]);
+    await ghiNhatKy(pool, req, { hanhDong: 'xoa_diem_thoi_tiet', loaiDoiTuong: 'diem_thoi_tiet', doiTuongId: req.params.id });
+    res.json({ ok: true });
+  } catch (e) { next(e); }
+});
+
 /* ================================================================ TIN TỨC */
 const LOAI_TIN = ['canh-bao', 'su-kien', 'thong-bao', 'uu-dai', 'lien-he'];
 const VUNG_TIN = ['cao-nguyen', 'bien-dao', 'dai-ngan'];
