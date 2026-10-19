@@ -1,4 +1,4 @@
--- Nạp 11 địa điểm mới kèm bài giới thiệu chi tiết (soạn ngày 19/10/2026), chạy SAU du_lich_lam_dong.sql.
+-- Nạp 13 địa điểm mới kèm bài giới thiệu chi tiết (soạn ngày 19/10/2026), chạy SAU du_lich_lam_dong.sql.
 --
 -- Danh sách lấy từ hai bài cẩm nang mia.vn và Traveloka, chỉ lấy TÊN điểm. Không lấy ảnh
 -- (ảnh của họ có bản quyền), không lấy giá vé, giờ mở cửa (dễ cũ, cán bộ bổ sung từ nguồn
@@ -397,3 +397,84 @@ The Lam Dong part is the Cat Loc sector. The main gate, visitor centre and lodgi
 - Book tours and a guide with the park, especially for Bau Sau.
 - Wear long clothes, bring insect repellent and watch for leeches in the rainy season.
 - Do not feed animals or take plants or animals out of the forest.' WHERE id = 'vqg-cat-tien' AND chi_tiet IS NULL;
+
+-- Bổ sung 2 điểm ở Đà Lạt (để gắn ảnh quảng trường và máng trượt).
+INSERT IGNORE INTO dia_diem (id, ten, ten_en, loai, mo_ta, mo_ta_en, dia_chi, lat, lng, vung, noi_bat, hien, da_kiem_tra, nguon) VALUES
+  ('quang-truong-lam-vien', 'Quảng trường Lâm Viên', 'Lam Vien Square', 'vui-choi',
+   'Quảng trường lớn bên hồ Xuân Hương, nổi bật với khối kính hình nụ hoa atiso và bông hoa dã quỳ khổng lồ. Nơi diễn ra nhiều sự kiện lớn của Đà Lạt, trong đó có lễ khai mạc Festival Hoa.',
+   'A large square by Xuan Huong Lake, known for its giant glass artichoke bud and wild sunflower structures. Many of Da Lat''s big events are held here, including the Flower Festival opening.',
+   'Đường Trần Quốc Toản, phường Xuân Hương – Đà Lạt, tỉnh Lâm Đồng', 11.9388409, 108.4450134, 'cao-nguyen', FALSE, TRUE, FALSE, 'Toạ độ: OpenStreetMap way 1303837487.'),
+  ('thac-datanla', 'Thác Datanla', 'Datanla Waterfall', 'vui-choi',
+   'Thác nước trong rừng thông cách trung tâm Đà Lạt khoảng 5 km theo hướng đèo Prenn. Có máng trượt xuyên rừng đưa khách xuống chân thác cùng nhiều hoạt động phiêu lưu ngoài trời.',
+   'A waterfall in the pine forest about 5 km from central Da Lat towards Prenn Pass. A forest alpine coaster takes visitors down to the falls, with other outdoor adventure activities.',
+   'Quốc lộ 20, đèo Prenn, phường Xuân Hương – Đà Lạt, tỉnh Lâm Đồng', 11.9011774, 108.4488444, 'cao-nguyen', FALSE, TRUE, FALSE, 'Toạ độ: OpenStreetMap node 4502225092.');
+UPDATE dia_diem SET chi_tiet = '## Giới thiệu
+Quảng trường Lâm Viên nằm bên bờ hồ Xuân Hương, ngay trung tâm Đà Lạt. Điểm nhấn là hai công trình kính màu: khối hình nụ hoa atiso và bông hoa dã quỳ khổng lồ, hai biểu tượng gắn với Đà Lạt.
+
+Quảng trường rộng, thoáng, nhìn ra mặt hồ, là nơi tổ chức nhiều sự kiện lớn của thành phố như lễ khai mạc Festival Hoa, chương trình chào năm mới và các đêm nhạc.
+
+## Lịch sử hình thành
+- Thập niên 2010: Quảng trường được xây dựng và đưa vào sử dụng. (Năm khánh thành cụ thể: cán bộ bổ sung.)
+- Ngày nay: Không gian sinh hoạt cộng đồng và tổ chức sự kiện của Đà Lạt.
+
+## Có gì để xem
+- Khối kính nụ hoa atiso và bông hoa dã quỳ, đẹp khi lên đèn buổi tối.
+- Toàn cảnh hồ Xuân Hương nhìn từ quảng trường.
+- Các sự kiện, lễ hội diễn ra thường xuyên, nhất là dịp Festival Hoa.
+
+## Kinh nghiệm
+- Buổi tối gió từ hồ thổi vào rất lạnh, nên mang áo ấm.
+- Dịp lễ hội rất đông, nên đi bộ từ khu trung tâm thay vì đi xe.
+- Có thể ghép với hồ Xuân Hương và chợ Đà Lạt trong một buổi.', chi_tiet_en = '## About
+Lam Vien Square sits on the shore of Xuan Huong Lake in the heart of Da Lat. Its landmarks are two coloured-glass structures: a giant artichoke bud and a giant wild sunflower, both symbols of Da Lat.
+
+The wide, open square faces the lake and hosts many of the city''s big events, such as the Flower Festival opening, New Year celebrations and concerts.
+
+## Timeline
+- 2010s: The square is built and opened. (Exact opening year: to be added by staff.)
+- Today: Da Lat''s main public space for gatherings and events.
+
+## What to see
+- The glass artichoke and wild sunflower, best when lit at night.
+- The view over Xuan Huong Lake.
+- Frequent events and festivals, especially during the Flower Festival.
+
+## Tips
+- Evenings are cold with wind off the lake: bring a jacket.
+- Festivals get very crowded, so walk in from the centre rather than drive.
+- Easy to combine with Xuan Huong Lake and Da Lat market.' WHERE id = 'quang-truong-lam-vien' AND chi_tiet IS NULL;
+UPDATE dia_diem SET chi_tiet = '## Giới thiệu
+Thác Datanla nằm trong rừng thông bên đèo Prenn, cách trung tâm Đà Lạt khoảng 5 km. Tên thác được cho là bắt nguồn từ tiếng K''Ho, gắn với dòng nước chảy dưới tán lá rừng.
+
+Khu thác nổi tiếng với máng trượt xuyên rừng đưa khách từ trên đồi xuống chân thác, cùng nhiều hoạt động phiêu lưu ngoài trời.
+
+## Lịch sử hình thành
+- Xưa: Vùng suối thác của đồng bào K''Ho, gắn với truyền thuyết địa phương.
+- Ngày nay: Khu du lịch có máng trượt, cáp treo và các trò chơi mạo hiểm. (Năm đưa máng trượt vào hoạt động: cán bộ bổ sung.)
+
+## Có gì để xem
+- Đi máng trượt xuyên rừng thông xuống chân thác.
+- Dòng thác chảy qua các tầng đá giữa rừng.
+- Các hoạt động phiêu lưu như vượt thác, đu dây (theo dịch vụ của khu du lịch).
+
+## Kinh nghiệm
+- Ngồi máng trượt theo đúng hướng dẫn, giữ khoảng cách với xe phía trước.
+- Trẻ nhỏ, người có bệnh tim mạch nên hỏi nhân viên trước khi chơi.
+- Đường đi bộ xuống thác có nhiều bậc, mang giày đế bám.', chi_tiet_en = '## About
+Datanla Waterfall lies in the pine forest by Prenn Pass, about 5 km from central Da Lat. Its name is said to come from the K''Ho language, referring to water flowing under the forest leaves.
+
+The area is known for its forest alpine coaster that carries visitors from the hilltop down to the falls, along with other outdoor adventures.
+
+## Timeline
+- Long ago: A stream and waterfall of the K''Ho people, tied to local legend.
+- Today: A tourist area with an alpine coaster, cable car and adventure activities. (Year the coaster opened: to be added by staff.)
+
+## What to see
+- The alpine coaster ride through the pines to the falls.
+- The water cascading over rock tiers in the forest.
+- Adventure activities such as canyoning and ziplines (run by the tourist area).
+
+## Tips
+- Ride the coaster as instructed and keep your distance from the car ahead.
+- Young children and people with heart conditions should check with staff first.
+- The walking path to the falls has many steps: wear shoes with good grip.' WHERE id = 'thac-datanla' AND chi_tiet IS NULL;
