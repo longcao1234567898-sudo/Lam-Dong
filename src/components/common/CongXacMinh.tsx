@@ -1,11 +1,11 @@
 /**
  * CỔNG KIỂM TRA "KHÔNG PHẢI NGƯỜI MÁY" — chỗ DUY NHẤT có ô Cloudflare Turnstile.
  *
- * Chỉ ở trang du khách; khu cán bộ (/dang-nhap, /quan-tri) không có. Hiện khi
- * mở trang mà thiết bị chưa có vé; qua ô thì máy chủ cấp vé 1 giờ gắn mã thiết
- * bị (services/xacMinh.ts) — mỗi thiết bị mỗi giờ kiểm tra một lần. Hết giờ thì
- * cổng hiện lại ở lần chuyển trang tiếp theo, hoặc lúc bấm gửi (khi đó trang
- * bên dưới giữ nguyên chữ đã gõ).
+ * Chỉ ở trang du khách; khu cán bộ (/dang-nhap, /quan-tri) không có. Hiện MỘT
+ * LẦN khi vừa vào web mà thiết bị chưa có vé; qua ô thì máy chủ cấp vé 1 giờ gắn
+ * mã thiết bị (services/xacMinh.ts). Qua rồi thì chuyển trang không hỏi lại
+ * (daQuaCong, nhớ trong tab). Cổng chỉ hiện lại khi bấm gửi mà máy chủ đòi vé
+ * (vé hết giờ): khi đó trang bên dưới giữ nguyên chữ đã gõ.
  *
  * Trang vẫn dựng và tải dữ liệu phía sau cổng (bị khoá thao tác bằng inert),
  * nên qua cổng là thấy nội dung ngay. Chưa khai VITE_TURNSTILE_SITE_KEY thì
@@ -26,7 +26,7 @@ import { useLocation } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import Turnstile from './Turnstile';
 import { DauHieu } from '../layout/Header';
-import { captchaEnabled, layVe, SU_KIEN_CAN_XAC_MINH } from '../../services/xacMinh';
+import { captchaEnabled, daQuaCong, danhDauDaQua, layVe, SU_KIEN_CAN_XAC_MINH } from '../../services/xacMinh';
 import { doiVeXacMinh, layDiaDiem, LoiApi } from '../../services/api';
 import { KhungAnh } from '../du-lich/GiaoDien';
 import { anhMacDinh } from '../../utils/anhMacDinh';
@@ -36,7 +36,7 @@ export default function CongXacMinh({ children }: { children: ReactNode }) {
   const { t, nn, doi, chon } = useNN();
   const { pathname } = useLocation();
   const khuCanBo = /^\/(dang-nhap|quan-tri)(\/|$)/.test(pathname);
-  const [can, setCan] = useState(() => captchaEnabled && !khuCanBo && !layVe());
+  const [can, setCan] = useState(() => captchaEnabled && !khuCanBo && !layVe() && !daQuaCong());
   const [lanLai, setLanLai] = useState(false);
   const [dang, setDang] = useState(false);
   const [cham, setCham] = useState(false);
@@ -49,11 +49,11 @@ export default function CongXacMinh({ children }: { children: ReactNode }) {
   const trang = useRef<HTMLDivElement>(null);
   const hop = useRef<HTMLDivElement>(null);
 
-  /* Mỗi lần chuyển trang: vào khu cán bộ thì đóng cổng; ở trang du khách mà vé đã hết giờ thì hiện cổng. */
+  /* Chuyển trang: vào khu cán bộ thì đóng cổng; ở trang du khách chỉ hiện nếu chưa qua cổng lần nào (mới vào web từ khu cán bộ). */
   useEffect(() => {
     if (!captchaEnabled) return;
     if (khuCanBo) { setCan(false); setLanLai(false); return; }
-    if (!layVe()) setCan(true);
+    if (!layVe() && !daQuaCong()) setCan(true);
   }, [pathname, khuCanBo]);
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function CongXacMinh({ children }: { children: ReactNode }) {
     return () => { el.removeAttribute('inert'); el.removeAttribute('aria-hidden'); document.documentElement.style.overflow = cuon; };
   }, [can]);
 
-  const dong = () => { setCan(false); setLanLai(false); setLoi(''); };
+  const dong = () => { danhDauDaQua(); setCan(false); setLanLai(false); setLoi(''); };
   const nhanMa = async (ma: string) => {
     if (!ma) return;
     const doiVe = doiVeXacMinh(ma);

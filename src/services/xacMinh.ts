@@ -29,6 +29,20 @@ export function luuVe(ve: string, hetHan: number) {
   try { localStorage.setItem(KHOA, JSON.stringify(nho)); } catch { /* chế độ riêng tư: giữ trong bộ nhớ */ }
 }
 
+/* Đã qua cổng trong lần vào web này (một tab, tải lại trang vẫn nhớ): chuyển trang
+   không hỏi lại nữa, kể cả khi vé hết giờ hoặc đổi vé ngầm hỏng. Chỉ lúc bấm gửi mà
+   máy chủ đòi vé thì cổng mới hiện lại (boVe). */
+const KHOA_QUA = 'dldn_da_qua_cong';
+let daQua = false;
+export function daQuaCong() {
+  if (!daQua) { try { daQua = sessionStorage.getItem(KHOA_QUA) === '1'; } catch { /* bỏ qua */ } }
+  return daQua;
+}
+export function danhDauDaQua() {
+  daQua = true;
+  try { sessionStorage.setItem(KHOA_QUA, '1'); } catch { /* chế độ riêng tư: giữ trong bộ nhớ */ }
+}
+
 /** Bỏ vé và báo cổng kiểm tra hiện lại. */
 export function boVe() {
   nho = null;
